@@ -137,10 +137,19 @@ export abstract class GameplayScene extends Phaser.Scene {
     this.refreshInteractions();
   }
 
-  private goToScene(key: SceneKey): void {
+  /**
+   * Data passed to the next scene's init(), e.g. where to spawn the player.
+   * Override to customise; transient, never stored in the story state.
+   */
+  protected sceneStartData(_key: SceneKey): object | undefined {
+    return undefined;
+  }
+
+  /** Switches to another scene once; repeated requests while switching are ignored. */
+  protected goToScene(key: SceneKey): void {
     if (this.transitioning || key === this.scene.key) return;
     this.transitioning = true;
     // Shuts this scene down (running the cleanups above) and starts the target.
-    this.scene.start(key);
+    this.scene.start(key, this.sceneStartData(key));
   }
 }

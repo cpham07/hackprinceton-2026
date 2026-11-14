@@ -1,5 +1,5 @@
 import { CHAPTER_1_TITLE, CLUES, getCurrentObjective } from "../game/story/chapter1";
-import { CHAPTER_2_TITLE, countSeals, getChapter2Objective, SEALS } from "../game/story/chapter2";
+import { CHAPTER_2_TITLE, countSeals, getChapter2Objective, hasAllSeals, SEALS } from "../game/story/chapter2";
 import { useGameState } from "../hooks/useGameState";
 
 /** Compact HUD: the current chapter's objective, plus clues (Chapter 1) or seals (Chapter 2). */
@@ -18,6 +18,7 @@ export default function QuestTracker() {
           <span className="quest-label">
             Magical Seals: {countSeals(state)}/{SEALS.length}
           </span>
+          {hasAllSeals(state) && <p className="quest-all-seals">All three seals collected.</p>}
           <ul>
             {SEALS.map((seal) => {
               const obtained = state.seals[seal.id];

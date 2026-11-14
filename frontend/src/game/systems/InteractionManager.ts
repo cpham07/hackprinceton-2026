@@ -13,6 +13,11 @@ export interface Interactable {
   promptY: number;
   /** What pressing E requests from React. Defaults to "dialogue". */
   kind?: "dialogue" | "puzzle";
+  /**
+   * Scene-specific handling of E (e.g. a portal). Return true if handled;
+   * false falls back to the dialogue or puzzle request.
+   */
+  onInteract?: () => boolean;
 }
 
 /**
@@ -77,6 +82,7 @@ export class InteractionManager {
 
     this.prompt.setText(target.prompt).setPosition(target.x, target.promptY);
     if (!pressed) return;
+    if (target.onInteract?.()) return;
     if (target.kind === "puzzle") EventBus.emit("puzzle:request", { puzzleId: target.id });
     else EventBus.emit("dialogue:request", { npcId: target.id });
   }

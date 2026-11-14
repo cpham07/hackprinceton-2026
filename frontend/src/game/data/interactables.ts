@@ -92,7 +92,25 @@ export const HUB_INTERACTABLES: Record<string, InteractableDefinition> = {
     x: 2250,
     displaySize: { width: 230, height: 300 },
     interactionRadius: 120,
-    prompt: "Press E to enter",
+    prompt: "Press E to descend",
+  },
+  zeusPalace: {
+    id: "zeusPalace",
+    name: "Zeus's Palace",
+    textureKey: "palace-locked",
+    x: 470,
+    displaySize: { width: 230, height: 330 },
+    interactionRadius: 130,
+    prompt: "Press E to examine",
+  },
+  ares: {
+    id: "ares",
+    name: "Ares",
+    textureKey: "npc-ares",
+    x: 1590,
+    displaySize: { width: 84, height: 146 },
+    interactionRadius: 130,
+    prompt: TALK,
   },
   athena: {
     id: "athena",
@@ -116,8 +134,54 @@ export const HUB_INTERACTABLES: Record<string, InteractableDefinition> = {
   },
 };
 
+/** Ares's training arena. Both exits lead back to the Olympus hub. */
+export const ARENA_INTERACTABLES: Record<string, InteractableDefinition> = {
+  arenaExitStart: {
+    id: "arenaExitStart",
+    name: "Exit to Olympus",
+    textureKey: "arena-exit",
+    x: 70,
+    displaySize: { width: 110, height: 170 },
+    interactionRadius: 90,
+    prompt: "Press E to return to Olympus",
+  },
+  arenaExitEnd: {
+    id: "arenaExitEnd",
+    name: "Exit to Olympus",
+    textureKey: "arena-exit",
+    x: 2230,
+    displaySize: { width: 110, height: 170 },
+    interactionRadius: 90,
+    prompt: "Press E to return to Olympus",
+  },
+};
+
+/** Hades's chamber. The exit leads back to the Olympus hub. */
+export const HADES_INTERACTABLES: Record<string, InteractableDefinition> = {
+  hades: {
+    id: "hades",
+    name: "Hades",
+    textureKey: "npc-hades",
+    x: 1030,
+    displaySize: { width: 92, height: 164 },
+    interactionRadius: 150,
+    prompt: TALK,
+  },
+  hadesExit: {
+    id: "hadesExit",
+    name: "Exit to Olympus",
+    textureKey: "underworld-exit",
+    x: 100,
+    displaySize: { width: 110, height: 170 },
+    interactionRadius: 90,
+    prompt: "Press E to return to Olympus",
+  },
+};
+
 /** Every interactable by id, for lookups that don't care which scene it is in. */
 export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...ENTRANCE_INTERACTABLES,
   ...HUB_INTERACTABLES,
+  ...ARENA_INTERACTABLES,
+  ...HADES_INTERACTABLES,
 };

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import ChallengeComplete from "./components/ChallengeComplete";
 import ChapterComplete from "./components/ChapterComplete";
 import ClueToast from "./components/ClueToast";
+import SealToast from "./components/SealToast";
 import DialogueBox from "./components/DialogueBox";
 import GameCanvas from "./components/GameCanvas";
 import QuestTracker from "./components/QuestTracker";
@@ -14,7 +16,7 @@ import { PUZZLES } from "./game/puzzles/wisdomPuzzle";
 import { getGameState } from "./game/state/gameState";
 import { applyStoryActions } from "./game/story/actions";
 import { FLAGS } from "./game/story/chapter1";
-import { CH2_FLAGS } from "./game/story/chapter2";
+import { CH2_FLAGS, CHALLENGES } from "./game/story/chapter2";
 import { getConversation } from "./game/story/conversations";
 import type { DialogueLine, PlayerResponse } from "./game/types/dialogue";
 import { useGameState } from "./hooks/useGameState";
@@ -48,14 +50,29 @@ export default function App() {
   }, []);
   const [puzzleOrders, setPuzzleOrders] = useState<Record<string, string[]>>({});
 
+  // A just-finished challenge whose success overlay is showing.
+  const [completedChallenge, setCompletedChallenge] = useState<string | null>(null);
+  useEffect(
+    () =>
+      EventBus.on("challenge:complete", ({ challengeId }) => {
+        if (CHALLENGES[challengeId]) setCompletedChallenge(challengeId);
+      }),
+    [],
+  );
+
   // Which Phaser scene is running. Scenes announce themselves when they are ready.
   const [activeScene, setActiveScene] = useState<SceneKey | null>(null);
   useEffect(() => EventBus.on("scene:ready", ({ key }) => setActiveScene(key)), []);
 
   const gameState = useGameState();
-  // The completion screen stays until the player explicitly continues (which changes the scene).
-  const showChapterComplete =
+  // The Chapter 1 screen stays until the player explicitly continues (which changes the scene).
+  const showChapter1Complete =
     gameState.flags[FLAGS.chapter1Complete] === true && activeScene === SCENES.entrance;
+  // The Chapter 2 screen shows in the hub once, until the player closes the Chapter 3 placeholder.
+  const [chapter2Dismissed, setChapter2Dismissed] = useState(false);
+  const showChapter2Complete =
+    gameState.flags[CH2_FLAGS.chapter2Complete] === true && activeScene === SCENES.hub && !chapter2Dismissed;
+  const showChapterComplete = showChapter1Complete || showChapter2Complete;
 
   // Phaser asks for a dialogue; React decides whether to open one.
   useEffect(() => {
@@ -87,7 +104,8 @@ export default function App() {
 
   // One input lock for every gameplay-blocking overlay. It is keyed on "is anything open",
   // so one overlay replacing another never unlocks the game in between.
-  const overlayOpen = session !== null || openPuzzleId !== null;
+  const overlayOpen =
+    session !== null || openPuzzleId !== null || completedChallenge !== null || showChapter2Complete;
   useEffect(() => {
     if (!overlayOpen) return;
     EventBus.emit("overlay:opened", { id: "app-overlay" });
@@ -133,6 +151,11 @@ export default function App() {
 
   const continueToOlympus = useCallback(() => EventBus.emit("scene:start", { key: SCENES.hub }), []);
 
+  const returnFromChallenge = useCallback(() => {
+    EventBus.emit("scene:start", { key: SCENES.hub });
+    setCompletedChallenge(null);
+  }, []);
+
   const openPuzzle = openPuzzleId ? PUZZLES[openPuzzleId] : null;
 
   return (
@@ -140,6 +163,7 @@ export default function App() {
       <GameCanvas />
       {activeScene && !showChapterComplete && <QuestTracker />}
       {!showChapterComplete && <ClueToast />}
+      {!showChapterComplete && <SealToast />}
       {session && (
         <DialogueBox
           key={session.npcId}
@@ -161,7 +185,18 @@ export default function App() {
           onClose={() => setOpenPuzzle(null)}
         />
       )}
-      {showChapterComplete && <ChapterComplete onContinue={continueToOlympus} />}
+      {completedChallenge && (
+        <ChallengeComplete
+          title={CHALLENGES[completedChallenge].title}
+          message={CHALLENGES[completedChallenge].message}
+          onReturn={returnFromChallenge}
+          onStay={() => setCompletedChallenge(null)}
+        />
+      )}
+      {showChapter1Complete && <ChapterComplete completedChapter={1} onContinue={continueToOlympus} />}
+      {showChapter2Complete && (
+        <ChapterComplete completedChapter={2} onClose={() => setChapter2Dismissed(true)} />
+      )}
     </div>
   );
 }

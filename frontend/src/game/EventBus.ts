@@ -7,6 +7,7 @@ import type { SceneKey } from "./constants";
  * - "dialogue:request": the player pressed E in range of an NPC or readable object.
  * - "puzzle:request": the player pressed E on a puzzle object.
  * - "scene:ready": a scene finished setting up and is now the active one.
+ * - "challenge:complete": the player just finished a challenge for the first time.
  *
  * React -> Phaser
  * - "overlay:opened" / "overlay:closed": a gameplay-blocking overlay (dialogue, puzzle, ...)
@@ -17,6 +18,7 @@ export interface GameEvents {
   "dialogue:request": { npcId: string };
   "puzzle:request": { puzzleId: string };
   "scene:ready": { key: SceneKey };
+  "challenge:complete": { challengeId: string };
   "overlay:opened": { id: string };
   "overlay:closed": { id: string };
   "scene:start": { key: SceneKey };

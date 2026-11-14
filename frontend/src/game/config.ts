@@ -1,13 +1,15 @@
 import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "./constants";
 import { getDevStartScene } from "./devShortcuts";
+import { AresTraining } from "./scenes/AresTraining";
+import { HadesChamber } from "./scenes/HadesChamber";
 import { OlympusEntrance } from "./scenes/OlympusEntrance";
 import { OlympusHub } from "./scenes/OlympusHub";
 
 export function createGame(parent: HTMLElement): Phaser.Game {
   // Phaser starts the first scene in the list. That is the entrance unless a dev shortcut applies.
-  const scenes = [OlympusEntrance, OlympusHub];
-  if (getDevStartScene() === SCENES.hub) scenes.reverse();
+  const scenes: Array<typeof Phaser.Scene> = [OlympusEntrance, OlympusHub, AresTraining, HadesChamber];
+  if (getDevStartScene() === SCENES.hub) scenes.unshift(...scenes.splice(1, 1));
 
   return new Phaser.Game({
     type: Phaser.AUTO,

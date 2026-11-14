@@ -6,5 +6,7 @@ export const GAME_HEIGHT = 720;
 export const SCENES = {
   entrance: "OlympusEntrance",
   hub: "OlympusHub",
+  ares: "AresTraining",
+  hades: "HadesChamber",
 } as const;
 export type SceneKey = (typeof SCENES)[keyof typeof SCENES];

@@ -27,6 +27,28 @@ export const TEXTURES = {
   marblePlatform: "platform-marble",
   athena: "npc-athena",
   archAres: "arch-ares",
+  archAresOpen: "arch-ares-open",
+  ares: "npc-ares",
+  // Chapter 2: Ares's training arena
+  skyArena: "bg-sky-arena",
+  arenaWall: "arena-wall",
+  arenaGround: "arena-ground",
+  arenaExit: "arena-exit",
+  hazard: "hazard-hammer",
+  finishLine: "finish-line",
+  sealCourage: "seal-courage",
+  // Chapter 2: Hades's chamber and Zeus's palace
+  skyUnderworld: "bg-sky-underworld",
+  underworldWall: "underworld-wall",
+  underworldFloor: "underworld-floor",
+  underworldColumn: "underworld-column",
+  underworldExit: "underworld-exit",
+  throne: "throne",
+  brazier: "brazier",
+  hades: "npc-hades",
+  sealPassage: "seal-passage",
+  palaceLocked: "palace-locked",
+  palaceOpen: "palace-open",
   archHades: "arch-hades",
   libraryWall: "library-wall",
   libraryDoor: "library-door",
@@ -279,7 +301,7 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.fillTriangle(47.5, 0, 43, 10, 52, 10);
   });
 
-  const drawArch = (stone: number, inside: number, banner: number) => {
+  const drawArch = (stone: number, inside: number, banner: number, barred = true) => {
     g.fillStyle(stone);
     g.fillRect(0, 40, 40, 260);
     g.fillRect(190, 40, 40, 260);
@@ -288,12 +310,36 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.fillRect(40, 50, 150, 250);
     g.fillStyle(banner);
     g.fillRect(60, 60, 110, 44);
-    g.lineStyle(6, 0x5b4a36); // crossed bars: closed for now
+    if (!barred) return;
+    g.lineStyle(6, 0x5b4a36); // crossed bars: closed
     g.lineBetween(46, 120, 184, 294);
     g.lineBetween(184, 120, 46, 294);
   };
   bake(TEXTURES.archAres, 230, 300, () => drawArch(0xd9c8b8, 0x5a1f1f, 0xb3261e));
+  bake(TEXTURES.archAresOpen, 230, 300, () => {
+    drawArch(0xd9c8b8, 0xf0a35c, 0xb3261e, false); // bright arena sand beyond
+    g.fillStyle(0xd98a3d);
+    g.fillRect(40, 250, 150, 50);
+  });
   bake(TEXTURES.archHades, 230, 300, () => drawArch(0x8d8a99, 0x1a1626, 0x4b2d7a));
+
+  bake(TEXTURES.ares, 56, 98, () => {
+    g.fillStyle(0xb3261e); // tall helmet crest
+    g.fillRect(20, 0, 16, 12);
+    g.fillStyle(0x7a7f87); // helmet
+    g.fillCircle(28, 20, 14);
+    g.fillStyle(0xc99a72);
+    g.fillRect(21, 20, 14, 12); // face
+    g.fillStyle(0x7a7f87); // breastplate, broad shoulders
+    g.fillRoundedRect(6, 32, 44, 34, 6);
+    g.fillStyle(0xb3261e); // red cloak and skirt
+    g.fillRect(8, 66, 40, 14);
+    g.fillStyle(0xc99a72);
+    g.fillRect(14, 80, 10, 18);
+    g.fillRect(32, 80, 10, 18);
+    g.fillStyle(0xb08d2f); // round shield
+    g.fillCircle(10, 52, 10);
+  });
 
   // ---- Chapter 2: Athena's library ----
 
@@ -419,6 +465,245 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.fillTriangle(56, 12, 26, 52, 46, 52);
     g.fillTriangle(50, 44, 70, 44, 38, 86);
   });
+
+  // ---- Chapter 2: Ares's training arena ----
+
+  bake(TEXTURES.skyArena, 64, 720, () => {
+    const top = Phaser.Display.Color.ValueToColor(0xf7b267);
+    const bottom = Phaser.Display.Color.ValueToColor(0xfde4c4);
+    const bands = 36;
+    for (let i = 0; i < bands; i++) {
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(top, bottom, bands - 1, i);
+      g.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b));
+      g.fillRect(0, (720 / bands) * i, 64, 720 / bands + 1);
+    }
+  });
+
+  bake(TEXTURES.arenaWall, 160, 370, () => {
+    g.fillStyle(0xc9a27a); // tiers of stone seating
+    g.fillRect(0, 0, 160, 370);
+    g.fillStyle(0xb38b62);
+    for (let y = 30; y < 370; y += 60) g.fillRect(0, y, 160, 14);
+    g.fillStyle(0x8f6a45); // arches at the bottom
+    g.fillRect(30, 270, 40, 100);
+    g.fillRect(110, 270, 40, 100);
+  });
+
+  bake(TEXTURES.arenaGround, 128, 100, () => {
+    g.fillStyle(0xe0b77c); // packed sand
+    g.fillRect(0, 0, 128, 100);
+    g.fillStyle(0xf0cf98);
+    g.fillRect(0, 0, 128, 8);
+    g.fillStyle(0xc99d62);
+    g.fillCircle(30, 40, 3);
+    g.fillCircle(90, 70, 3);
+    g.fillCircle(60, 20, 2);
+  });
+
+  bake(TEXTURES.arenaExit, 110, 170, () => {
+    g.fillStyle(0xd9c8b8);
+    g.fillRect(0, 0, 110, 24);
+    g.fillRect(0, 24, 20, 146);
+    g.fillRect(90, 24, 20, 146);
+    g.fillStyle(0xfff1c4); // the bright hub beyond
+    g.fillRect(20, 24, 70, 146);
+  });
+
+  bake(TEXTURES.hazard, 64, 64, () => {
+    g.fillStyle(0x3b3f45); // spiked bronze weight
+    for (let i = 0; i < 8; i++) {
+      const a = (Math.PI / 4) * i;
+      g.fillTriangle(
+        32 + Math.cos(a) * 31, 32 + Math.sin(a) * 31,
+        32 + Math.cos(a + 0.35) * 18, 32 + Math.sin(a + 0.35) * 18,
+        32 + Math.cos(a - 0.35) * 18, 32 + Math.sin(a - 0.35) * 18,
+      );
+    }
+    g.fillStyle(0xb3261e);
+    g.fillCircle(32, 32, 21);
+    g.fillStyle(0xd4af37);
+    g.fillCircle(32, 32, 9);
+  });
+
+  bake(TEXTURES.finishLine, 140, 240, () => {
+    g.fillStyle(0x7a5230); // two posts
+    g.fillRect(0, 0, 14, 240);
+    g.fillRect(126, 0, 14, 240);
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 7; col++) {
+        g.fillStyle((row + col) % 2 === 0 ? 0x111111 : 0xffffff); // checkered banner
+        g.fillRect(14 + col * 16, row * 16, 16, 16);
+      }
+    }
+  });
+
+  bake(TEXTURES.sealCourage, 96, 96, () => {
+    g.fillStyle(0xd4af37);
+    g.fillCircle(48, 48, 46);
+    g.fillStyle(0xb3261e);
+    g.fillCircle(48, 48, 36);
+    g.fillStyle(0xd4af37); // shield emblem
+    g.fillCircle(48, 48, 20);
+    g.fillStyle(0xb3261e);
+    g.fillCircle(48, 48, 8);
+  });
+
+  // ---- Chapter 2: Hades's chamber ----
+
+  bake(TEXTURES.skyUnderworld, 64, 720, () => {
+    const top = Phaser.Display.Color.ValueToColor(0x0b0a1f);
+    const bottom = Phaser.Display.Color.ValueToColor(0x2b1747);
+    const bands = 36;
+    for (let i = 0; i < bands; i++) {
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(top, bottom, bands - 1, i);
+      g.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b));
+      g.fillRect(0, (720 / bands) * i, 64, 720 / bands + 1);
+    }
+  });
+
+  bake(TEXTURES.underworldWall, 160, 400, () => {
+    g.fillStyle(0x1c1a33); // dark masonry
+    g.fillRect(0, 0, 160, 400);
+    g.lineStyle(2, 0x14122a);
+    for (let y = 0; y < 400; y += 50) g.lineBetween(0, y, 160, y);
+    for (let y = 0; y < 400; y += 100) {
+      g.lineBetween(40, y, 40, y + 50);
+      g.lineBetween(120, y, 120, y + 50);
+    }
+    for (let y = 50; y < 400; y += 100) {
+      g.lineBetween(80, y, 80, y + 50);
+    }
+    g.fillStyle(0x4b3a86, 0.35); // faint Greek-key band
+    for (let x = 8; x < 160; x += 32) g.fillRect(x, 60, 16, 8);
+  });
+
+  bake(TEXTURES.underworldFloor, 128, 100, () => {
+    g.fillStyle(0x24213d);
+    g.fillRect(0, 0, 128, 100);
+    g.fillStyle(0x4b3a86); // faintly lit top edge
+    g.fillRect(0, 0, 128, 6);
+    g.lineStyle(2, 0x171530);
+    g.lineBetween(64, 6, 64, 100);
+    g.lineBetween(0, 52, 128, 52);
+  });
+
+  bake(TEXTURES.underworldColumn, 90, 420, () => {
+    g.fillStyle(0x3a3358);
+    g.fillRect(0, 0, 90, 26);
+    g.fillRect(0, 394, 90, 26);
+    g.fillStyle(0x2c2748);
+    g.fillRect(14, 26, 62, 368);
+    g.lineStyle(3, 0x4b3a86);
+    for (let x = 26; x <= 64; x += 12) g.lineBetween(x, 30, x, 390);
+  });
+
+  bake(TEXTURES.underworldExit, 110, 170, () => {
+    g.fillStyle(0x3a3358);
+    g.fillRect(0, 0, 110, 24);
+    g.fillRect(0, 24, 20, 146);
+    g.fillRect(90, 24, 20, 146);
+    g.fillStyle(0xfff1c4); // the bright hub beyond
+    g.fillRect(20, 24, 70, 146);
+  });
+
+  bake(TEXTURES.throne, 230, 330, () => {
+    g.fillStyle(0x15122a); // tall back with pointed top
+    g.fillRect(40, 60, 150, 220);
+    g.fillTriangle(40, 60, 115, 0, 190, 60);
+    g.fillStyle(0x4b3a86);
+    g.fillRect(50, 70, 130, 8);
+    g.fillStyle(0x2b2348); // seat and armrests
+    g.fillRect(20, 200, 190, 40);
+    g.fillRect(14, 170, 36, 70);
+    g.fillRect(180, 170, 36, 70);
+    g.fillStyle(0x3a3358); // base steps
+    g.fillRect(0, 280, 230, 24);
+    g.fillRect(14, 304, 202, 26);
+    g.fillStyle(0x7fc4ff); // pale blue gem
+    g.fillCircle(115, 40, 9);
+  });
+
+  bake(TEXTURES.brazier, 60, 130, () => {
+    g.fillStyle(0x3a3358);
+    g.fillRect(24, 60, 12, 62); // stand
+    g.fillRect(10, 122, 40, 8);
+    g.fillRoundedRect(6, 48, 48, 18, 6); // bowl
+    g.fillStyle(0x3d7bff); // blue flame
+    g.fillTriangle(30, 0, 14, 48, 46, 48);
+    g.fillStyle(0xa5d3ff);
+    g.fillTriangle(30, 18, 22, 48, 38, 48);
+  });
+
+  bake(TEXTURES.hades, 60, 108, () => {
+    g.fillStyle(0x6a4bd8, 0.9); // crown of dark flame
+    g.fillTriangle(14, 14, 20, -2, 26, 14);
+    g.fillTriangle(25, 14, 30, -4, 35, 14);
+    g.fillTriangle(34, 14, 40, -2, 46, 14);
+    g.fillStyle(0xd9d6e8); // pale face
+    g.fillCircle(30, 22, 12);
+    g.fillStyle(0x15122a); // dark beard and eyes
+    g.fillTriangle(20, 26, 40, 26, 30, 46);
+    g.fillStyle(0x7fc4ff);
+    g.fillRect(24, 19, 4, 3);
+    g.fillRect(33, 19, 4, 3);
+    g.fillStyle(0x3b2f7a); // long dark robes, lifted enough to read against the throne
+    g.fillTriangle(30, 36, 4, 108, 56, 108);
+    g.fillRoundedRect(12, 36, 36, 40, 6);
+    g.fillStyle(0x4b3a86); // trim
+    g.fillRect(12, 36, 36, 5);
+    g.fillStyle(0x6b5a3a); // staff
+    g.fillRect(52, 10, 3, 98);
+    g.fillStyle(0x7fc4ff);
+    g.fillCircle(53.5, 8, 5);
+  });
+
+  bake(TEXTURES.sealPassage, 96, 96, () => {
+    g.fillStyle(0xd4af37);
+    g.fillCircle(48, 48, 46);
+    g.fillStyle(0x4b2d9a);
+    g.fillCircle(48, 48, 36);
+    g.fillStyle(0xd4af37); // open doorway emblem
+    g.fillRect(36, 30, 24, 36);
+    g.fillTriangle(36, 30, 48, 18, 60, 30);
+    g.fillStyle(0x4b2d9a);
+    g.fillRect(41, 38, 14, 28);
+  });
+
+  // ---- Zeus's palace gates in the hub ----
+
+  const drawPalace = (open: boolean) => {
+    g.fillStyle(open ? 0xf7f1e3 : 0xb9b4c4); // pediment and pillars
+    g.fillTriangle(0, 90, 115, 0, 230, 90);
+    g.fillRect(0, 90, 230, 24);
+    g.fillRect(0, 114, 34, 216);
+    g.fillRect(196, 114, 34, 216);
+    g.fillStyle(open ? 0xd4af37 : 0x6f6a80); // doors
+    g.fillRect(34, 114, 162, 216);
+    g.lineStyle(4, open ? 0x8a6d12 : 0x4a4660);
+    g.lineBetween(115, 114, 115, 330);
+    g.strokeRect(34, 114, 162, 216);
+    g.fillStyle(open ? 0xfff6d6 : 0x2e2b3d); // lightning emblem on the lintel
+    g.fillTriangle(121, 20, 100, 58, 114, 58);
+    g.fillTriangle(116, 52, 132, 52, 108, 84);
+    // Three seal sockets: dark and empty while locked, glowing once all three seals are held.
+    for (const [sx, color] of [[70, 0x3a5ba0], [115, 0xb3261e], [160, 0x4b2d9a]] as const) {
+      g.fillStyle(open ? color : 0x15132a);
+      g.fillCircle(sx, 200, 17);
+      g.lineStyle(3, open ? 0xfff6d6 : 0x4a4660);
+      g.strokeCircle(sx, 200, 17);
+    }
+    if (!open) {
+      g.lineStyle(7, 0x3a3748); // chains across the doors
+      g.lineBetween(34, 150, 196, 290);
+      g.lineBetween(196, 150, 34, 290);
+      g.fillStyle(0x3a3748);
+      g.fillRoundedRect(98, 255, 34, 30, 5); // padlock
+      g.lineStyle(6, 0x3a3748);
+      g.strokeCircle(115, 252, 11);
+    }
+  };
+  bake(TEXTURES.palaceLocked, 230, 330, () => drawPalace(false));
+  bake(TEXTURES.palaceOpen, 230, 330, () => drawPalace(true));
 
   g.destroy();
 }

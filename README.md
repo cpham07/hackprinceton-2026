@@ -45,6 +45,6 @@ Chapter 1 walkthrough: talk to Aphrodite, then Old Theron and Lyra up the road. 
 
 Conversations are scripted; replies do not interpret what you type, except the gatekeeper, who checks for the incantation.
 
-Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to Athena (far right of the hub), enter her library, press E at the pedestal and order the symbols to earn the Seal of Wisdom. The Ares and Hades paths are marked "Coming Soon".
+Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to Athena (far right of the hub), enter her library, press E at the pedestal and order the symbols to earn the Seal of Wisdom. Talk to Ares (next to the red arena gate) to open his training arena: get past three moving hammers to the finish line to earn the Seal of Courage. The seals can be earned in either order. Descend through the dark arch to Hades's chamber and answer his three questions to earn the Seal of Passage. With all three seals, the gates of Zeus's palace (left of the fountain) unlock; press E there to finish Chapter 2. Chapter 3 is not playable yet.
 
-For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2.
+For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal.

@@ -428,3 +428,24 @@ body,
   60% { transform: scale(2.2) rotate(10deg); opacity: 1; }
   100% { transform: scale(1) rotate(0); }
 }
+
+/* Chapter 2 completion */
+.quest-all-seals {
+  margin: 2px 0 4px;
+  color: #f2c94c;
+  font-weight: bold;
+}
+
+.seal-toast {
+  position: absolute;
+  right: 16px;
+  bottom: 68px;
+  padding: 10px 16px;
+  border: 1px solid #f2c94c;
+  border-radius: 10px;
+  background: rgba(40, 28, 8, 0.92);
+  color: #fff3c4;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  pointer-events: none;
+}

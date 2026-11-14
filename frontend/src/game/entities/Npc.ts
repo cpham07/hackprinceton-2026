@@ -7,9 +7,12 @@ import type { Interactable } from "../systems/InteractionManager";
 export class Npc extends Phaser.GameObjects.Image implements Interactable {
   readonly id: string;
   readonly interactionRadius: number;
-  readonly prompt: string;
+  /** Mutable so a scene can change it with the story state (e.g. a locked and an unlocked gate). */
+  prompt: string;
   readonly promptY: number;
   readonly kind: "dialogue" | "puzzle";
+  /** Set by a scene to handle E itself; see Interactable.onInteract. */
+  onInteract?: () => boolean;
 
   constructor(scene: Phaser.Scene, def: InteractableDefinition, feetY: number) {
     super(scene, def.x, feetY, def.textureKey);

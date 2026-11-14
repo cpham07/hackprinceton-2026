@@ -3,19 +3,30 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { HUB_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
-import { getGameState, subscribe } from "../state/gameState";
-import { CH2_FLAGS } from "../story/chapter2";
+import { getGameState, hasFlag, subscribe } from "../state/gameState";
+import { CH2_FLAGS, completeChapter2IfReady, hasAllSeals } from "../story/chapter2";
 import { GameplayScene } from "./GameplayScene";
 
 const WORLD_WIDTH = 4400;
 const GROUND_Y = 620;
+const DEFAULT_SPAWN_X = 200;
+/**
+ * Where the player appears when coming back from Ares's arena: just right of the arena gate,
+ * outside the gate's and Hades's interaction ranges, on open ground.
+ */
+export const HUB_SPAWN_FROM_ARENA_X = 1910;
+/**
+ * Where the player appears when coming back from Hades's chamber: just right of the Hades gate
+ * (its range ends at 2370) and left of Athena's (it starts at 2610).
+ */
+export const HUB_SPAWN_FROM_HADES_X = 2430;
 
 /** Athena's library is the enclosed part of the same scene, from the door to the end of the world. */
 const LIBRARY = { doorX: 3000, endX: WORLD_WIDTH, wallTop: 150 };
 /** Invisible wall at the library door until Athena opens it. Independent of the door art. */
 const LIBRARY_BARRIER = { x: LIBRARY.doorX, width: 40 };
 
-const COLUMN_XS = [420, 1500, 2000, 2500];
+const COLUMN_XS = [1500, 2000, 2500]; // the palace gates stand where the first column was
 /** One-way marble terraces over the plaza: jump up through them, stand on top. */
 const PLATFORMS = [
   { x: 950, y: 500, width: 256 },
@@ -50,9 +61,18 @@ export class OlympusHub extends GameplayScene {
   private libraryDoor!: Phaser.GameObjects.Image;
   private libraryBarrier!: Phaser.GameObjects.Zone;
   private sealEmblem!: Phaser.GameObjects.Image;
+  private aresGate!: Npc;
+  private hadesGate!: Npc;
+  private palace!: Npc;
+  private spawnX = DEFAULT_SPAWN_X;
 
   constructor() {
     super(SCENES.hub);
+  }
+
+  /** Scene data from scene.start(): an optional spawn point (e.g. returning from the arena). */
+  init(data: { spawnX?: number } | undefined): void {
+    this.spawnX = data?.spawnX ?? DEFAULT_SPAWN_X;
   }
 
   create(): void {
@@ -60,7 +80,7 @@ export class OlympusHub extends GameplayScene {
     this.buildHubBackdrop();
     this.buildLibrary();
     const ground = this.buildGround();
-    this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: 200, ground });
+    this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: this.spawnX, ground });
 
     for (const { x, y, width } of PLATFORMS) {
       const platform = this.add.tileSprite(x, y, width, 20, TEXTURES.marblePlatform).setOrigin(0);
@@ -78,8 +98,26 @@ export class OlympusHub extends GameplayScene {
     this.physics.add.collider(this.player, this.libraryBarrier);
 
     for (const def of Object.values(HUB_INTERACTABLES)) {
-      this.interactions.register(new Npc(this, def, GROUND_Y));
+      const entity = new Npc(this, def, GROUND_Y);
+      this.interactions.register(entity);
+      if (def.id === "aresPath") this.aresGate = entity;
+      if (def.id === "hadesPath") this.hadesGate = entity;
+      if (def.id === "zeusPalace") this.palace = entity;
     }
+    this.hadesGate.onInteract = () => {
+      this.goToScene(SCENES.hades);
+      return true;
+    };
+    // With all three seals the gates open and E enters the palace (completing Chapter 2).
+    // In every other case (seals missing, or already entered) E falls back to the palace's message.
+    this.palace.onInteract = () => completeChapter2IfReady();
+    // Once Ares has spoken with the player, his gate leads to the arena;
+    // before that, E falls back to the "barred gate" message.
+    this.aresGate.onInteract = () => {
+      if (!hasFlag(CH2_FLAGS.aresIntroComplete)) return false;
+      this.goToScene(SCENES.ares);
+      return true;
+    };
 
     // The story state lives in the gameState module; the scene only mirrors it.
     this.applyStoryState();
@@ -98,6 +136,15 @@ export class OlympusHub extends GameplayScene {
     this.libraryDoor.setTexture(libraryOpen ? TEXTURES.libraryDoorOpen : TEXTURES.libraryDoor);
     (this.libraryBarrier.body as Phaser.Physics.Arcade.StaticBody).enable = !libraryOpen;
     this.sealEmblem.setVisible(seals.athena);
+    this.aresGate.setTexture(
+      flags[CH2_FLAGS.aresIntroComplete] === true ? TEXTURES.archAresOpen : TEXTURES.archAres,
+    );
+
+    const palaceOpen = hasAllSeals(getGameState());
+    this.palace.setTexture(palaceOpen ? TEXTURES.palaceOpen : TEXTURES.palaceLocked);
+    this.palace.prompt = palaceOpen && flags[CH2_FLAGS.chapter2Complete] !== true
+      ? "Press E to enter Zeus's palace"
+      : "Press E to examine";
   }
 
   private buildHubBackdrop(): void {
