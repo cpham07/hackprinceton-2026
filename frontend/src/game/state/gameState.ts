@@ -1,12 +1,14 @@
 /**
  * Authoritative story state. Plain TypeScript: no Phaser or React imports.
  * Phaser and React both read and write through the functions below.
+ * Every mutation is idempotent (adding a clue twice changes nothing) and notifies subscribers.
  */
 
 export type SealId = "athena" | "ares" | "hades";
+export type Chapter = 1 | 2 | 3 | 4 | 5;
 
 export interface GameState {
-  chapter: 1 | 2 | 3 | 4 | 5;
+  chapter: Chapter;
   inventory: string[];
   clues: string[];
   completedQuests: string[];
@@ -47,8 +49,39 @@ export function subscribe(listener: () => void): () => void {
 }
 
 export function setFlag(name: string, value = true): void {
-  if (state.flags[name] === value) return;
+  if ((state.flags[name] ?? false) === value) return;
   update({ ...state, flags: { ...state.flags, [name]: value } });
+}
+
+export function hasFlag(name: string): boolean {
+  return state.flags[name] === true;
+}
+
+/** Returns true if the clue was new. */
+export function addClue(clueId: string): boolean {
+  if (state.clues.includes(clueId)) return false;
+  update({ ...state, clues: [...state.clues, clueId] });
+  return true;
+}
+
+export function hasClue(clueId: string): boolean {
+  return state.clues.includes(clueId);
+}
+
+/** Returns true if the quest was not already complete. */
+export function completeQuest(questId: string): boolean {
+  if (state.completedQuests.includes(questId)) return false;
+  update({ ...state, completedQuests: [...state.completedQuests, questId] });
+  return true;
+}
+
+export function hasCompletedQuest(questId: string): boolean {
+  return state.completedQuests.includes(questId);
+}
+
+export function setChapter(chapter: Chapter): void {
+  if (state.chapter === chapter) return;
+  update({ ...state, chapter });
 }
 
 export function resetGameState(): void {

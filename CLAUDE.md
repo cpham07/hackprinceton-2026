@@ -14,13 +14,17 @@ HackPrinceton 2026 hackathon project. It is not a git repository yet, and there 
 ## Architecture
 
 - `frontend/`: Vite + React 18 + TypeScript + Phaser 3. Game logic lives in Phaser (`src/game/`), UI in React (`src/components/`).
-  - `App.tsx` owns dialogue state and the single `submitPlayerResponse(PlayerResponse)` handler (typed text now, voice transcriptions later).
-  - `components/GameCanvas.tsx` creates and destroys the Phaser game; `components/DialogueBox.tsx` is the dialogue overlay.
+  - `App.tsx` owns the open dialogue session and the single `submitPlayerResponse(PlayerResponse)` handler (typed text now, voice transcriptions later).
+  - `components/`: `GameCanvas` (creates/destroys the Phaser game), `DialogueBox` (`hideInput` gives a read-only mode), `QuestTracker` (objective HUD), `ClueToast`, `ChapterComplete`. `hooks/useGameState.ts` subscribes React to the story state.
   - `game/EventBus.ts` is the only Phaser/React channel: `dialogue:request` (Phaser to React), `dialogue:opened` and `dialogue:closed` (React to Phaser).
   - `game/state/gameState.ts` is the authoritative story state (plain TS module with `getGameState`, `setFlag`, `subscribe`). Don't keep story state in the Phaser registry.
   - `game/input/keys.ts` creates gameplay keys and holds the explicit list of captured keys. The scene releases captures and disables the keyboard while dialogue is open. Use `consumePress` for one-shot actions, not `JustDown` (it misses taps shorter than a frame).
   - `game/scenes/OlympusEntrance.ts` is the Chapter 1 scene; `entities/Player.ts`, `entities/Npc.ts`, `systems/InteractionManager.ts` are reusable across scenes.
-  - `game/data/npcs.ts` defines NPCs (position, display size, interaction radius, mock lines); `game/dialogue/mockDialogue.ts` returns scripted lines by turn.
+  - `game/data/interactables.ts` defines every NPC and object the player can press E on (position, display size, interaction radius, prompt text, optional glow). `entities/Npc.ts` builds any of them.
+  - Story progress only changes through `story/actions.ts` (`applyStoryActions` with `setFlag` / `addClue` / `completeQuest` / `setChapter`). Dialogue steps carry actions that apply when the line is shown, never just because a dialogue opened.
+  - `story/chapter1.ts` holds Chapter 1 flags, clues, the incantation and `getCurrentObjective(state)`; `story/chapter1Dialogue.ts` picks each character's conversation from the current state.
+  - `dialogue/conversation.ts` is the scripted reply engine (`getReply`); `dialogue/phraseMatch.ts` is the deterministic phrase validator used for the incantation.
+  - `OlympusEntrance` mirrors story state via `subscribe()` + `applyStoryState()` (gate art, gate barrier collision, sleeping gatekeeper). Don't copy story state into the scene.
   - `game/graphics/placeholders.ts` generates placeholder textures under fixed keys. Real art replaces them by loading images under the same keys; display sizes and collision boxes come from `PLAYER_CONFIG` and the NPC definitions, not from texture dimensions.
   - The player uses real art from `frontend/public/assets/characters/player/`, loaded by `Player.preload(scene)` in the scene's `preload()`. `PLAYER_ART` in `entities/Player.ts` holds the source-pixel measurements (feet line, collision box, source facing); `PLAYER_ANIMATIONS` maps idle/walk/jump to frame keys (all one image for now). The art faces left in the file, and `face()` moves the origin and body offset together when flipping so the collision box stays put.
   - In scene cleanup, only touch the keyboard on `SHUTDOWN`, never on `DESTROY` (the keyboard manager is already gone and throwing there leaves a second Phaser instance alive under StrictMode).

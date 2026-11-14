@@ -7,13 +7,15 @@ export interface Interactable {
   x: number;
   y: number;
   interactionRadius: number;
-  /** World y at which the "Press E to talk" prompt is drawn. */
+  /** Text shown when in range, e.g. "Press E to talk" or "Press E to investigate". */
+  prompt: string;
+  /** World y at which the prompt is drawn. */
   promptY: number;
 }
 
 /**
  * Finds the nearest interactable in range of the player, shows the prompt above it,
- * and requests a dialogue when E is pressed. Scenes register their NPCs and call update().
+ * and requests a dialogue when E is pressed. Scenes register NPCs and objects alike and call update().
  */
 export class InteractionManager {
   private readonly targets: Interactable[] = [];
@@ -27,7 +29,7 @@ export class InteractionManager {
     private readonly consumeInteract: () => boolean,
   ) {
     this.prompt = scene.add
-      .text(0, 0, "Press E to talk", {
+      .text(0, 0, "", {
         fontFamily: "Georgia, serif",
         fontSize: "22px",
         color: "#ffffff",
@@ -71,7 +73,7 @@ export class InteractionManager {
     this.prompt.setVisible(target !== null);
     if (!target) return;
 
-    this.prompt.setPosition(target.x, target.promptY);
+    this.prompt.setText(target.prompt).setPosition(target.x, target.promptY);
     if (pressed) EventBus.emit("dialogue:request", { npcId: target.id });
   }
 }

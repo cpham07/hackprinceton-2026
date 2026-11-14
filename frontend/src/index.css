@@ -20,10 +20,10 @@ body,
 
 .dialogue-box {
   position: absolute;
-  left: 50%;
-  top: 4vh;
-  transform: translateX(-50%);
-  width: min(860px, calc(100vw - 32px));
+  /* Sits to the right of the quest tracker so both stay readable. */
+  left: 348px;
+  top: 16px;
+  width: min(860px, calc(100vw - 364px));
   box-sizing: border-box;
   padding: 14px 18px 16px;
   border: 2px solid #d4af37;
@@ -100,4 +100,116 @@ body,
 .dialogue-send:disabled {
   opacity: 0.45;
   cursor: default;
+}
+
+.dialogue-line {
+  white-space: pre-line;
+}
+
+.quest-tracker {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 316px;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid #d4af37;
+  border-radius: 10px;
+  background: rgba(27, 18, 40, 0.86);
+  color: #f6f1e7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.quest-chapter {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #f2c94c;
+  margin-bottom: 4px;
+}
+
+.quest-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.quest-objective {
+  font-size: 17px;
+}
+
+.quest-clues {
+  margin: 8px 0 0;
+  padding: 8px 0 0 18px;
+  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  font-size: 14px;
+}
+
+.clue-toast {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 10px 16px;
+  border: 1px solid #9fe8ff;
+  border-radius: 10px;
+  background: rgba(16, 32, 48, 0.92);
+  color: #e6faff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.chapter-complete {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 16, 32, 0.82);
+  color: #f6f1e7;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+}
+
+.chapter-complete-card {
+  max-width: min(620px, calc(100vw - 32px));
+  padding: 28px 32px;
+  border: 2px solid #d4af37;
+  border-radius: 14px;
+  background: rgba(27, 18, 40, 0.96);
+}
+
+.chapter-complete-card h1 {
+  margin: 4px 0 12px;
+  font-size: 32px;
+  color: #f2c94c;
+}
+
+.chapter-complete-kicker {
+  margin: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+}
+
+.chapter-complete-next {
+  margin: 20px 0;
+  font-size: 20px;
+  color: #a9cdf5;
+}
+
+.chapter-complete-card button {
+  padding: 8px 18px;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  background: #3a2755;
+  color: #f6f1e7;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
 }

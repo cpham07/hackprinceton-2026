@@ -7,18 +7,25 @@ interface DialogueBoxProps {
   /** Called with trimmed, nonempty text. */
   onSubmit: (text: string) => void;
   onClose: () => void;
+  /** Read-only mode (inscriptions, finished conversations): no text field or Send button. */
+  hideInput?: boolean;
 }
 
-export default function DialogueBox({ npcName, lines, onSubmit, onClose }: DialogueBoxProps) {
+export default function DialogueBox({ npcName, lines, onSubmit, onClose, hideInput = false }: DialogueBoxProps) {
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   // The key that opened the dialogue may still be held down. Until a key is released,
   // drop auto-repeat keydowns so a held E doesn't fill the input with "eeee".
   const ignoreRepeats = useRef(true);
 
+  // Keep focus inside the box so Escape and typing always land here.
   useEffect(() => {
-    inputRef.current?.focus();
+    (hideInput ? closeRef.current : inputRef.current)?.focus();
+  }, [hideInput]);
+
+  useEffect(() => {
     const release = () => {
       ignoreRepeats.current = false;
     };
@@ -61,7 +68,7 @@ export default function DialogueBox({ npcName, lines, onSubmit, onClose }: Dialo
     >
       <header className="dialogue-header">
         <span className="dialogue-name">{npcName}</span>
-        <button type="button" className="dialogue-close" onClick={onClose}>
+        <button ref={closeRef} type="button" className="dialogue-close" onClick={onClose}>
           Close
         </button>
       </header>
@@ -74,6 +81,7 @@ export default function DialogueBox({ npcName, lines, onSubmit, onClose }: Dialo
         ))}
       </div>
 
+      {!hideInput && (
       <form className="dialogue-form" onSubmit={handleSubmit}>
         <input
           ref={inputRef}
@@ -89,6 +97,7 @@ export default function DialogueBox({ npcName, lines, onSubmit, onClose }: Dialo
           Send
         </button>
       </form>
+      )}
     </div>
   );
 }

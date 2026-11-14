@@ -38,7 +38,9 @@ npm run dev
 
 - Move: A/D or left/right arrows
 - Jump: Space or up arrow
-- Talk: walk up to Aphrodite (to the right, near the gate) and press E
+- Interact: walk up to a character or object and press E
 - In the dialogue: type a reply and press Enter to send, Escape to close
 
-The dialogue is a fixed mock script for now; it does not interpret what you type.
+Chapter 1 walkthrough: talk to Aphrodite, then Old Theron and Lyra up the road. Lyra teaches the incantation; say it to Argos the gatekeeper ("Somnus, let the heavens dream.") and walk through the open gate. The glowing statue is optional.
+
+Conversations are scripted; replies do not interpret what you type, except the gatekeeper, who checks for the incantation.

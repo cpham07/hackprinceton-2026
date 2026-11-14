@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
 import { EventBus } from "../EventBus";
-import { NPCS } from "../data/npcs";
+import { INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
 import { Player } from "../entities/Player";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
@@ -13,11 +13,18 @@ import {
   releaseGameplayKeys,
   type GameplayKeys,
 } from "../input/keys";
+import { getGameState, hasFlag, subscribe } from "../state/gameState";
+import { applyStoryActions } from "../story/actions";
+import { CHAPTER_1_COMPLETE_ACTIONS, FLAGS } from "../story/chapter1";
 import { InteractionManager } from "../systems/InteractionManager";
 
 const WORLD_WIDTH = 3840;
 const GROUND_Y = 620; // y of the walkable surface
 const GATE_X = 3350;
+/** Invisible wall in front of the gate doors while the gate is locked. Independent of the gate art. */
+const GATE_BARRIER = { x: 3250, width: 40 };
+/** Crossing this x (beyond the gate) completes the chapter. */
+const EXIT_X = 3520;
 const COLUMN_XS = [500, 950, 1400, 1850, 2300, 2650];
 
 export class OlympusEntrance extends Phaser.Scene {
@@ -25,6 +32,10 @@ export class OlympusEntrance extends Phaser.Scene {
   private keys!: GameplayKeys;
   private interactions!: InteractionManager;
   private dialogueOpen = false;
+  private gate!: Phaser.GameObjects.Image;
+  private gateBarrier!: Phaser.GameObjects.Zone;
+  private gatekeeper!: Npc;
+  private gatekeeperZzz!: Phaser.GameObjects.Text;
 
   constructor() {
     super("OlympusEntrance");
@@ -45,6 +56,11 @@ export class OlympusEntrance extends Phaser.Scene {
     this.player.setDepth(10);
     this.physics.add.collider(this.player, ground);
 
+    // Full-height static wall (y = 0 to GROUND_Y), so the locked gate cannot be jumped over.
+    this.gateBarrier = this.add.zone(GATE_BARRIER.x, GROUND_Y / 2, GATE_BARRIER.width, GROUND_Y);
+    this.physics.add.existing(this.gateBarrier, true);
+    this.physics.add.collider(this.player, this.gateBarrier);
+
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, GAME_HEIGHT);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, GAME_HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -56,11 +72,28 @@ export class OlympusEntrance extends Phaser.Scene {
     this.interactions = new InteractionManager(this, this.player, () =>
       consumePress(this.keys, "interact"),
     );
-    this.interactions.register(new Npc(this, NPCS.aphrodite, GROUND_Y));
+    for (const def of Object.values(INTERACTABLES)) {
+      const entity = new Npc(this, def, GROUND_Y);
+      this.interactions.register(entity);
+      if (def.id === "gatekeeper") this.gatekeeper = entity;
+    }
+    this.gatekeeperZzz = this.add
+      .text(this.gatekeeper.x + 30, this.gatekeeper.promptY + 40, "Z z z", {
+        fontFamily: "Georgia, serif",
+        fontSize: "22px",
+        color: "#ffffff",
+        stroke: "#3b2a4a",
+        strokeThickness: 4,
+      })
+      .setVisible(false);
+
+    // The story state lives in the gameState module; the scene only mirrors it.
+    this.applyStoryState();
 
     const unsubscribe = [
       EventBus.on("dialogue:opened", () => this.setDialogueOpen(true)),
       EventBus.on("dialogue:closed", () => this.setDialogueOpen(false)),
+      subscribe(() => this.applyStoryState()),
     ];
     const unsubscribeAll = () => unsubscribe.splice(0).forEach((off) => off());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -73,8 +106,36 @@ export class OlympusEntrance extends Phaser.Scene {
   }
 
   update(time: number): void {
-    this.player.tick(this.dialogueOpen ? null : this.keys, time);
+    const chapterComplete = hasFlag(FLAGS.chapter1Complete);
+    this.player.tick(this.dialogueOpen || chapterComplete ? null : this.keys, time);
     this.interactions.update();
+
+    // Fires once: the actions set chapter1Complete, which makes this condition false.
+  if (
+    !chapterComplete &&
+    hasFlag(FLAGS.gateOpen) &&
+    this.player.x >= EXIT_X
+  ) {
+    applyStoryActions(CHAPTER_1_COMPLETE_ACTIONS);
+    }
+  }
+
+  /** Makes the world match the story state. Runs at start and on every state change. */
+  private applyStoryState(): void {
+    const { flags } = getGameState();
+    const gateOpen = flags[FLAGS.gateOpen] === true;
+    const asleep = flags[FLAGS.gatekeeperAsleep] === true;
+
+    this.gate.setTexture(gateOpen ? TEXTURES.gateOpen : TEXTURES.gate);
+    (this.gateBarrier.body as Phaser.Physics.Arcade.StaticBody).enable = !gateOpen;
+
+    this.gatekeeper.setTexture(asleep ? TEXTURES.gatekeeperAsleep : TEXTURES.gatekeeper);
+    this.gatekeeperZzz.setVisible(asleep);
+
+    if (flags[FLAGS.chapter1Complete] === true) {
+      this.player.halt();
+      this.interactions.setEnabled(false);
+    }
   }
 
   /** Hands the keyboard to React while the dialogue is open, and takes it back after. */
@@ -95,7 +156,7 @@ export class OlympusEntrance extends Phaser.Scene {
       keyboard.resetKeys();
       clearPresses(this.keys);
       captureGameplayKeys(keyboard);
-      this.interactions.setEnabled(true);
+      this.interactions.setEnabled(!hasFlag(FLAGS.chapter1Complete));
     }
   }
 
@@ -117,7 +178,7 @@ export class OlympusEntrance extends Phaser.Scene {
     for (const x of COLUMN_XS) {
       this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
     }
-    this.add.image(GATE_X, GROUND_Y, TEXTURES.gate).setOrigin(0.5, 1);
+    this.gate = this.add.image(GATE_X, GROUND_Y, TEXTURES.gate).setOrigin(0.5, 1);
   }
 
   /** Visual ground strip plus one static physics body whose top edge is GROUND_Y. */
