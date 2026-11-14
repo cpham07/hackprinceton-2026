@@ -1,0 +1,103 @@
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0b1020;
+}
+
+.game-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.game-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.dialogue-box {
+  position: absolute;
+  left: 50%;
+  top: 4vh;
+  transform: translateX(-50%);
+  width: min(860px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 14px 18px 16px;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  background: rgba(27, 18, 40, 0.94);
+  color: #f6f1e7;
+  font-family: Georgia, "Times New Roman", serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.dialogue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dialogue-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: #f2c94c;
+}
+
+.dialogue-log {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.dialogue-line {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.dialogue-line-player {
+  color: #a9cdf5;
+}
+
+.dialogue-form {
+  display: flex;
+  gap: 8px;
+}
+
+.dialogue-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #7d6a94;
+  border-radius: 8px;
+  background: #100a1a;
+  color: inherit;
+  font: inherit;
+  font-size: 17px;
+}
+
+.dialogue-input:focus {
+  outline: 2px solid #f2c94c;
+  outline-offset: 1px;
+}
+
+.dialogue-send,
+.dialogue-close {
+  padding: 8px 16px;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  background: #3a2755;
+  color: #f6f1e7;
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.dialogue-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

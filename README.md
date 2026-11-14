@@ -33,3 +33,12 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Playing the Chapter 1 prototype
+
+- Move: A/D or left/right arrows
+- Jump: Space or up arrow
+- Talk: walk up to Aphrodite (to the right, near the gate) and press E
+- In the dialogue: type a reply and press Enter to send, Escape to close
+
+The dialogue is a fixed mock script for now; it does not interpret what you type.
