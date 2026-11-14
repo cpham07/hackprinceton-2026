@@ -14,6 +14,8 @@ export interface GameState {
   completedQuests: string[];
   seals: Record<SealId, boolean>;
   flags: Record<string, boolean>;
+  /** Small numeric progress values, e.g. which position each puzzle statue is in. */
+  counters: Record<string, number>;
 }
 
 export function createInitialGameState(): GameState {
@@ -24,6 +26,7 @@ export function createInitialGameState(): GameState {
     completedQuests: [],
     seals: { athena: false, ares: false, hades: false },
     flags: {},
+    counters: {},
   };
 }
 
@@ -77,6 +80,26 @@ export function completeQuest(questId: string): boolean {
 
 export function hasCompletedQuest(questId: string): boolean {
   return state.completedQuests.includes(questId);
+}
+
+/** Adds a unique key item to the inventory. Returns true if it was not already held. */
+export function addItem(itemId: string): boolean {
+  if (state.inventory.includes(itemId)) return false;
+  update({ ...state, inventory: [...state.inventory, itemId] });
+  return true;
+}
+
+export function hasItem(itemId: string): boolean {
+  return state.inventory.includes(itemId);
+}
+
+export function getCounter(name: string): number {
+  return state.counters[name] ?? 0;
+}
+
+export function setCounter(name: string, value: number): void {
+  if (getCounter(name) === value) return;
+  update({ ...state, counters: { ...state.counters, [name]: value } });
 }
 
 /** Marks a seal as obtained. Returns true if it was not already held. */

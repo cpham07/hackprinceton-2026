@@ -11,6 +11,8 @@ export interface Interactable {
   prompt: string;
   /** World y at which the prompt is drawn. */
   promptY: number;
+  /** False while the interaction is switched off; it is then never offered or triggered. */
+  interactionEnabled?: boolean;
   /** What pressing E requests from React. Defaults to "dialogue". */
   kind?: "dialogue" | "puzzle";
   /**
@@ -62,6 +64,7 @@ export class InteractionManager {
     let nearest: Interactable | null = null;
     let nearestDistance = Infinity;
     for (const target of this.targets) {
+      if (target.interactionEnabled === false) continue;
       const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
       if (distance <= target.interactionRadius && distance < nearestDistance) {
         nearest = target;

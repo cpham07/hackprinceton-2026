@@ -4,6 +4,7 @@ import { HUB_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { getGameState, hasFlag, subscribe } from "../state/gameState";
+import { canEnterScene } from "../story/access";
 import { CH2_FLAGS, completeChapter2IfReady, hasAllSeals } from "../story/chapter2";
 import { GameplayScene } from "./GameplayScene";
 
@@ -20,6 +21,8 @@ export const HUB_SPAWN_FROM_ARENA_X = 1910;
  * (its range ends at 2370) and left of Athena's (it starts at 2610).
  */
 export const HUB_SPAWN_FROM_HADES_X = 2430;
+/** Coming back from Zeus's palace: just right of the palace gates (their range ends at x = 600). */
+export const HUB_SPAWN_FROM_PALACE_X = 650;
 
 /** Athena's library is the enclosed part of the same scene, from the door to the end of the world. */
 const LIBRARY = { doorX: 3000, endX: WORLD_WIDTH, wallTop: 150 };
@@ -108,9 +111,14 @@ export class OlympusHub extends GameplayScene {
       this.goToScene(SCENES.hades);
       return true;
     };
-    // With all three seals the gates open and E enters the palace (completing Chapter 2).
-    // In every other case (seals missing, or already entered) E falls back to the palace's message.
-    this.palace.onInteract = () => completeChapter2IfReady();
+    // With all three seals the gates open. The first E completes Chapter 2 (its screen continues into
+    // the palace); afterwards E walks straight in. With seals missing, E falls back to the sealed message.
+    this.palace.onInteract = () => {
+      if (completeChapter2IfReady()) return true;
+      if (!canEnterScene(SCENES.palace, getGameState())) return false;
+      this.goToScene(SCENES.palace);
+      return true;
+    };
     // Once Ares has spoken with the player, his gate leads to the arena;
     // before that, E falls back to the "barred gate" message.
     this.aresGate.onInteract = () => {
@@ -142,9 +150,7 @@ export class OlympusHub extends GameplayScene {
 
     const palaceOpen = hasAllSeals(getGameState());
     this.palace.setTexture(palaceOpen ? TEXTURES.palaceOpen : TEXTURES.palaceLocked);
-    this.palace.prompt = palaceOpen && flags[CH2_FLAGS.chapter2Complete] !== true
-      ? "Press E to enter Zeus's palace"
-      : "Press E to examine";
+    this.palace.prompt = palaceOpen ? "Press E to enter Zeus's palace" : "Press E to examine";
   }
 
   private buildHubBackdrop(): void {

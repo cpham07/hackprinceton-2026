@@ -10,6 +10,8 @@ import {
   releaseGameplayKeys,
   type GameplayKeys,
 } from "../input/keys";
+import { getGameState } from "../state/gameState";
+import { canEnterScene } from "../story/access";
 import { InteractionManager } from "../systems/InteractionManager";
 
 /**
@@ -148,6 +150,7 @@ export abstract class GameplayScene extends Phaser.Scene {
   /** Switches to another scene once; repeated requests while switching are ignored. */
   protected goToScene(key: SceneKey): void {
     if (this.transitioning || key === this.scene.key) return;
+    if (!canEnterScene(key, getGameState())) return; // not earned yet
     this.transitioning = true;
     // Shuts this scene down (running the cleanups above) and starts the target.
     this.scene.start(key, this.sceneStartData(key));

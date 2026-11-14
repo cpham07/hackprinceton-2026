@@ -47,4 +47,6 @@ Conversations are scripted; replies do not interpret what you type, except the g
 
 Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to Athena (far right of the hub), enter her library, press E at the pedestal and order the symbols to earn the Seal of Wisdom. Talk to Ares (next to the red arena gate) to open his training arena: get past three moving hammers to the finish line to earn the Seal of Courage. The seals can be earned in either order. Descend through the dark arch to Hades's chamber and answer his three questions to earn the Seal of Passage. With all three seals, the gates of Zeus's palace (left of the fountain) unlock; press E there to finish Chapter 2. Chapter 3 is not playable yet.
 
-For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal.
+Chapter 3: after Chapter 2, choose "Continue to Zeus's Palace". Move the two statues onto their plates (E cycles a statue, the lever resets them), show the guards Ares's warrior badge (your Seal of Courage), open the vault with the three seals, take the Master Lightning Bolt, answer Zeus, and leave through the palace gate. Chapter 4 is not playable yet.
+
+For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal. `?chapter=3` starts inside Zeus's palace.

@@ -449,3 +449,33 @@ body,
   font-size: 16px;
   pointer-events: none;
 }
+
+/* Chapter 3 tracker */
+.quest-steps {
+  margin: 8px 0 0;
+  padding: 8px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.step-done {
+  color: #f2c94c;
+  text-decoration: line-through;
+  text-decoration-color: rgba(242, 201, 76, 0.5);
+}
+
+.step-todo {
+  opacity: 0.8;
+}
+
+.quest-seals-line {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.quest-item {
+  color: #f2c94c;
+}

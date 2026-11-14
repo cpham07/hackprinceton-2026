@@ -117,14 +117,6 @@ const hades = (state: Readonly<GameState>): Conversation => {
 
 /** The sealed gates of Zeus's palace. Once all three seals are held, the hub scene handles E instead. */
 const zeusPalace = (state: Readonly<GameState>): Conversation => {
-  if (state.flags[CH2_FLAGS.chapter2Complete]) {
-    return {
-      opening: {
-        text: "The gates of Zeus's palace stand open. Beyond them lies the road to the Forbidden Vault, but that is a story for the next chapter.",
-      },
-      readOnly: true,
-    };
-  }
   const missing = SEALS.filter((seal) => !state.seals[seal.id]);
   return {
     opening: {

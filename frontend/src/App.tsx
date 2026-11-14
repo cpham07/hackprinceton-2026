@@ -17,8 +17,10 @@ import { getGameState } from "./game/state/gameState";
 import { applyStoryActions } from "./game/story/actions";
 import { FLAGS } from "./game/story/chapter1";
 import { CH2_FLAGS, CHALLENGES } from "./game/story/chapter2";
+import { CH3_FLAGS } from "./game/story/chapter3";
 import { getConversation } from "./game/story/conversations";
 import type { DialogueLine, PlayerResponse } from "./game/types/dialogue";
+import { useCompletionScreen } from "./hooks/useCompletionScreen";
 import { useGameState } from "./hooks/useGameState";
 
 interface DialogueSession {
@@ -68,11 +70,19 @@ export default function App() {
   // The Chapter 1 screen stays until the player explicitly continues (which changes the scene).
   const showChapter1Complete =
     gameState.flags[FLAGS.chapter1Complete] === true && activeScene === SCENES.entrance;
-  // The Chapter 2 screen shows in the hub once, until the player closes the Chapter 3 placeholder.
-  const [chapter2Dismissed, setChapter2Dismissed] = useState(false);
-  const showChapter2Complete =
-    gameState.flags[CH2_FLAGS.chapter2Complete] === true && activeScene === SCENES.hub && !chapter2Dismissed;
-  const showChapterComplete = showChapter1Complete || showChapter2Complete;
+  // The Chapter 2 screen opens when Chapter 2 is completed in the hub, until the player continues into the palace.
+  const [showChapter2Complete, closeChapter2Complete] = useCompletionScreen(
+    gameState.flags[CH2_FLAGS.chapter2Complete] === true,
+    SCENES.hub,
+    activeScene,
+  );
+  // The Chapter 3 screen opens when Chapter 3 is completed in the palace, until the Chapter 4 placeholder is closed.
+  const [showChapter3Complete, closeChapter3Complete] = useCompletionScreen(
+    gameState.flags[CH3_FLAGS.chapter3Complete] === true,
+    SCENES.palace,
+    activeScene,
+  );
+  const showChapterComplete = showChapter1Complete || showChapter2Complete || showChapter3Complete;
 
   // Phaser asks for a dialogue; React decides whether to open one.
   useEffect(() => {
@@ -105,7 +115,11 @@ export default function App() {
   // One input lock for every gameplay-blocking overlay. It is keyed on "is anything open",
   // so one overlay replacing another never unlocks the game in between.
   const overlayOpen =
-    session !== null || openPuzzleId !== null || completedChallenge !== null || showChapter2Complete;
+    session !== null ||
+    openPuzzleId !== null ||
+    completedChallenge !== null ||
+    showChapter2Complete ||
+    showChapter3Complete;
   useEffect(() => {
     if (!overlayOpen) return;
     EventBus.emit("overlay:opened", { id: "app-overlay" });
@@ -151,6 +165,11 @@ export default function App() {
 
   const continueToOlympus = useCallback(() => EventBus.emit("scene:start", { key: SCENES.hub }), []);
 
+  const continueToPalace = useCallback(() => {
+    EventBus.emit("scene:start", { key: SCENES.palace }); // refused by the scene unless the seals are held
+    closeChapter2Complete();
+  }, [closeChapter2Complete]);
+
   const returnFromChallenge = useCallback(() => {
     EventBus.emit("scene:start", { key: SCENES.hub });
     setCompletedChallenge(null);
@@ -194,8 +213,9 @@ export default function App() {
         />
       )}
       {showChapter1Complete && <ChapterComplete completedChapter={1} onContinue={continueToOlympus} />}
-      {showChapter2Complete && (
-        <ChapterComplete completedChapter={2} onClose={() => setChapter2Dismissed(true)} />
+      {showChapter2Complete && <ChapterComplete completedChapter={2} onContinue={continueToPalace} />}
+      {showChapter3Complete && (
+        <ChapterComplete completedChapter={3} onClose={closeChapter3Complete} />
       )}
     </div>
   );

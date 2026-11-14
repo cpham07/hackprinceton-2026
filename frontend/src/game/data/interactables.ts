@@ -178,10 +178,91 @@ export const HADES_INTERACTABLES: Record<string, InteractableDefinition> = {
   },
 };
 
+/**
+ * Zeus's palace. Statue positions come from the pressure-plate puzzle's tracks and the story
+ * state; the x here is only the starting position.
+ */
+export const PALACE_INTERACTABLES: Record<string, InteractableDefinition> = {
+  palaceExit: {
+    id: "palaceExit",
+    name: "Palace Gate",
+    textureKey: "palace-exit-door",
+    x: 90,
+    displaySize: { width: 130, height: 210 },
+    interactionRadius: 90,
+    prompt: "Press E to leave the palace",
+  },
+  statueA: {
+    id: "statueA",
+    name: "Stone Guardian",
+    textureKey: "puzzle-statue",
+    x: 800,
+    displaySize: { width: 76, height: 130 },
+    interactionRadius: 100,
+    prompt: "Press E to move the statue",
+  },
+  resetLever: {
+    id: "resetLever",
+    name: "Reset Lever",
+    textureKey: "puzzle-lever",
+    x: 1170,
+    displaySize: { width: 50, height: 90 },
+    interactionRadius: 80,
+    prompt: "Press E to reset the statues",
+  },
+  statueB: {
+    id: "statueB",
+    name: "Stone Guardian",
+    textureKey: "puzzle-statue",
+    x: 1300,
+    displaySize: { width: 76, height: 130 },
+    interactionRadius: 100,
+    prompt: "Press E to move the statue",
+  },
+  palaceGuards: {
+    id: "palaceGuards",
+    name: "Palace Guards",
+    textureKey: "palace-guards",
+    x: 2200,
+    displaySize: { width: 180, height: 150 },
+    interactionRadius: 130,
+    prompt: "Press E to speak with the guards",
+  },
+  vaultDoor: {
+    id: "vaultDoor",
+    name: "The Forbidden Vault",
+    textureKey: "vault-door",
+    x: 3200,
+    displaySize: { width: 190, height: 300 },
+    interactionRadius: 120,
+    prompt: "Press E to unlock the vault",
+  },
+  masterBolt: {
+    id: "masterBolt",
+    name: "Master Lightning Bolt",
+    textureKey: "master-bolt",
+    x: 3900,
+    displaySize: { width: 110, height: 220 },
+    interactionRadius: 120,
+    prompt: "Press E to take the Master Lightning Bolt",
+    glowColor: 0xffe066,
+  },
+  zeus: {
+    id: "zeus",
+    name: "Zeus",
+    textureKey: "npc-zeus",
+    x: 4180,
+    displaySize: { width: 110, height: 200 },
+    interactionRadius: 150,
+    prompt: "Press E to talk",
+  },
+};
+
 /** Every interactable by id, for lookups that don't care which scene it is in. */
 export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...ENTRANCE_INTERACTABLES,
   ...HUB_INTERACTABLES,
   ...ARENA_INTERACTABLES,
   ...HADES_INTERACTABLES,
+  ...PALACE_INTERACTABLES,
 };
