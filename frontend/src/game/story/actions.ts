@@ -1,4 +1,12 @@
-import { addClue, completeQuest, setChapter, setFlag, type Chapter } from "../state/gameState";
+import {
+  addClue,
+  completeQuest,
+  grantSeal,
+  setChapter,
+  setFlag,
+  type Chapter,
+  type SealId,
+} from "../state/gameState";
 
 /**
  * A change to story progress. Dialogue steps, scene triggers and (later) validated
@@ -8,6 +16,7 @@ export type StoryAction =
   | { type: "setFlag"; flag: string }
   | { type: "addClue"; clue: string }
   | { type: "completeQuest"; quest: string }
+  | { type: "grantSeal"; seal: SealId }
   | { type: "setChapter"; chapter: Chapter };
 
 /** Safe to call repeatedly: the underlying state operations ignore duplicates. */
@@ -22,6 +31,9 @@ export function applyStoryActions(actions: StoryAction[] | undefined): void {
         break;
       case "completeQuest":
         completeQuest(action.quest);
+        break;
+      case "grantSeal":
+        grantSeal(action.seal);
         break;
       case "setChapter":
         setChapter(action.chapter);

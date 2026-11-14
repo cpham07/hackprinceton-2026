@@ -20,6 +20,24 @@ export const TEXTURES = {
   gatekeeperAsleep: "npc-gatekeeper-asleep",
   statue: "object-statue",
   glow: "fx-glow",
+  // Chapter 2: Olympus hub and Athena's library
+  skyOlympus: "bg-sky-olympus",
+  temple: "temple",
+  fountain: "fountain",
+  marblePlatform: "platform-marble",
+  athena: "npc-athena",
+  archAres: "arch-ares",
+  archHades: "arch-hades",
+  libraryWall: "library-wall",
+  libraryDoor: "library-door",
+  libraryDoorOpen: "library-door-open",
+  bookshelf: "bookshelf",
+  pedestal: "object-pedestal",
+  seal: "seal-wisdom",
+  symbolOwl: "symbol-owl",
+  symbolOlive: "symbol-olive",
+  symbolShield: "symbol-shield",
+  symbolBolt: "symbol-bolt",
 } as const;
 
 export function createPlaceholderTextures(scene: Phaser.Scene): void {
@@ -196,6 +214,210 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.fillStyle(0xe86a9a); // long robe
     g.fillTriangle(24, 22, 2, 88, 46, 88);
     g.fillRoundedRect(10, 26, 28, 26, 6);
+  });
+
+  // ---- Chapter 2: Olympus hub ----
+
+  // Celestial sky: pale gold at the top fading to soft blue-white.
+  bake(TEXTURES.skyOlympus, 64, 720, () => {
+    const top = Phaser.Display.Color.ValueToColor(0xfff1c4);
+    const bottom = Phaser.Display.Color.ValueToColor(0xcfe6ff);
+    const bands = 36;
+    for (let i = 0; i < bands; i++) {
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(top, bottom, bands - 1, i);
+      g.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b));
+      g.fillRect(0, (720 / bands) * i, 64, 720 / bands + 1);
+    }
+  });
+
+  bake(TEXTURES.temple, 520, 400, () => {
+    g.fillStyle(0xf7f1e3);
+    g.fillTriangle(0, 120, 260, 0, 520, 120); // pediment
+    g.fillRect(0, 120, 520, 28);
+    g.fillRect(0, 372, 520, 28); // steps
+    g.fillStyle(0xe9e1cf);
+    for (let x = 30; x <= 450; x += 84) g.fillRect(x, 148, 40, 224); // columns
+    g.fillStyle(0xd4af37);
+    g.fillCircle(260, 72, 22); // golden emblem
+  });
+
+  bake(TEXTURES.fountain, 220, 150, () => {
+    g.fillStyle(0xe9e1cf);
+    g.fillRect(0, 110, 220, 40); // basin
+    g.fillRect(96, 40, 28, 70); // pillar
+    g.fillEllipse(110, 40, 90, 22);
+    g.fillStyle(0x8fd3ff, 0.9); // water
+    g.fillRect(8, 104, 204, 10);
+    g.fillEllipse(110, 34, 70, 10);
+    g.fillRect(70, 34, 6, 72);
+    g.fillRect(144, 34, 6, 72);
+  });
+
+  bake(TEXTURES.marblePlatform, 64, 20, () => {
+    g.fillStyle(0xf4efe4);
+    g.fillRect(0, 0, 64, 20);
+    g.fillStyle(0xd4af37);
+    g.fillRect(0, 0, 64, 3);
+    g.lineStyle(1, 0xb8b0a0);
+    g.lineBetween(32, 3, 32, 20);
+  });
+
+  bake(TEXTURES.athena, 52, 94, () => {
+    g.fillStyle(0x8a8f98); // helmet with crest
+    g.fillCircle(26, 16, 13);
+    g.fillStyle(0x3a5ba0);
+    g.fillRect(22, 0, 8, 8);
+    g.fillStyle(0xe8c9a6);
+    g.fillRect(19, 16, 14, 11); // face
+    g.fillStyle(0xf2efe6); // long white chiton
+    g.fillRoundedRect(10, 28, 32, 66, 6);
+    g.fillStyle(0x3a5ba0); // blue sash
+    g.fillRect(10, 44, 32, 6);
+    g.fillStyle(0x6b5a3a); // spear
+    g.fillRect(46, 4, 3, 90);
+    g.fillStyle(0xcfd4d8);
+    g.fillTriangle(47.5, 0, 43, 10, 52, 10);
+  });
+
+  const drawArch = (stone: number, inside: number, banner: number) => {
+    g.fillStyle(stone);
+    g.fillRect(0, 40, 40, 260);
+    g.fillRect(190, 40, 40, 260);
+    g.fillRect(0, 0, 230, 50);
+    g.fillStyle(inside);
+    g.fillRect(40, 50, 150, 250);
+    g.fillStyle(banner);
+    g.fillRect(60, 60, 110, 44);
+    g.lineStyle(6, 0x5b4a36); // crossed bars: closed for now
+    g.lineBetween(46, 120, 184, 294);
+    g.lineBetween(184, 120, 46, 294);
+  };
+  bake(TEXTURES.archAres, 230, 300, () => drawArch(0xd9c8b8, 0x5a1f1f, 0xb3261e));
+  bake(TEXTURES.archHades, 230, 300, () => drawArch(0x8d8a99, 0x1a1626, 0x4b2d7a));
+
+  // ---- Chapter 2: Athena's library ----
+
+  bake(TEXTURES.libraryWall, 128, 128, () => {
+    g.fillStyle(0x4a3b52);
+    g.fillRect(0, 0, 128, 128);
+    g.lineStyle(2, 0x3a2d42);
+    g.strokeRect(0, 0, 64, 64);
+    g.strokeRect(64, 64, 64, 64);
+    g.fillStyle(0xd4af37, 0.25); // faint meander dots
+    g.fillRect(28, 28, 8, 8);
+    g.fillRect(92, 92, 8, 8);
+  });
+
+  const drawDoorFrame = () => {
+    g.fillStyle(0xf7f1e3);
+    g.fillRect(0, 0, 180, 36);
+    g.fillRect(0, 36, 34, 284);
+    g.fillRect(146, 36, 34, 284);
+    g.fillStyle(0xd4af37);
+    g.fillRect(0, 30, 180, 6);
+  };
+  bake(TEXTURES.libraryDoor, 180, 320, () => {
+    drawDoorFrame();
+    g.fillStyle(0x7a5230); // closed wooden doors
+    g.fillRect(34, 36, 112, 284);
+    g.lineStyle(3, 0x4f3520);
+    g.lineBetween(90, 36, 90, 320);
+    g.fillStyle(0xd4af37);
+    g.fillCircle(80, 180, 5);
+    g.fillCircle(100, 180, 5);
+  });
+  bake(TEXTURES.libraryDoorOpen, 180, 320, () => {
+    drawDoorFrame();
+    g.fillStyle(0x2c2233); // dark doorway
+    g.fillRect(34, 36, 112, 284);
+    g.fillStyle(0x7a5230); // doors folded back
+    g.fillRect(34, 36, 12, 284);
+    g.fillRect(134, 36, 12, 284);
+  });
+
+  bake(TEXTURES.bookshelf, 150, 320, () => {
+    g.fillStyle(0x5b3d24);
+    g.fillRect(0, 0, 150, 320);
+    const spines = [0xb3261e, 0x2f6fb5, 0x3fa58c, 0xd4af37, 0x7a4fa3, 0xe9e1cf];
+    for (let row = 0; row < 5; row++) {
+      const top = 12 + row * 62;
+      g.fillStyle(0x3a2616);
+      g.fillRect(8, top, 134, 50);
+      for (let i = 0; i < 11; i++) {
+        g.fillStyle(spines[(i + row * 2) % spines.length]);
+        g.fillRect(12 + i * 12, top + 6 + ((i * 7 + row * 3) % 10), 9, 44 - ((i * 7 + row * 3) % 10));
+      }
+    }
+  });
+
+  bake(TEXTURES.pedestal, 90, 110, () => {
+    g.fillStyle(0xe9e1cf);
+    g.fillRect(0, 0, 90, 16); // top slab
+    g.fillRect(18, 16, 54, 74);
+    g.fillRect(6, 90, 78, 20); // base
+    g.fillStyle(0xd4af37);
+    g.fillRect(0, 12, 90, 4);
+    g.lineStyle(2, 0xb8b0a0);
+    for (let x = 28; x <= 62; x += 11) g.lineBetween(x, 20, x, 86);
+  });
+
+  bake(TEXTURES.seal, 96, 96, () => {
+    g.fillStyle(0xd4af37);
+    g.fillCircle(48, 48, 46);
+    g.fillStyle(0x3a5ba0);
+    g.fillCircle(48, 48, 36);
+    g.fillStyle(0xf7f1e3); // owl face
+    g.fillCircle(36, 44, 11);
+    g.fillCircle(60, 44, 11);
+    g.fillStyle(0x1b1228);
+    g.fillCircle(36, 44, 5);
+    g.fillCircle(60, 44, 5);
+    g.fillStyle(0xd4af37);
+    g.fillTriangle(48, 50, 42, 62, 54, 62);
+  });
+
+  // Symbol plaques: a stone tile with a simple icon.
+  const plaque = (key: string, drawIcon: () => void) =>
+    bake(key, 96, 96, () => {
+      g.fillStyle(0xe9e1cf);
+      g.fillRoundedRect(0, 0, 96, 96, 10);
+      g.lineStyle(3, 0xd4af37);
+      g.strokeRoundedRect(2, 2, 92, 92, 10);
+      drawIcon();
+    });
+  plaque(TEXTURES.symbolOwl, () => {
+    g.fillStyle(0x6b5a3a);
+    g.fillEllipse(48, 54, 46, 56);
+    g.fillTriangle(30, 30, 36, 14, 44, 30);
+    g.fillTriangle(52, 30, 60, 14, 66, 30);
+    g.fillStyle(0xffffff);
+    g.fillCircle(38, 44, 9);
+    g.fillCircle(58, 44, 9);
+    g.fillStyle(0x1b1228);
+    g.fillCircle(38, 44, 4);
+    g.fillCircle(58, 44, 4);
+  });
+  plaque(TEXTURES.symbolOlive, () => {
+    g.lineStyle(4, 0x5b4a36);
+    g.lineBetween(20, 76, 76, 20);
+    g.fillStyle(0x4f8a3c);
+    for (let i = 0; i < 4; i++) {
+      g.fillEllipse(30 + i * 13, 58 - i * 13, 20, 9);
+      g.fillEllipse(40 + i * 13, 72 - i * 13, 9, 20);
+    }
+  });
+  plaque(TEXTURES.symbolShield, () => {
+    g.fillStyle(0xb3261e);
+    g.fillCircle(48, 48, 32);
+    g.fillStyle(0xd4af37);
+    g.fillCircle(48, 48, 22);
+    g.fillStyle(0xb3261e);
+    g.fillCircle(48, 48, 9);
+  });
+  plaque(TEXTURES.symbolBolt, () => {
+    g.fillStyle(0xf2c21b);
+    g.fillTriangle(56, 12, 26, 52, 46, 52);
+    g.fillTriangle(50, 44, 70, 44, 38, 86);
   });
 
   g.destroy();

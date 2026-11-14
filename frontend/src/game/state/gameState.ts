@@ -79,6 +79,17 @@ export function hasCompletedQuest(questId: string): boolean {
   return state.completedQuests.includes(questId);
 }
 
+/** Marks a seal as obtained. Returns true if it was not already held. */
+export function grantSeal(sealId: SealId): boolean {
+  if (state.seals[sealId]) return false;
+  update({ ...state, seals: { ...state.seals, [sealId]: true } });
+  return true;
+}
+
+export function hasSeal(sealId: SealId): boolean {
+  return state.seals[sealId];
+}
+
 export function setChapter(chapter: Chapter): void {
   if (state.chapter === chapter) return;
   update({ ...state, chapter });

@@ -4,7 +4,6 @@ import type { StoryAction } from "./actions";
 /** Chapter 1 story data: flags, clues, the incantation and the objective shown in the HUD. */
 
 export const CHAPTER_1_TITLE = "Chapter 1: Welcome to Olympus";
-export const CHAPTER_2_TEASER = "Chapter 2: The Secrets of the Gods — Coming Next";
 export const CHAPTER_1_QUEST = "chapter1";
 
 export const INCANTATION = "Somnus, let the heavens dream.";

@@ -9,12 +9,14 @@ export class Npc extends Phaser.GameObjects.Image implements Interactable {
   readonly interactionRadius: number;
   readonly prompt: string;
   readonly promptY: number;
+  readonly kind: "dialogue" | "puzzle";
 
   constructor(scene: Phaser.Scene, def: InteractableDefinition, feetY: number) {
     super(scene, def.x, feetY, def.textureKey);
     this.id = def.id;
     this.interactionRadius = def.interactionRadius;
     this.prompt = def.prompt;
+    this.kind = def.kind ?? "dialogue";
     this.setOrigin(0.5, 1);
     this.setDisplaySize(def.displaySize.width, def.displaySize.height);
 

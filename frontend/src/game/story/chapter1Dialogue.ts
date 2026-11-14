@@ -8,6 +8,7 @@ import { CLUES, FLAGS, INCANTATION } from "./chapter1";
  */
 
 type Has = (flag: string) => boolean;
+const hasIn = (state: Readonly<GameState>): Has => (flag) => state.flags[flag] === true;
 
 const aphrodite = (has: Has): Conversation => {
   if (!has(FLAGS.aphroditeIntroComplete)) {
@@ -138,15 +139,10 @@ const statue = (): Conversation => ({
   readOnly: true,
 });
 
-const SCRIPTS: Record<string, (has: Has) => Conversation> = {
-  aphrodite,
-  theron,
-  lyra,
-  gatekeeper,
+export const CHAPTER_1_SCRIPTS: Record<string, (state: Readonly<GameState>) => Conversation> = {
+  aphrodite: (state) => aphrodite(hasIn(state)),
+  theron: (state) => theron(hasIn(state)),
+  lyra: (state) => lyra(hasIn(state)),
+  gatekeeper: (state) => gatekeeper(hasIn(state)),
   statue,
 };
-
-export function getConversation(id: string, state: Readonly<GameState>): Conversation | null {
-  const script = SCRIPTS[id];
-  return script ? script((flag) => state.flags[flag] === true) : null;
-}

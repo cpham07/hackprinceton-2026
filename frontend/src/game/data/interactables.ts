@@ -16,13 +16,16 @@ export interface InteractableDefinition {
   interactionRadius: number;
   /** Shown above it when the player is in range. */
   prompt: string;
+  /** "puzzle" opens the puzzle with this id instead of a dialogue. Defaults to "dialogue". */
+  kind?: "dialogue" | "puzzle";
   /** Tint of a soft pulsing glow drawn behind it. */
   glowColor?: number;
 }
 
 const TALK = "Press E to talk";
 
-export const INTERACTABLES: Record<string, InteractableDefinition> = {
+/** Chapter 1: the entrance to Olympus. */
+export const ENTRANCE_INTERACTABLES: Record<string, InteractableDefinition> = {
   aphrodite: {
     id: "aphrodite",
     name: "Aphrodite",
@@ -69,4 +72,52 @@ export const INTERACTABLES: Record<string, InteractableDefinition> = {
     interactionRadius: 150,
     prompt: TALK,
   },
+};
+
+/** Chapter 2: the Olympus hub and Athena's library (one continuous scene). */
+export const HUB_INTERACTABLES: Record<string, InteractableDefinition> = {
+  aresPath: {
+    id: "aresPath",
+    name: "Arena of Ares",
+    textureKey: "arch-ares",
+    x: 1750,
+    displaySize: { width: 230, height: 300 },
+    interactionRadius: 120,
+    prompt: "Press E to enter",
+  },
+  hadesPath: {
+    id: "hadesPath",
+    name: "Descent to Hades",
+    textureKey: "arch-hades",
+    x: 2250,
+    displaySize: { width: 230, height: 300 },
+    interactionRadius: 120,
+    prompt: "Press E to enter",
+  },
+  athena: {
+    id: "athena",
+    name: "Athena",
+    textureKey: "npc-athena",
+    x: 2760,
+    displaySize: { width: 78, height: 140 },
+    interactionRadius: 150,
+    prompt: TALK,
+  },
+  wisdomPuzzle: {
+    id: "wisdomPuzzle",
+    name: "Puzzle Pedestal",
+    textureKey: "object-pedestal",
+    x: 3850,
+    displaySize: { width: 90, height: 110 },
+    interactionRadius: 120,
+    prompt: "Press E to examine",
+    kind: "puzzle",
+    glowColor: 0xf2c94c,
+  },
+};
+
+/** Every interactable by id, for lookups that don't care which scene it is in. */
+export const INTERACTABLES: Record<string, InteractableDefinition> = {
+  ...ENTRANCE_INTERACTABLES,
+  ...HUB_INTERACTABLES,
 };

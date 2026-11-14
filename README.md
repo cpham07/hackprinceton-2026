@@ -44,3 +44,7 @@ npm run dev
 Chapter 1 walkthrough: talk to Aphrodite, then Old Theron and Lyra up the road. Lyra teaches the incantation; say it to Argos the gatekeeper ("Somnus, let the heavens dream.") and walk through the open gate. The glowing statue is optional.
 
 Conversations are scripted; replies do not interpret what you type, except the gatekeeper, who checks for the incantation.
+
+Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to Athena (far right of the hub), enter her library, press E at the pedestal and order the symbols to earn the Seal of Wisdom. The Ares and Hades paths are marked "Coming Soon".
+
+For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2.

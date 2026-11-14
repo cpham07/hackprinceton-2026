@@ -52,7 +52,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   /** Call from the scene's preload(). */
   static preload(scene: Phaser.Scene): void {
-    for (const { key, path } of PLAYER_ASSETS) scene.load.image(key, path);
+    for (const { key, path } of PLAYER_ASSETS) {
+      // Textures are shared by all scenes, so only the first scene actually loads them.
+      if (!scene.textures.exists(key)) scene.load.image(key, path);
+    }
   }
 
   private static createAnimations(scene: Phaser.Scene): void {

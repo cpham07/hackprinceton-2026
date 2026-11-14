@@ -4,13 +4,18 @@ import ClueToast from "./components/ClueToast";
 import DialogueBox from "./components/DialogueBox";
 import GameCanvas from "./components/GameCanvas";
 import QuestTracker from "./components/QuestTracker";
+import SymbolPuzzle from "./components/SymbolPuzzle";
+import { SCENES, type SceneKey } from "./game/constants";
 import { EventBus } from "./game/EventBus";
 import { INTERACTABLES } from "./game/data/interactables";
 import { getReply, type Conversation } from "./game/dialogue/conversation";
+import { isCorrectSequence, shuffledStart } from "./game/puzzles/sequencePuzzle";
+import { PUZZLES } from "./game/puzzles/wisdomPuzzle";
 import { getGameState } from "./game/state/gameState";
 import { applyStoryActions } from "./game/story/actions";
 import { FLAGS } from "./game/story/chapter1";
-import { getConversation } from "./game/story/chapter1Dialogue";
+import { CH2_FLAGS } from "./game/story/chapter2";
+import { getConversation } from "./game/story/conversations";
 import type { DialogueLine, PlayerResponse } from "./game/types/dialogue";
 import { useGameState } from "./hooks/useGameState";
 
@@ -33,12 +38,29 @@ export default function App() {
     setSessionState(next);
   }, []);
 
-  const chapterComplete = useGameState().flags[FLAGS.chapter1Complete] === true;
+  // The open puzzle, and each puzzle's current arrangement (kept while the page lives,
+  // so closing a puzzle does not lose progress). Whether it is solved comes from the game state.
+  const [openPuzzleId, setOpenPuzzleState] = useState<string | null>(null);
+  const openPuzzleRef = useRef<string | null>(null);
+  const setOpenPuzzle = useCallback((next: string | null) => {
+    openPuzzleRef.current = next;
+    setOpenPuzzleState(next);
+  }, []);
+  const [puzzleOrders, setPuzzleOrders] = useState<Record<string, string[]>>({});
+
+  // Which Phaser scene is running. Scenes announce themselves when they are ready.
+  const [activeScene, setActiveScene] = useState<SceneKey | null>(null);
+  useEffect(() => EventBus.on("scene:ready", ({ key }) => setActiveScene(key)), []);
+
+  const gameState = useGameState();
+  // The completion screen stays until the player explicitly continues (which changes the scene).
+  const showChapterComplete =
+    gameState.flags[FLAGS.chapter1Complete] === true && activeScene === SCENES.entrance;
 
   // Phaser asks for a dialogue; React decides whether to open one.
   useEffect(() => {
     return EventBus.on("dialogue:request", ({ npcId }) => {
-      if (sessionRef.current || !INTERACTABLES[npcId]) return;
+      if (sessionRef.current || openPuzzleRef.current || !INTERACTABLES[npcId]) return;
       const conversation = getConversation(npcId, getGameState());
       if (!conversation) return;
       // The opening line is shown now, so its story actions apply now.
@@ -53,13 +75,24 @@ export default function App() {
     });
   }, [setSession]);
 
-  // Tell Phaser when the overlay is actually shown or hidden.
-  const openNpcId = session?.npcId ?? null;
+  // Phaser asks for a puzzle.
   useEffect(() => {
-    if (!openNpcId) return;
-    EventBus.emit("dialogue:opened", { npcId: openNpcId });
-    return () => EventBus.emit("dialogue:closed");
-  }, [openNpcId]);
+    return EventBus.on("puzzle:request", ({ puzzleId }) => {
+      const puzzle = PUZZLES[puzzleId];
+      if (!puzzle || sessionRef.current || openPuzzleRef.current) return;
+      setPuzzleOrders((orders) => (orders[puzzleId] ? orders : { ...orders, [puzzleId]: shuffledStart(puzzle) }));
+      setOpenPuzzle(puzzleId);
+    });
+  }, [setOpenPuzzle]);
+
+  // One input lock for every gameplay-blocking overlay. It is keyed on "is anything open",
+  // so one overlay replacing another never unlocks the game in between.
+  const overlayOpen = session !== null || openPuzzleId !== null;
+  useEffect(() => {
+    if (!overlayOpen) return;
+    EventBus.emit("overlay:opened", { id: "app-overlay" });
+    return () => EventBus.emit("overlay:closed", { id: "app-overlay" });
+  }, [overlayOpen]);
 
   /**
    * The single entry point for player replies. Typed text comes through here now;
@@ -90,11 +123,23 @@ export default function App() {
 
   const closeDialogue = useCallback(() => setSession(null), [setSession]);
 
+  /** Checks a puzzle arrangement and applies its reward. Rewards are idempotent story actions. */
+  const submitPuzzle = useCallback((puzzleId: string, order: string[]): boolean => {
+    const puzzle = PUZZLES[puzzleId];
+    if (!puzzle || !isCorrectSequence(puzzle, order)) return false;
+    applyStoryActions(puzzle.rewardActions);
+    return true;
+  }, []);
+
+  const continueToOlympus = useCallback(() => EventBus.emit("scene:start", { key: SCENES.hub }), []);
+
+  const openPuzzle = openPuzzleId ? PUZZLES[openPuzzleId] : null;
+
   return (
     <div className="game-shell">
       <GameCanvas />
-      {!chapterComplete && <QuestTracker />}
-      {!chapterComplete && <ClueToast />}
+      {activeScene && !showChapterComplete && <QuestTracker />}
+      {!showChapterComplete && <ClueToast />}
       {session && (
         <DialogueBox
           key={session.npcId}
@@ -105,7 +150,18 @@ export default function App() {
           onClose={closeDialogue}
         />
       )}
-      {chapterComplete && <ChapterComplete />}
+      {openPuzzle && (
+        <SymbolPuzzle
+          key={openPuzzle.id}
+          puzzle={openPuzzle}
+          order={puzzleOrders[openPuzzle.id] ?? openPuzzle.solution}
+          solved={gameState.flags[CH2_FLAGS.wisdomPuzzleSolved] === true}
+          onReorder={(order) => setPuzzleOrders((orders) => ({ ...orders, [openPuzzle.id]: order }))}
+          onSubmit={(order) => submitPuzzle(openPuzzle.id, order)}
+          onClose={() => setOpenPuzzle(null)}
+        />
+      )}
+      {showChapterComplete && <ChapterComplete onContinue={continueToOlympus} />}
     </div>
   );
 }

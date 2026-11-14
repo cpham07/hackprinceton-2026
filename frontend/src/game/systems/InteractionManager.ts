@@ -11,11 +11,13 @@ export interface Interactable {
   prompt: string;
   /** World y at which the prompt is drawn. */
   promptY: number;
+  /** What pressing E requests from React. Defaults to "dialogue". */
+  kind?: "dialogue" | "puzzle";
 }
 
 /**
  * Finds the nearest interactable in range of the player, shows the prompt above it,
- * and requests a dialogue when E is pressed. Scenes register NPCs and objects alike and call update().
+ * and requests its dialogue or puzzle when E is pressed. Scenes register NPCs and objects alike and call update().
  */
 export class InteractionManager {
   private readonly targets: Interactable[] = [];
@@ -74,6 +76,8 @@ export class InteractionManager {
     if (!target) return;
 
     this.prompt.setText(target.prompt).setPosition(target.x, target.promptY);
-    if (pressed) EventBus.emit("dialogue:request", { npcId: target.id });
+    if (!pressed) return;
+    if (target.kind === "puzzle") EventBus.emit("puzzle:request", { puzzleId: target.id });
+    else EventBus.emit("dialogue:request", { npcId: target.id });
   }
 }
