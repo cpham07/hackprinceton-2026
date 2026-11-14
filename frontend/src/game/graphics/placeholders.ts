@@ -12,8 +12,6 @@ export const TEXTURES = {
   ground: "ground",
   column: "column",
   gate: "gate",
-  playerIdle: "player-idle",
-  playerWalk: "player-walk",
   aphrodite: "npc-aphrodite",
 } as const;
 
@@ -80,19 +78,6 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.lineBetween(180, 140, 180, 480);
     g.strokeRect(80, 140, 200, 340);
   });
-
-  const drawPerson = (tunic: number, skin: number, legSpread: number) => {
-    g.fillStyle(skin);
-    g.fillCircle(24, 12, 11); // head
-    g.fillStyle(tunic);
-    g.fillRoundedRect(8, 24, 32, 30, 6); // torso
-    g.fillStyle(skin);
-    g.fillRect(16 - legSpread, 54, 7, 18); // legs
-    g.fillRect(25 + legSpread, 54, 7, 18);
-  };
-
-  bake(TEXTURES.playerIdle, 48, 72, () => drawPerson(0x2f6fb5, 0xf0c9a0, 0));
-  bake(TEXTURES.playerWalk, 48, 72, () => drawPerson(0x2f6fb5, 0xf0c9a0, 5));
 
   bake(TEXTURES.aphrodite, 48, 88, () => {
     g.fillStyle(0xe8b04a); // hair

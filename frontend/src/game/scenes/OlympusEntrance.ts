@@ -30,6 +30,10 @@ export class OlympusEntrance extends Phaser.Scene {
     super("OlympusEntrance");
   }
 
+  preload(): void {
+    Player.preload(this);
+  }
+
   create(): void {
     createPlaceholderTextures(this);
     this.dialogueOpen = false;
