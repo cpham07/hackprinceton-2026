@@ -4,6 +4,7 @@ import { EventBus } from "../EventBus";
 import { ARENA_INTERACTABLES } from "../data/interactables";
 import { Hazard, type HazardConfig } from "../entities/Hazard";
 import { Npc } from "../entities/Npc";
+import { addBackground, BACKGROUNDS, preloadBackground } from "../graphics/backgrounds";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { consumePress } from "../input/keys";
 import { hasFlag } from "../state/gameState";
@@ -61,6 +62,11 @@ export class AresTraining extends GameplayScene {
     super(SCENES.ares);
   }
 
+  preload(): void {
+    super.preload();
+    preloadBackground(this, BACKGROUNDS.arena);
+  }
+
   create(): void {
     createPlaceholderTextures(this);
     this.finished = false;
@@ -70,6 +76,8 @@ export class AresTraining extends GameplayScene {
 
     this.buildBackdrop();
     const ground = this.buildGround();
+    // The painting has its own sand in front; the strip stays as the (invisible) floor the player stands on.
+    if (this.textures.exists(BACKGROUNDS.arena.key)) ground.setVisible(false);
     this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: START_X, ground });
 
     for (const def of Object.values(ARENA_INTERACTABLES)) {
@@ -157,13 +165,16 @@ export class AresTraining extends GameplayScene {
   }
 
   private buildBackdrop(): void {
-    this.add
-      .image(0, 0, TEXTURES.skyArena)
-      .setOrigin(0)
-      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-      .setScrollFactor(0);
-    // Arena stands behind the course.
-    this.add.tileSprite(0, 250, WORLD_WIDTH, GROUND_Y - 250, TEXTURES.arenaWall).setOrigin(0).setScrollFactor(0.6, 1);
+    const painted = addBackground(this, BACKGROUNDS.arena, { worldWidth: WORLD_WIDTH, groundY: GROUND_Y });
+    if (!painted) {
+      // Placeholder sky and arena wall, used if the painting failed to load.
+      this.add
+        .image(0, 0, TEXTURES.skyArena)
+        .setOrigin(0)
+        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+        .setScrollFactor(0);
+      this.add.tileSprite(0, 250, WORLD_WIDTH, GROUND_Y - 250, TEXTURES.arenaWall).setOrigin(0).setScrollFactor(0.6, 1);
+    }
 
     const label = (x: number, y: number, text: string, size = 22) =>
       this.add

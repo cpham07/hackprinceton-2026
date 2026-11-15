@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="160" viewBox="0 0 96 160">
+  <!-- Lyra the young scholar, who teaches the incantation (placeholder 48x80, drawn at 2x). Drawn to match chapter1_bg.webp: bold dark outlines, flat warm colours, light ink wobble. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/>
+    </filter>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- legs and sandals -->
+    <path d="M34 120 L32 154 L44 154 L46 120 Z M52 120 L54 154 L66 154 L62 120 Z" fill="#f0c9a0"/>
+    <path d="M28 152 L46 152 L47 158 L27 158 Z M52 152 L70 152 L71 158 L51 158 Z" fill="#6b4226"/>
+    <!-- teal chiton with a gold belt -->
+    <path d="M28 58 C22 80 22 104 24 126 L72 126 C74 104 74 80 68 58 C58 52 38 52 28 58 Z" fill="#3fa58c"/>
+    <path d="M58 60 C66 80 68 104 68 124 L72 126 C74 104 74 80 68 58 Z" fill="#2c7a68" stroke="none"/>
+    <path d="M26 88 C40 92 58 92 70 88" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M36 96 L34 124 M48 96 L48 124 M60 96 L62 124" fill="none" stroke="#2c7a68" stroke-width="1.8"/>
+    <!-- arms holding an open scroll in front -->
+    <path d="M30 62 C24 74 24 86 32 94 L40 88 C36 80 36 72 38 66 Z" fill="#f0c9a0"/>
+    <path d="M66 62 C72 74 72 86 64 94 L56 88 C60 80 60 72 58 66 Z" fill="#f0c9a0"/>
+    <path d="M30 82 L66 82 L66 100 L30 100 Z" fill="#f4efe4"/>
+    <path d="M26 80 C22 80 22 102 26 102 C30 102 30 80 26 80 Z M70 80 C66 80 66 102 70 102 C74 102 74 80 70 80 Z" fill="#c9a46a"/>
+    <path d="M36 88 L60 88 M36 94 L54 94" fill="none" stroke="#8a7a66" stroke-width="1.6"/>
+    <!-- neck and head -->
+    <path d="M42 44 L42 56 L54 56 L54 44 Z" fill="#f0c9a0"/>
+    <path d="M32 28 C32 14 40 8 48 8 C58 8 64 14 64 28 C64 40 56 48 48 48 C40 48 32 40 32 28 Z" fill="#f0c9a0"/>
+    <!-- dark hair with a bun and a teal ribbon -->
+    <path d="M30 30 C26 12 40 2 50 4 C62 6 68 16 66 32 C62 22 56 16 46 16 C38 18 34 22 30 30 Z" fill="#4a2f1b"/>
+    <circle cx="62" cy="10" r="9" fill="#4a2f1b"/>
+    <path d="M56 16 C60 18 64 18 68 16" fill="none" stroke="#3fa58c" stroke-width="3"/>
+    <path d="M30 30 C28 38 30 46 34 50" fill="none" stroke="#4a2f1b" stroke-width="4"/>
+    <!-- bright, friendly face -->
+    <circle cx="42" cy="29" r="2" fill="#2b2836" stroke="none"/>
+    <circle cx="54" cy="29" r="2" fill="#2b2836" stroke="none"/>
+    <path d="M38 24 L45 23 M51 23 L58 24" fill="none" stroke="#4a2f1b" stroke-width="1.8"/>
+    <path d="M43 38 C46 41 50 41 53 38" fill="none" stroke="#b5574a" stroke-width="2"/>
+    <circle cx="38" cy="35" r="3" fill="#f2a6a0" stroke="none" opacity="0.7"/>
+    <circle cx="58" cy="35" r="3" fill="#f2a6a0" stroke="none" opacity="0.7"/>
+
+  </g>
+</svg>

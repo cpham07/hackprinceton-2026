@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="330" viewBox="0 0 230 330">
+  <!-- Zeus's palace gates in the hub, chained shut, seal sockets empty. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="8" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <path d="M0 316 L230 316 L230 330 L0 330 Z" fill="#c9c3d6"/>
+    <path d="M34 114 L115 114 L115 330 L34 330 Z M115 114 L196 114 L196 330 L115 330 Z" fill="#8b86a0"/>
+    <path d="M44 126 L105 126 L105 180 L44 180 Z M125 126 L186 126 L186 180 L125 180 Z M44 228 L105 228 L105 318 L44 318 Z M125 228 L186 228 L186 318 L125 318 Z" fill="none" stroke="#5f5a75" stroke-width="2.5"/>
+    <circle cx="70" cy="200" r="20" fill="#e0b04a"/>
+    <circle cx="70" cy="200" r="15" fill="#1c1830"/>
+    <circle cx="115" cy="200" r="20" fill="#e0b04a"/>
+    <circle cx="115" cy="200" r="15" fill="#1c1830"/>
+    <circle cx="160" cy="200" r="20" fill="#e0b04a"/>
+    <circle cx="160" cy="200" r="15" fill="#1c1830"/>
+    <path d="M34 150 C90 220 140 230 196 290 M196 150 C140 220 90 230 34 290" fill="none" stroke="#2b2836" stroke-width="12" stroke-dasharray="14 6"/>
+    <path d="M34 150 C90 220 140 230 196 290 M196 150 C140 220 90 230 34 290" fill="none" stroke="#6f6a80" stroke-width="6" stroke-dasharray="14 6"/>
+    <path d="M104 240 C104 222 126 222 126 240" fill="none" stroke="#2b2836" stroke-width="7"/>
+    <path d="M96 240 L134 240 L134 272 L96 272 Z" fill="#4a4660"/>
+    <circle cx="115" cy="254" r="4" fill="#1c1830"/>
+    <path d="M0 114 L34 114 L34 330 L0 330 Z M196 114 L230 114 L230 330 L196 330 Z" fill="#c9c3d6"/>
+    <path d="M24 118 L34 118 L34 330 L24 330 Z M220 118 L230 118 L230 330 L220 330 Z" fill="#a39cb4" stroke="none"/>
+    <path d="M8 120 L8 320 M222 120 L222 320" fill="none" stroke="#e2ddea" stroke-width="3"/>
+    <path d="M0 88 L230 88 L230 116 L0 116 Z" fill="#c9c3d6"/>
+    <path d="M0 104 L230 104" fill="none" stroke="#e0b04a" stroke-width="4"/>
+    <path d="M-2 90 L115 2 L232 90 Z" fill="#c9c3d6"/>
+    <path d="M26 82 L115 16 L204 82 Z" fill="#b7b0c8"/>
+    <path d="M118.4 28.5 L104.8 57.4 L115.0 57.4 L109.9 79.5 L126.9 48.9 L116.7 48.9 Z" fill="#4a4660" stroke-width="2.5"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="20" viewBox="0 0 64 20">
+  <!-- One tile of the hub's floating marble ledges (tiled horizontally; placeholder size 64x20). -->
+  <rect x="0" y="0" width="64" height="20" fill="#f1e4cc"/>
+  <rect x="0" y="0" width="64" height="5" fill="#fffaf0"/>
+  <rect x="0" y="14" width="64" height="6" fill="#d6bf9b"/>
+  <path d="M0 1.2 L64 1.2 M0 18.8 L64 18.8" stroke="#2b2836" stroke-width="2.4"/>
+  <path d="M63 2 L63 18" stroke="#b9a07b" stroke-width="1.6"/>
+  <path d="M6 9.5 h6 v-3 h6 v3 h6 M38 9.5 h6 v-3 h6 v3 h6" fill="none" stroke="#c9a56a" stroke-width="1.4"/>
+</svg>

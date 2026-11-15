@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="320" viewBox="0 0 180 320">
+  <!-- Athena's library door, open. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <path d="M34 36 L146 36 L146 320 L34 320 Z" fill="#2c2233"/>
+    <path d="M60 120 L120 120 L120 320 L60 320 Z" fill="#3b2f48" stroke="none"/>
+    <path d="M34 36 L46 44 L46 316 L34 320 Z M146 36 L134 44 L134 316 L146 320 Z" fill="#7a5230"/>
+    <path d="M0 36 L34 36 L34 320 L0 320 Z M146 36 L180 36 L180 320 L146 320 Z" fill="#f1e4cc"/>
+    <path d="M24 40 L34 40 L34 320 L24 320 Z M170 40 L180 40 L180 320 L170 320 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M0 0 L180 0 L180 38 L0 38 Z" fill="#f1e4cc"/>
+    <path d="M0 30 L180 30" fill="none" stroke="#e0b04a" stroke-width="5"/>
+    <!-- owl of Athena on the lintel -->
+    <path d="M78 26 C78 8 102 8 102 26 Z" fill="#e0b04a" stroke-width="2"/>
+    <circle cx="85" cy="18" r="3.5" fill="#fffaf0" stroke-width="1.5"/><circle cx="95" cy="18" r="3.5" fill="#fffaf0" stroke-width="1.5"/>
+  </g>
+</svg>

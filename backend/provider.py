@@ -7,6 +7,7 @@ audio and player text are never put in a message or a log line (only status code
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -24,6 +25,25 @@ def _status_error(status: int, service: str) -> ServiceError:
     if status == 404:
         return ServiceError(502, f"The {service} provider could not find the configured model or endpoint.")
     return ServiceError(502, f"The {service} provider returned an error ({status}).")
+
+
+_SAFE_ID = re.compile(r"[A-Za-z0-9_.\-]{1,64}")
+
+
+def _error_ids(response: httpx.Response) -> tuple[str, str, str]:
+    """`error.type`, `error.code` and `error.param` from an OpenAI-style error body, for the log.
+
+    Only short identifier-shaped values are kept (e.g. `unsupported_parameter`, `max_tokens`); the error
+    `message` and anything else in the body are never read out, since they can echo request content.
+    """
+    try:
+        error = response.json().get("error")
+    except (ValueError, AttributeError):
+        return "-", "-", "-"
+    if not isinstance(error, dict):
+        return "-", "-", "-"
+    pick = lambda key: error[key] if isinstance(error.get(key), str) and _SAFE_ID.fullmatch(error[key]) else "-"  # noqa: E731
+    return pick("type"), pick("code"), pick("param")
 
 
 async def post_json_to_provider(
@@ -53,7 +73,10 @@ async def post_json_to_provider(
         raise ServiceError(502, f"Could not reach the {service} provider.") from None
 
     if response.status_code >= 400:
-        logger.warning("%s provider returned HTTP %d", service, response.status_code)
+        kind, code, param = _error_ids(response)
+        logger.warning(
+            "%s provider returned HTTP %d (type=%s code=%s param=%s)", service, response.status_code, kind, code, param
+        )
         raise _status_error(response.status_code, service)
 
     try:

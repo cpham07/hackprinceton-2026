@@ -3,6 +3,7 @@ import { GAME_HEIGHT, type SceneKey } from "../constants";
 import { EventBus } from "../EventBus";
 import { Player } from "../entities/Player";
 import { preloadCharacterArt } from "../graphics/characterArt";
+import { preloadPropArt } from "../graphics/propArt";
 import {
   captureGameplayKeys,
   clearPresses,
@@ -36,6 +37,7 @@ export abstract class GameplayScene extends Phaser.Scene {
   preload(): void {
     Player.preload(this);
     preloadCharacterArt(this);
+    preloadPropArt(this);
   }
 
   /**

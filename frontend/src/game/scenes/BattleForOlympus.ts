@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { BATTLE_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
-import { HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
+import { GOD_SCALE, HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { brokenCount, ENCHANTMENTS, isEnchantmentBroken, strikeEnchantment } from "../puzzles/enchantmentNodes";
 import { getGameState, subscribe } from "../state/gameState";
@@ -90,9 +90,9 @@ export class BattleForOlympus extends GameplayScene {
       }
     }
 
-    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170, 250).setDepth(6);
+    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170 * GOD_SCALE, 250 * GOD_SCALE).setDepth(6);
     // In Aphrodite's hand (her art's hand point; the offset is for the placeholder).
-    const hand = aphrodite?.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET) ?? { x: THRONE_X + 34, y: GROUND_Y - 118 };
+    const hand = aphrodite?.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET) ?? { x: THRONE_X + HELD_BOLT_PLACEHOLDER_OFFSET.x, y: GROUND_Y + HELD_BOLT_PLACEHOLDER_OFFSET.y };
     this.heldBolt = this.add.image(hand.x, hand.y, TEXTURES.masterBolt).setDisplaySize(30, 60).setDepth(6);
     this.darkness = this.add
       .rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x1a0b2e)
@@ -101,7 +101,7 @@ export class BattleForOlympus extends GameplayScene {
       .setDepth(40)
       .setAlpha(DARKNESS.siege);
     this.notice = this.add
-      .text(GAME_WIDTH / 2, 160, "", { fontFamily: "Georgia, serif", fontSize: "32px", color: "#fff6c2", stroke: "#3b2a4a", strokeThickness: 7 })
+      .text(GAME_WIDTH / 2, 160, "", { fontFamily: "Georgia, serif", fontSize: "32px", color: "#fbe4f0", stroke: "#3b2a4a", strokeThickness: 7 })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(100)
@@ -233,7 +233,7 @@ export class BattleForOlympus extends GameplayScene {
 
     const label = (x: number, y: number, text: string, size = 26) =>
       this.add
-        .text(x, y, text, { fontFamily: "Georgia, serif", fontSize: `${size}px`, color: "#5b4a36", stroke: "#fff6c2", strokeThickness: 5, align: "center" })
+        .text(x, y, text, { fontFamily: "Georgia, serif", fontSize: `${size}px`, color: "#5b4a36", stroke: "#fbe4f0", strokeThickness: 5, align: "center" })
         .setOrigin(0.5, 1)
         .setDepth(41);
     label(450, 170, "Palace Courtyard");

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="400" viewBox="0 0 520 400">
+  <!-- The temple behind the agora. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- dark interior behind the colonnade -->
+    <path d="M24 150 L496 150 L496 372 L24 372 Z" fill="#c7a98a"/>
+    <path d="M24 150 L496 150 L496 200 L24 200 Z" fill="#b08d6c" stroke="none"/>
+    <path d="M22 150 L78 150 L78 164 L22 164 Z" fill="#f1e4cc"/>
+    <path d="M30 164 L70 164 L70 360 L30 360 Z" fill="#f1e4cc"/>
+    <path d="M58.8 165 L68.5 165 L68.5 359 L58.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M35 170 L35 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M24 360 L76 360 L78 372 L22 372 Z" fill="#f1e4cc"/>
+    <path d="M43.3 170 L43.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M56.7 170 L56.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M106 150 L162 150 L162 164 L106 164 Z" fill="#f1e4cc"/>
+    <path d="M114 164 L154 164 L154 360 L114 360 Z" fill="#f1e4cc"/>
+    <path d="M142.8 165 L152.5 165 L152.5 359 L142.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M119 170 L119 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M108 360 L160 360 L162 372 L106 372 Z" fill="#f1e4cc"/>
+    <path d="M127.3 170 L127.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M140.7 170 L140.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M190 150 L246 150 L246 164 L190 164 Z" fill="#f1e4cc"/>
+    <path d="M198 164 L238 164 L238 360 L198 360 Z" fill="#f1e4cc"/>
+    <path d="M226.8 165 L236.5 165 L236.5 359 L226.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M203 170 L203 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M192 360 L244 360 L246 372 L190 372 Z" fill="#f1e4cc"/>
+    <path d="M211.3 170 L211.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M224.7 170 L224.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M274 150 L330 150 L330 164 L274 164 Z" fill="#f1e4cc"/>
+    <path d="M282 164 L322 164 L322 360 L282 360 Z" fill="#f1e4cc"/>
+    <path d="M310.8 165 L320.5 165 L320.5 359 L310.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M287 170 L287 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M276 360 L328 360 L330 372 L274 372 Z" fill="#f1e4cc"/>
+    <path d="M295.3 170 L295.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M308.7 170 L308.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M358 150 L414 150 L414 164 L358 164 Z" fill="#f1e4cc"/>
+    <path d="M366 164 L406 164 L406 360 L366 360 Z" fill="#f1e4cc"/>
+    <path d="M394.8 165 L404.5 165 L404.5 359 L394.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M371 170 L371 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M360 360 L412 360 L414 372 L358 372 Z" fill="#f1e4cc"/>
+    <path d="M379.3 170 L379.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M392.7 170 L392.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M442 150 L498 150 L498 164 L442 164 Z" fill="#f1e4cc"/>
+    <path d="M450 164 L490 164 L490 360 L450 360 Z" fill="#f1e4cc"/>
+    <path d="M478.8 165 L488.5 165 L488.5 359 L478.8 359 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M455 170 L455 354" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M444 360 L496 360 L498 372 L442 372 Z" fill="#f1e4cc"/>
+    <path d="M463.3 170 L463.3 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M476.7 170 L476.7 354" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <!-- steps -->
+    <path d="M0 372 L520 372 L520 400 L0 400 Z" fill="#f1e4cc"/>
+    <path d="M10 386 L510 386" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <!-- entablature and pediment -->
+    <path d="M0 120 L520 120 L520 152 L0 152 Z" fill="#f1e4cc"/>
+    <path d="M0 140 L520 140" fill="none" stroke="#e0b04a" stroke-width="5"/>
+    <path d="M-2 122 L260 2 L522 122 Z" fill="#f1e4cc"/>
+    <path d="M44 112 L260 18 L476 112 Z" fill="#e7d6b8"/>
+    <path d="M360 66 L476 112 L420 112 Z" fill="#d6bf9b" stroke="none"/>
+    <circle cx="260" cy="74" r="24" fill="#e0b04a"/>
+    <circle cx="260" cy="74" r="14" fill="none" stroke="#fff1c9" stroke-width="3"/>
+    <path d="M232 74 L288 74 M260 46 L260 102" fill="none" stroke="#a8742a" stroke-width="2"/>
+
+  </g>
+</svg>

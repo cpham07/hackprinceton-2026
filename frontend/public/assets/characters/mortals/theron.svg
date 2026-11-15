@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="160" viewBox="0 0 96 160">
+  <!-- Old Theron, the steps-sweeper of Chapter 1 (placeholder 48x80, drawn at 2x). Drawn to match chapter1_bg.webp: bold dark outlines, flat warm colours, light ink wobble. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/>
+    </filter>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- walking stick -->
+    <path d="M84 44 L86 158" fill="none" stroke="#2b2836" stroke-width="6"/>
+    <path d="M84 44 L86 158" fill="none" stroke="#8a5a32" stroke-width="3"/>
+    <path d="M78 46 C80 38 90 38 90 46" fill="none" stroke="#2b2836" stroke-width="5"/>
+    <!-- robe, stooped forward -->
+    <path d="M30 58 C18 80 14 120 16 156 L72 156 C74 120 70 84 62 60 C52 52 38 52 30 58 Z" fill="#8a6e52"/>
+    <path d="M58 64 C66 90 70 120 70 154 L72 156 C74 120 70 84 62 60 Z" fill="#6b5340" stroke="none"/>
+    <path d="M24 100 C40 104 56 104 70 98" fill="none" stroke="#c9a46a" stroke-width="4"/>
+    <path d="M30 110 L34 150 M46 112 L46 152" fill="none" stroke="#6b5340" stroke-width="1.8"/>
+    <!-- arm reaching to the stick -->
+    <path d="M52 66 C64 72 74 76 82 80 L80 88 C70 86 58 82 48 76 Z" fill="#8a6e52"/>
+    <path d="M78 76 C84 72 92 76 90 84 C86 90 78 88 78 76 Z" fill="#e2b893"/>
+    <!-- sandals -->
+    <path d="M18 154 L38 154 L40 159 L16 159 Z M52 154 L72 154 L74 159 L50 159 Z" fill="#5b3a22"/>
+    <!-- head, tilted forward -->
+    <path d="M36 22 C36 10 46 4 54 6 C64 8 68 18 66 28 C64 38 56 44 48 44 C40 42 36 34 36 22 Z" fill="#e2b893"/>
+    <!-- white hair and long beard -->
+    <path d="M34 26 C30 12 42 0 54 2 C66 4 72 16 68 26 C64 18 58 14 50 14 C42 14 38 20 34 26 Z" fill="#f2efe8"/>
+    <path d="M40 34 C40 48 46 64 54 72 C60 62 66 48 64 32 C58 38 48 38 40 34 Z" fill="#f2efe8"/>
+    <path d="M48 46 L50 62 M56 44 L56 64" fill="none" stroke="#c9c3b8" stroke-width="1.6"/>
+    <!-- kindly face: bushy brows, small eyes, nose -->
+    <path d="M44 22 L52 22 M58 22 L64 21" fill="none" stroke="#f2efe8" stroke-width="3.5"/>
+    <circle cx="48" cy="27" r="1.6" fill="#2b2836" stroke="none"/>
+    <circle cx="60" cy="27" r="1.6" fill="#2b2836" stroke="none"/>
+    <path d="M55 28 C58 32 58 34 55 35" fill="none" stroke="#b5835e" stroke-width="1.8"/>
+
+  </g>
+</svg>

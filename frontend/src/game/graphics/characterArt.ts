@@ -72,10 +72,47 @@ export const CHARACTER_ART: Partial<Record<string, CharacterArt>> = {
     worldHeight: 160,
     hand: { x: 318, y: 236 }, // raised fist
   },
+  // 512x1024 SVG (hand-authored, editable). Spear tip to sole spans x 132-453, y 66-840; the crest starts at
+  // y ~140, so worldHeight is set to give about 175 px from crest to feet, between Athena and Zeus.
+  [TEXTURES.ares]: {
+    frames: [`${NPC_DIR}/ares.svg`],
+    frameRate: 6,
+    frameWidth: 512,
+    frameHeight: 1024,
+    visible: { x: 126, y: 60, width: 334, height: 784 },
+    feetY: 832,
+    anchorX: 262,
+    worldHeight: 195,
+  },
+  // 512x1024 SVG (hand-authored, editable). Bident tip to sole spans x 130-400, y 102-842; the crown starts at
+  // y ~172, so worldHeight is set to give about 180 px from crown to feet.
+  [TEXTURES.hades]: {
+    frames: [`${NPC_DIR}/hades.svg`],
+    frameRate: 6,
+    frameWidth: 512,
+    frameHeight: 1024,
+    visible: { x: 124, y: 96, width: 282, height: 752 },
+    feetY: 840,
+    anchorX: 259,
+    worldHeight: 200,
+  },
 };
 
+/**
+ * The gods are drawn this many times larger than their measurements above (or their placeholder's
+ * displaySize), so they tower over the mortals. Their name label, E prompt, glow and held props follow.
+ */
+export const GOD_SCALE = 2;
+export const GOD_TEXTURES: ReadonlySet<string> = new Set([
+  TEXTURES.zeus,
+  TEXTURES.athena,
+  TEXTURES.aphrodite,
+  TEXTURES.ares,
+  TEXTURES.hades,
+]);
+
 /** Where the bolt sits relative to the placeholder Aphrodite's feet, used only if her art did not load. */
-export const HELD_BOLT_PLACEHOLDER_OFFSET = { x: 34, y: -118 };
+export const HELD_BOLT_PLACEHOLDER_OFFSET = { x: 34 * GOD_SCALE, y: -118 * GOD_SCALE };
 
 const frameKey =(textureKey: string, index: number) => (index === 0 ? textureKey : `${textureKey}-${index}`);
 
@@ -84,7 +121,10 @@ export function preloadCharacterArt(scene: Phaser.Scene): void {
   for (const [textureKey, art] of Object.entries(CHARACTER_ART)) {
     art!.frames.forEach((path, index) => {
       const key = frameKey(textureKey, index);
-      if (!scene.textures.exists(key)) scene.load.image(key, path);
+      if (scene.textures.exists(key)) return;
+      // SVGs are rasterised at the frame size, so their measurements match the PNG art's.
+      if (path.endsWith(".svg")) scene.load.svg(key, path, { width: art!.frameWidth, height: art!.frameHeight });
+      else scene.load.image(key, path);
     });
   }
 }

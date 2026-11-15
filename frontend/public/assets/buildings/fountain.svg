@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="150" viewBox="0 0 220 150">
+  <!-- The fountain in the agora. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- lower basin -->
+    <path d="M4 112 C4 100 216 100 216 112 L210 146 L10 146 Z" fill="#f1e4cc"/>
+    <path d="M150 106 C190 106 216 108 216 112 L210 146 L170 146 Z" fill="#d6bf9b" stroke="none"/>
+    <ellipse cx="110" cy="110" rx="102" ry="10" fill="#7ec8f0"/>
+    <path d="M30 110 C60 106 90 114 120 108 C150 104 170 112 192 108" fill="none" stroke="#e6f7ff" stroke-width="2.5"/>
+    <path d="M14 128 L206 128" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <!-- pedestal and upper bowl -->
+    <path d="M96 52 L124 52 L128 108 L92 108 Z" fill="#f1e4cc"/>
+    <path d="M114 54 L124 52 L128 108 L118 108 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M60 42 C60 62 160 62 160 42 Z" fill="#f1e4cc"/>
+    <ellipse cx="110" cy="42" rx="50" ry="9" fill="#7ec8f0"/>
+    <!-- spout and falling water -->
+    <path d="M104 42 L106 22 L114 22 L116 42" fill="#7ec8f0"/>
+    <path d="M110 14 C104 14 102 20 106 24 L114 24 C118 20 116 14 110 14 Z" fill="#b9e6ff"/>
+    <path d="M64 46 C52 60 48 80 50 106 M156 46 C168 60 172 80 170 106 M84 54 C78 70 76 88 78 106 M136 54 C142 70 144 88 142 106" fill="none" stroke="#7ec8f0" stroke-width="5"/>
+    <path d="M64 46 C52 60 48 80 50 106 M156 46 C168 60 172 80 170 106" fill="none" stroke="#e6f7ff" stroke-width="1.6"/>
+    <circle cx="48" cy="104" r="3" fill="#e6f7ff" stroke="none"/><circle cx="172" cy="104" r="3" fill="#e6f7ff" stroke="none"/>
+
+  </g>
+</svg>

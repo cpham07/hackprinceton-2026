@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="560" viewBox="0 0 180 560">
+  <!-- A weathered marble column for the Chapter 1 meadow, drawn to match chapter1_bg.webp:
+       bold dark outlines, warm cream marble, flat shading, a little ivy. Base of the plinth at y=550. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-5%" width="120%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+    </filter>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- plinth -->
+    <path d="M12 504 L168 504 L172 550 L8 550 Z" fill="#e3cfae"/>
+    <path d="M130 508 L166 508 L169 546 L134 546 Z" fill="#c9ad86" stroke="none"/>
+    <path d="M40 526 L70 522 M100 530 L120 526" fill="none" stroke="#a8906c" stroke-width="2"/>
+    <!-- base torus -->
+    <path d="M26 474 C26 466 154 466 154 474 L158 504 L22 504 Z" fill="#f1e4cc"/>
+    <path d="M120 472 L154 474 L158 504 L124 504 Z" fill="#d6bf9b" stroke="none"/>
+    <!-- shaft with a slight swell -->
+    <path d="M44 112 C38 240 38 360 40 472 L140 472 C142 360 142 240 136 112 Z" fill="#f1e4cc"/>
+    <path d="M114 112 C120 240 122 360 122 472 L140 472 C142 360 142 240 136 112 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M50 120 C46 240 46 360 48 466" fill="none" stroke="#fffaf0" stroke-width="5"/>
+    <!-- fluting -->
+    <path d="M62 118 C58 240 58 360 60 468 M80 116 C78 240 78 360 79 470 M98 116 C98 240 99 360 99 470 M116 118 C118 240 120 360 120 468" fill="none" stroke="#b9a07b" stroke-width="2.5"/>
+    <!-- cracks -->
+    <path d="M70 300 L78 318 L72 334 M108 200 L116 214" fill="none" stroke="#8f7a5c" stroke-width="2"/>
+    <!-- capital: echinus and abacus -->
+    <path d="M36 112 C30 96 150 96 144 112 Z" fill="#f1e4cc"/>
+    <path d="M30 84 C40 104 140 104 150 84 Z" fill="#e7d6b8"/>
+    <path d="M16 56 L164 56 L164 84 L16 84 Z" fill="#f1e4cc"/>
+    <path d="M128 58 L162 58 L162 82 L128 82 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M22 62 L120 62" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <!-- ivy climbing from the base -->
+    <path d="M30 500 C60 460 30 420 64 380 C96 344 70 300 96 262 C110 240 104 214 118 196" fill="none" stroke="#4f6e2a" stroke-width="3.5"/>
+    <g fill="#7fa83f" stroke="#3d5a22" stroke-width="2.5">
+      <path d="M44 470 c-14 -4 -18 -16 -10 -24 c10 4 14 14 10 24 Z"/>
+      <path d="M50 430 c14 -6 26 -2 26 8 c-10 8 -22 6 -26 -8 Z"/>
+      <path d="M58 392 c-14 -2 -20 -14 -12 -22 c10 2 16 12 12 22 Z"/>
+      <path d="M80 344 c14 -8 26 -4 26 6 c-10 8 -22 8 -26 -6 Z"/>
+      <path d="M86 300 c-14 -2 -20 -14 -12 -22 c10 2 16 12 12 22 Z"/>
+      <path d="M100 254 c14 -6 24 0 22 10 c-10 6 -20 4 -22 -10 Z"/>
+      <path d="M112 212 c-12 -2 -18 -12 -10 -20 c10 2 14 10 10 20 Z"/>
+    </g>
+    <path d="M24 504 C28 494 40 490 52 496 C62 488 76 492 80 504 Z" fill="#8bb143" stroke="#3d5a22" stroke-width="2.5"/>
+  </g>
+</svg>

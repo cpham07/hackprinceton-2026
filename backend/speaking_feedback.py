@@ -104,7 +104,8 @@ GOAL_INSTRUCTIONS = {
 RULES = (
     "Give exactly one positive observation (`positive`) and exactly one actionable suggestion (`suggestion`), each a "
     "single short sentence in plain, friendly English that a learner can understand. Address the player as 'you'.",
-    "`focus` names the one goal the suggestion is about, chosen from the player's goals listed below.",
+    "`focus` names the one goal the suggestion is about. It must be exactly one of these goal ids, written as shown "
+    "(the id, not the goal's title): {focus_ids}.",
     "The text was spoken aloud, transcribed by speech recognition, then reviewed and confirmed by the player. Do not "
     "comment on spelling, punctuation or capitalisation. These names are spelled correctly: {names}",
     "You only see text. Never comment on pronunciation, accent, speed, pauses, repetitions, filler words or fluency, "
@@ -127,8 +128,10 @@ REMINDER = (
 
 def build_messages(request: SpeakingFeedbackRequest) -> list[dict[str, str]]:
     names = MYTHOLOGY_TRANSCRIPTION_PROMPT.rstrip(".")
-    goals = "\n".join(f"- {GOAL_INSTRUCTIONS[goal]}" for goal in request.text_goals)
-    rules = "\n".join(f"- {rule.format(names=names)}" for rule in RULES)
+    # Each goal is listed with its id, because `focus` must name the id (the parser accepts nothing else).
+    goals = "\n".join(f"- goal id `{goal}`: {GOAL_INSTRUCTIONS[goal]}" for goal in request.text_goals)
+    focus_ids = ", ".join(request.text_goals)
+    rules = "\n".join(f"- {rule.format(names=names, focus_ids=focus_ids)}" for rule in RULES)
     system = (
         "You are a kind, encouraging speaking coach inside a Greek-mythology adventure game where people practise "
         "speaking English by talking to characters.\n\n"
@@ -180,6 +183,32 @@ def _flag(value: Any, field: str) -> bool | None:
     raise FeedbackFormatError(f"{field} must be true, false or null")
 
 
+# Spellings of each goal a model may reasonably use for `focus`: the id, the id with a space or hyphen, and the
+# title the player sees (frontend/src/companion/goals.ts). Compared after lowercasing and collapsing separators.
+FOCUS_ALIASES: dict[str, str] = {
+    "english": "english",
+    "improve my english": "english",
+    "clarity": "clarity",
+    "express my ideas clearly": "clarity",
+    "clear speech": "clear_speech",
+    "practice speaking clearly": "clear_speech",
+    "practise speaking clearly": "clear_speech",
+}
+
+
+def _focus(value: Any, goals: list[str]) -> str:
+    """The goal id `focus` names. Accepts an id or a goal title in any case; still only one of this player's goals."""
+    if not isinstance(value, str):
+        raise FeedbackFormatError("focus is missing or not a string")
+    key = re.sub(r"[\s_\-]+", " ", value).strip().lower()
+    goal = FOCUS_ALIASES.get(key)
+    if goal is None:
+        raise FeedbackFormatError("focus is not a known goal")
+    if goal not in goals:
+        raise FeedbackFormatError("focus is not one of the player's goals")
+    return goal
+
+
 def _same_words(a: str, b: str) -> bool:
     words = lambda s: re.sub(r"[^\w\s]", "", s.lower()).split()  # noqa: E731
     return words(a) == words(b)
@@ -195,9 +224,7 @@ def parse_feedback(content: str, request: SpeakingFeedbackRequest) -> SpeakingFe
         raise FeedbackFormatError("not a JSON object")
 
     goals = request.text_goals
-    focus = data.get("focus")
-    if focus not in goals:
-        raise FeedbackFormatError("focus is not one of the player's goals")
+    focus = _focus(data.get("focus"), goals)
 
     rephrasing = None
     if "english" in goals or "clear_speech" in goals:
@@ -240,12 +267,25 @@ def parse_feedback(content: str, request: SpeakingFeedbackRequest) -> SpeakingFe
 
 def _content_of(data: dict) -> str:
     try:
-        content = data["choices"][0]["message"]["content"]
+        choice = data["choices"][0]
+        content = choice["message"]["content"]
     except (KeyError, IndexError, TypeError):
+        logger.warning("feedback provider response has no choices[0].message.content")
         raise ServiceError(502, "The feedback provider sent an unexpected response.") from None
+    finish_reason = choice.get("finish_reason") if isinstance(choice, dict) else None
+    if finish_reason == "length":
+        # Cut off at FEEDBACK_MAX_TOKENS: the JSON is incomplete. Reported as its own reason, then retried.
+        raise FeedbackFormatError(f"truncated at the token limit ({FEEDBACK_MAX_TOKENS})")
     if not isinstance(content, str):
+        # A refusal or a tool call instead of text; only the reason is logged, never the payload.
+        logger.warning("feedback provider returned no text (finish_reason=%s)", _safe_id(finish_reason))
         raise ServiceError(502, "The feedback provider sent an unexpected response.")
     return content
+
+
+def _safe_id(value: Any) -> str:
+    """A short provider identifier (finish_reason, error code) that is safe to log, or '-'."""
+    return value if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.\-]{1,64}", value) else "-"
 
 
 async def _ask_model(messages: list[dict[str, str]], settings: Settings, client: httpx.AsyncClient, api_key: str, base_url: str) -> str:
@@ -278,15 +318,17 @@ async def generate_feedback(request: SpeakingFeedbackRequest, settings: Settings
     retried = False
     try:
         feedback = parse_feedback(await _ask_model(messages, settings, client, api_key, base_url), request)
-    except FeedbackFormatError:
+    except FeedbackFormatError as first:
+        # Reasons are fixed labels from this module (field names, rule names), never model output or player text.
+        logger.warning("feedback attempt 1 rejected: %s (model=%s)", first, settings.dialogue_model)
         retried = True  # one retry with a reminder; the rejected answer is not echoed back
         try:
             feedback = parse_feedback(
                 await _ask_model(messages + [{"role": "system", "content": REMINDER}], settings, client, api_key, base_url),
                 request,
             )
-        except FeedbackFormatError as exc:
-            logger.warning("feedback rejected twice: %s", exc)
+        except FeedbackFormatError as second:
+            logger.warning("feedback attempt 2 rejected: %s (model=%s); returning 502", second, settings.dialogue_model)
             raise ServiceError(502, "The feedback could not be used this time. Please try again later.") from None
 
     # Metadata only: never the transcript or the feedback.
