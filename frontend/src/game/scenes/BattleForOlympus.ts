@@ -101,7 +101,7 @@ export class BattleForOlympus extends GameplayScene {
       .setDepth(40)
       .setAlpha(DARKNESS.siege);
     this.notice = this.add
-      .text(GAME_WIDTH / 2, 160, "", { fontFamily: "Georgia, serif", fontSize: "32px", color: "#fff6c2", stroke: "#3b2a4a", strokeThickness: 7 })
+      .text(GAME_WIDTH / 2, 160, "", { fontFamily: "Georgia, serif", fontSize: "32px", color: "#fbe4f0", stroke: "#3b2a4a", strokeThickness: 7 })
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(100)
@@ -233,7 +233,7 @@ export class BattleForOlympus extends GameplayScene {
 
     const label = (x: number, y: number, text: string, size = 26) =>
       this.add
-        .text(x, y, text, { fontFamily: "Georgia, serif", fontSize: `${size}px`, color: "#5b4a36", stroke: "#fff6c2", strokeThickness: 5, align: "center" })
+        .text(x, y, text, { fontFamily: "Georgia, serif", fontSize: `${size}px`, color: "#5b4a36", stroke: "#fbe4f0", strokeThickness: 5, align: "center" })
         .setOrigin(0.5, 1)
         .setDepth(41);
     label(450, 170, "Palace Courtyard");

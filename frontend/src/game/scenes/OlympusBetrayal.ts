@@ -309,7 +309,7 @@ export class OlympusBetrayal extends GameplayScene {
       .text(GAME_WIDTH / 2 + 170, 80, "The Steps of Zeus's Palace", {
         fontFamily: "Georgia, serif",
         fontSize: "30px",
-        color: "#fff6c2",
+        color: "#fbe4f0",
         stroke: "#3b2a4a",
         strokeThickness: 6,
       })

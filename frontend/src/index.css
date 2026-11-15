@@ -26,7 +26,7 @@ body,
   width: min(860px, calc(100vw - 364px));
   box-sizing: border-box;
   padding: 14px 18px 16px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 12px;
   background: rgba(27, 18, 40, 0.94);
   color: #f6f1e7;
@@ -44,7 +44,7 @@ body,
 .dialogue-name {
   font-size: 22px;
   font-weight: bold;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .dialogue-log {
@@ -81,14 +81,14 @@ body,
 }
 
 .dialogue-input:focus {
-  outline: 2px solid #f2c94c;
+  outline: 2px solid #f4b6d2;
   outline-offset: 1px;
 }
 
 .dialogue-send,
 .dialogue-close {
   padding: 8px 16px;
-  border: 1px solid #d4af37;
+  border: 1px solid #b79be6;
   border-radius: 8px;
   background: #3a2755;
   color: #f6f1e7;
@@ -113,7 +113,7 @@ body,
   width: 316px;
   box-sizing: border-box;
   padding: 10px 14px;
-  border: 1px solid #d4af37;
+  border: 1px solid #b79be6;
   border-radius: 10px;
   background: rgba(27, 18, 40, 0.86);
   color: #f6f1e7;
@@ -126,7 +126,7 @@ body,
 .quest-chapter {
   font-size: 13px;
   letter-spacing: 0.04em;
-  color: #f2c94c;
+  color: #f4b6d2;
   margin-bottom: 4px;
 }
 
@@ -145,7 +145,7 @@ body,
 .quest-clues {
   margin: 8px 0 0;
   padding: 8px 0 0 18px;
-  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  border-top: 1px solid rgba(183, 155, 230, 0.4);
   font-size: 14px;
 }
 
@@ -178,7 +178,7 @@ body,
 .chapter-complete-card {
   max-width: min(620px, calc(100vw - 32px));
   padding: 28px 32px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 14px;
   background: rgba(27, 18, 40, 0.96);
 }
@@ -186,7 +186,7 @@ body,
 .chapter-complete-card h1 {
   margin: 4px 0 12px;
   font-size: 32px;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .chapter-complete-kicker {
@@ -205,7 +205,7 @@ body,
 
 .chapter-complete-card button {
   padding: 8px 18px;
-  border: 1px solid #d4af37;
+  border: 1px solid #b79be6;
   border-radius: 8px;
   background: #3a2755;
   color: #f6f1e7;
@@ -222,7 +222,7 @@ body,
 }
 
 .chapter-complete-card button.primary {
-  background: #d4af37;
+  background: #b79be6;
   color: #1b1228;
   font-weight: bold;
 }
@@ -236,7 +236,7 @@ body,
 .quest-seals {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  border-top: 1px solid rgba(183, 155, 230, 0.4);
   font-size: 14px;
 }
 
@@ -247,7 +247,7 @@ body,
 }
 
 .seal-obtained {
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .seal-missing {
@@ -268,7 +268,7 @@ body,
   width: min(760px, calc(100vw - 32px));
   box-sizing: border-box;
   padding: 18px 22px 20px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 14px;
   background: rgba(27, 18, 40, 0.97);
   color: #f6f1e7;
@@ -285,7 +285,7 @@ body,
 .puzzle-title {
   font-size: 24px;
   font-weight: bold;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .puzzle-inscription {
@@ -336,13 +336,13 @@ body,
 }
 
 .puzzle-tile-selected {
-  border-color: #f2c94c;
-  box-shadow: 0 0 0 3px rgba(242, 201, 76, 0.6);
+  border-color: #f4b6d2;
+  box-shadow: 0 0 0 3px rgba(244, 182, 210, 0.6);
 }
 
 .puzzle-tiles-solved .puzzle-tile {
-  border-color: #d4af37;
-  background: #fff6d6;
+  border-color: #b79be6;
+  background: #f8eefb;
 }
 
 .puzzle-glyph {
@@ -373,7 +373,7 @@ body,
 .puzzle-close,
 .puzzle-submit {
   padding: 6px 14px;
-  border: 1px solid #d4af37;
+  border: 1px solid #b79be6;
   border-radius: 8px;
   background: #3a2755;
   color: #f6f1e7;
@@ -388,7 +388,7 @@ body,
 }
 
 .puzzle-submit {
-  background: #d4af37;
+  background: #b79be6;
   color: #1b1228;
   font-weight: bold;
   padding: 8px 22px;
@@ -411,7 +411,7 @@ body,
 .puzzle-solved {
   margin: 0;
   font-size: 18px;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .puzzle-seal {
@@ -432,7 +432,7 @@ body,
 /* Chapter 2 completion */
 .quest-all-seals {
   margin: 2px 0 4px;
-  color: #f2c94c;
+  color: #f4b6d2;
   font-weight: bold;
 }
 
@@ -441,10 +441,10 @@ body,
   right: 16px;
   bottom: 68px;
   padding: 10px 16px;
-  border: 1px solid #f2c94c;
+  border: 1px solid #f4b6d2;
   border-radius: 10px;
-  background: rgba(40, 28, 8, 0.92);
-  color: #fff3c4;
+  background: rgba(38, 22, 52, 0.92);
+  color: #f9e6f2;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 16px;
   pointer-events: none;
@@ -455,15 +455,15 @@ body,
   margin: 8px 0 0;
   padding: 8px 0 0;
   list-style: none;
-  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  border-top: 1px solid rgba(183, 155, 230, 0.4);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .step-done {
-  color: #f2c94c;
+  color: #f4b6d2;
   text-decoration: line-through;
-  text-decoration-color: rgba(242, 201, 76, 0.5);
+  text-decoration-color: rgba(244, 182, 210, 0.5);
 }
 
 .step-todo {
@@ -477,7 +477,7 @@ body,
 }
 
 .quest-item {
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 /* Dialogue: AI/voice integration */
@@ -489,8 +489,8 @@ body,
 .dialogue-note {
   margin: 0 0 8px;
   padding: 4px 8px;
-  border-left: 3px solid #f5b041;
-  color: #f5d6a0;
+  border-left: 3px solid #f4a3a8;
+  color: #f3cfe0;
   font-size: 14px;
   font-style: italic;
 }
@@ -515,8 +515,8 @@ body,
 }
 
 .dialogue-badge-sim {
-  border-color: #f5b041;
-  color: #f5b041;
+  border-color: #f4a3a8;
+  color: #f4a3a8;
 }
 
 .dialogue-badge-voice {
@@ -528,7 +528,7 @@ body,
 .dialogue-voice {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(212, 175, 55, 0.35);
+  border-top: 1px solid rgba(183, 155, 230, 0.35);
 }
 
 .dialogue-input[readonly] {
@@ -540,7 +540,7 @@ body,
   left: 16px;
   bottom: 16px;
   padding: 8px 10px;
-  border: 1px dashed #f5b041;
+  border: 1px dashed #f4a3a8;
   border-radius: 8px;
   background: rgba(20, 14, 30, 0.88);
   color: #f6f1e7;
@@ -548,7 +548,7 @@ body,
 }
 
 .dev-tools-title {
-  color: #f5b041;
+  color: #f4a3a8;
   font-weight: bold;
   letter-spacing: 0.08em;
 }
@@ -556,7 +556,7 @@ body,
 .dev-tools-modes {
   margin: 4px 0;
   padding: 4px 8px;
-  border: 1px solid rgba(245, 176, 65, 0.4);
+  border: 1px solid rgba(244, 163, 168, 0.4);
   border-radius: 6px;
 }
 
@@ -601,9 +601,9 @@ body,
   width: 100%;
   margin-bottom: 10px;
   padding: 10px 14px;
-  border: 1px solid #f2c94c;
+  border: 1px solid #f4b6d2;
   border-radius: 8px;
-  background: #d4af37;
+  background: #b79be6;
   color: #1b1228;
   font: inherit;
   font-size: 17px;
@@ -626,13 +626,13 @@ body,
 
 /* The ending */
 .ending {
-  background: radial-gradient(circle at 50% 40%, rgba(80, 60, 20, 0.85), rgba(11, 16, 32, 0.92));
+  background: radial-gradient(circle at 50% 40%, rgba(90, 50, 110, 0.85), rgba(11, 16, 32, 0.92));
 }
 
 .ending-card {
   max-width: min(680px, calc(100vw - 32px));
-  border-color: #f2c94c;
-  box-shadow: 0 0 60px rgba(242, 201, 76, 0.35);
+  border-color: #f4b6d2;
+  box-shadow: 0 0 60px rgba(244, 182, 210, 0.35);
 }
 
 .ending-card h1 {
@@ -643,7 +643,7 @@ body,
   margin: 14px auto;
   padding: 0;
   list-style: none;
-  color: #f2c94c;
+  color: #f4b6d2;
   font-size: 16px;
 }
 

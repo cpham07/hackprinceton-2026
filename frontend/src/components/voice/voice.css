@@ -1,12 +1,12 @@
 .voice-input { display: flex; flex-direction: column; gap: 8px; font: inherit; color: inherit; }
 .voice-recorder, .voice-panel { display: flex; flex-direction: column; gap: 8px; }
 .voice-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.voice-btn { padding: 6px 12px; border: 1px solid #c9a24a; border-radius: 6px; background: #c9a24a; color: #1a1a1a; font: inherit; cursor: pointer; }
+.voice-btn { padding: 6px 12px; border: 1px solid #b79be6; border-radius: 6px; background: #b79be6; color: #1a1a1a; font: inherit; cursor: pointer; }
 .voice-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .voice-btn:focus-visible, .voice-link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .voice-btn-stop { background: #c0392b; border-color: #c0392b; color: #fff; }
 .voice-btn-secondary { background: transparent; color: inherit; border-color: currentColor; }
-.voice-btn-mock { background: transparent; color: #f5b041; border: 1px dashed #f5b041; }
+.voice-btn-mock { background: transparent; color: #f4a3a8; border: 1px dashed #f4a3a8; }
 .voice-indicator { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
 .voice-dot { width: 10px; height: 10px; border-radius: 50%; background: #e74c3c; animation: voice-pulse 1s infinite; }
 @keyframes voice-pulse { 50% { opacity: 0.25; } }
