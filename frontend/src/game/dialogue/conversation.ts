@@ -29,6 +29,13 @@ export interface Conversation {
    * stay deterministic. Choosing it shows `playerLine` and then `step`, and ends the conversation.
    */
   choice?: DialogueChoice;
+  /**
+   * The character hears the player out: each reply before the last is answered freely (by the
+   * conversation backend when the character is AI-eligible, otherwise by `replies[i]` / `fallback`),
+   * and those answers never carry story actions. After `turns` replies the scripted `conclusion` is
+   * shown with its actions. Progress depends only on the number of replies, never on their meaning.
+   */
+  hearOut?: { turns: number; conclusion: DialogueStep };
 }
 
 export interface DialogueChoice {
@@ -60,6 +67,12 @@ export function getReply(
   repliesGiven: number,
   response: PlayerResponse,
 ): ReplyResult {
+  if (conversation.hearOut) {
+    const { turns, conclusion } = conversation.hearOut;
+    if (repliesGiven + 1 >= turns) return { step: conclusion, ended: conclusion.ends === true, freeform: false };
+    const line = conversation.replies?.[repliesGiven] ?? { text: conversation.fallback ?? "..." };
+    return { step: { text: line.text }, ended: false, freeform: true }; // text only: never actions
+  }
   if (conversation.passphrase) {
     const { phrase, success, failure } = conversation.passphrase;
     return containsPhrase(response.text, phrase)

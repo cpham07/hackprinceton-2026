@@ -20,6 +20,25 @@ export default function SymbolPuzzle({ puzzle, order, solved, onReorder, onSubmi
   const [justSolved, setJustSolved] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
+  // Escape must close the puzzle even when focus has left it: solving it removes the Submit button the
+  // player just clicked, which drops focus to the page. Keys pressed inside the box use its own handler.
+  useEffect(() => {
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      const active = document.activeElement;
+      if (active && active !== document.body && boxRef.current?.contains(active)) return;
+      event.preventDefault();
+      onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  // Once solved, the Submit button is gone: keep focus in the box so the keyboard still works.
+  useEffect(() => {
+    if (justSolved) boxRef.current?.focus();
+  }, [justSolved]);
+
   // Keep focus inside the box so Escape and the buttons work from the keyboard.
   useEffect(() => {
     boxRef.current?.focus();

@@ -12,13 +12,23 @@ import {
   VAULT_OPENED,
   ZEUS_CONFRONTED,
 } from "./story/chapter3";
+import {
+  APHRODITE_CONFRONTED,
+  BETRAYAL_REVEALED,
+  BOLT_SURRENDERED,
+  CHAPTER_4_COMPLETE_ACTIONS,
+  CHAPTER_4_ENTERED,
+  PLAYER_RESCUED,
+  ZEUS_IMPRISONED,
+} from "./story/chapter4";
 
 /**
  * Development only: `?chapter=2` starts in the Olympus hub with the state a player
  * would have after finishing Chapter 1. `?chapter=3` starts inside Zeus's palace with the state of a
  * player who has finished Chapter 2: all three seals earned and the Chapter 2 completion applied.
  * `?chapter=4` starts in front of Zeus's palace as a player who has just finished Chapter 3: every
- * Chapter 3 step done and the Master Lightning Bolt in hand. Add `&seals=athena,ares,hades` (or `&seals=all`) to start
+ * Chapter 3 step done and the Master Lightning Bolt in hand. `?chapter=5` starts the final chapter as a
+ * player who has just finished Chapter 4: betrayed, rescued, the bolt in Aphrodite's hands. Add `&seals=athena,ares,hades` (or `&seals=all`) to start
  * with those seals already earned. Returns null in production builds and when the parameter
  * is absent, so normal play always starts at the entrance. It only runs while the game is
  * being created, before any real progress exists.
@@ -26,7 +36,7 @@ import {
 export function getDevStartScene(): SceneKey | null {
   if (!import.meta.env.DEV) return null;
   const chapter = new URLSearchParams(window.location.search).get("chapter");
-  if (chapter !== "2" && chapter !== "3" && chapter !== "4") return null;
+  if (!["2", "3", "4", "5"].includes(chapter ?? "")) return null;
 
   applyStoryActions([
     { type: "setFlag", flag: FLAGS.aphroditeIntroComplete },
@@ -52,7 +62,7 @@ export function getDevStartScene(): SceneKey | null {
     applyStoryActions(CHAPTER_2_COMPLETE_ACTIONS);
     return SCENES.palace;
   }
-  if (chapter === "4") {
+  if (chapter === "4" || chapter === "5") {
     applyStoryActions([
       ...CHAPTER_2_COMPLETE_ACTIONS,
       ...PALACE_ENTERED,
@@ -63,7 +73,17 @@ export function getDevStartScene(): SceneKey | null {
       ...ZEUS_CONFRONTED,
       ...CHAPTER_3_COMPLETE_ACTIONS,
     ]);
-    return SCENES.betrayal;
+    if (chapter === "4") return SCENES.betrayal;
+    applyStoryActions([
+      ...CHAPTER_4_ENTERED,
+      ...APHRODITE_CONFRONTED,
+      ...BOLT_SURRENDERED,
+      ...BETRAYAL_REVEALED,
+      ...ZEUS_IMPRISONED,
+      ...PLAYER_RESCUED,
+      ...CHAPTER_4_COMPLETE_ACTIONS,
+    ]);
+    return SCENES.battle;
   }
   return SCENES.hub;
 }

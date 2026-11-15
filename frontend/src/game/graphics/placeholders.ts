@@ -68,6 +68,10 @@ export const TEXTURES = {
   zeus: "npc-zeus",
   // Chapter 4
   goldenCage: "golden-cage",
+  // Chapter 5
+  enchantNode: "enchant-node",
+  enchantNodeBroken: "enchant-node-broken",
+  forceField: "force-field",
   archHades: "arch-hades",
   libraryWall: "library-wall",
   libraryDoor: "library-door",
@@ -927,6 +931,34 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     for (let x = 10; x <= 154; x += 24) g.fillRect(x, 18, 7, 214);
     g.fillStyle(0xfff6c2, 0.9);
     for (let x = 12; x <= 156; x += 24) g.fillRect(x, 18, 2, 214);
+  });
+
+  // ---- Chapter 5: Aphrodite's enchantments and the barrier they hold up ----
+  const drawNode = (lit: boolean) => {
+    g.fillStyle(0x8f949c); // pedestal
+    g.fillRect(12, 100, 46, 30);
+    g.fillStyle(lit ? 0xff7ad9 : 0x6e737b); // crystal: a tall diamond
+    g.fillTriangle(35, 0, 10, 50, 60, 50);
+    g.fillTriangle(10, 50, 60, 50, 35, 100);
+    g.fillStyle(lit ? 0xffd1f0 : 0x8f949c, 0.9);
+    g.fillTriangle(35, 10, 24, 50, 35, 50);
+    if (!lit) {
+      g.lineStyle(3, 0x3a3748); // cracks
+      g.lineBetween(30, 20, 40, 48);
+      g.lineBetween(40, 48, 28, 72);
+      g.lineBetween(28, 72, 38, 92);
+    }
+  };
+  bake(TEXTURES.enchantNode, 70, 130, () => drawNode(true));
+  bake(TEXTURES.enchantNodeBroken, 70, 130, () => drawNode(false));
+
+  bake(TEXTURES.forceField, 60, 420, () => {
+    g.fillStyle(0xff7ad9, 0.35);
+    g.fillRect(0, 0, 60, 420);
+    g.lineStyle(3, 0xffd1f0, 0.9);
+    for (let y = 20; y < 420; y += 40) g.lineBetween(4, y, 56, y + 20);
+    g.lineStyle(4, 0xff7ad9);
+    g.strokeRect(2, 2, 56, 416);
   });
 
   g.destroy();

@@ -1,5 +1,7 @@
 import { CH2_FLAGS } from "../story/chapter2";
 import { CH3_FLAGS } from "../story/chapter3";
+import { CH4_FLAGS } from "../story/chapter4";
+import { CH5_FLAGS } from "../story/chapter5";
 import { DEFAULT_ACTION_POLICY, type ActionPolicy } from "../../services/npc/proposedAction";
 
 /**
@@ -15,12 +17,27 @@ import { DEFAULT_ACTION_POLICY, type ActionPolicy } from "../../services/npc/pro
 export interface AiNpcPolicy {
   /** Flag names the backend may see for this character (only those set to true are sent). */
   relevantFlags: string[];
+  /** Only in these chapters (all chapters when omitted). */
+  chapters?: number[];
 }
 
 export const AI_ELIGIBLE_NPCS: Record<string, AiNpcPolicy> = {
   hades: { relevantFlags: [CH2_FLAGS.hadesTrialComplete] },
   zeus: {
-    relevantFlags: [CH3_FLAGS.guardsPassed, CH3_FLAGS.vaultOpen, CH3_FLAGS.zeusConfrontationComplete],
+    relevantFlags: [
+      CH3_FLAGS.guardsPassed,
+      CH3_FLAGS.vaultOpen,
+      CH3_FLAGS.zeusConfrontationComplete,
+      CH4_FLAGS.betrayalRevealed,
+      CH5_FLAGS.zeusFreed,
+      CH5_FLAGS.boltReturned,
+    ],
+  },
+  // Chapter 5 only: she answers the player's case while they try to talk her off the throne.
+  // The outcome is still scripted (see the throne-room conversation's `hearOut`).
+  aphrodite: {
+    chapters: [5],
+    relevantFlags: [CH4_FLAGS.betrayalRevealed, CH5_FLAGS.enchantmentsBroken, CH5_FLAGS.aphroditeYielded],
   },
 };
 
@@ -31,8 +48,9 @@ export const AI_ELIGIBLE_NPCS: Record<string, AiNpcPolicy> = {
  */
 export const AI_ACTION_POLICY: ActionPolicy = DEFAULT_ACTION_POLICY;
 
-export function isAiEligible(npcId: string): boolean {
-  return npcId in AI_ELIGIBLE_NPCS;
+export function isAiEligible(npcId: string, chapter: number): boolean {
+  const policy = AI_ELIGIBLE_NPCS[npcId];
+  return policy !== undefined && (policy.chapters === undefined || policy.chapters.includes(chapter));
 }
 
 /** How free conversation is answered. "mock" exists only in development builds. */

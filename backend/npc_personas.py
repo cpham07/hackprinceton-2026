@@ -21,6 +21,8 @@ class Persona:
     rules: tuple[str, ...] = ()
     # Never revealed, hinted at, or confirmed. Included in the prompt so the character can play it.
     private: str | None = None
+    # From this chapter on the private agenda is public knowledge and is no longer sent as a secret.
+    private_until_chapter: int | None = None
     # Regexes this character's replies must never match (enforced on the reply, whatever the progress).
     never_say: tuple[str, ...] = ()
     # Clue/flag/item ids this character cannot know about, so they are left out of the prompt.
@@ -37,11 +39,16 @@ PERSONAS: dict[str, Persona] = {
             "You are secretly using the mortal to take Zeus's Master Lightning Bolt for yourself. Keep them trusting "
             "you and moving toward the vault."
         ),
+        private_until_chapter=5,
         rules=(
             "If pressed about your motives, deflect warmly and sincerely. Never lie in a way that would contradict a "
             "later reveal, and never admit to manipulating anyone.",
         ),
-        never_say=(r"\bi(?:['\u2019]m|\s+am|['\u2019]ve\s+been|\s+have\s+been)\s+(?:using|manipulating|deceiving|tricking)\s+you\b",),
+        never_say=(
+            r"\bi(?:['\u2019]m|\s+am|['\u2019]ve\s+been|\s+have\s+been)\s+(?:using|manipulating|deceiving|tricking)\s+you\b",
+            # Her surrender is a scripted story beat; a generated reply must never announce it.
+            r"\bi\s+(?:surrender|yield|give\s+up)\b",
+        ),
     ),
     "athena": Persona(
         id="athena",
@@ -125,6 +132,9 @@ NON_CONVERSATIONAL: dict[str, str] = {
     "palaceGuards": "a scripted-only checkpoint",
     "vaultDoor": "a door",
     "masterBolt": "an object",
+    "enchantVanity": "an enchantment",
+    "enchantJealousy": "an enchantment",
+    "enchantDesire": "an enchantment",
 }
 
 

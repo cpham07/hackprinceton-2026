@@ -5,6 +5,7 @@ import ClueToast from "./components/ClueToast";
 import SealToast from "./components/SealToast";
 import DevToolsPanel from "./components/DevToolsPanel";
 import DialogueBox from "./components/DialogueBox";
+import EndingScreen from "./components/EndingScreen";
 import GameCanvas from "./components/GameCanvas";
 import QuestTracker from "./components/QuestTracker";
 import SymbolPuzzle from "./components/SymbolPuzzle";
@@ -21,6 +22,7 @@ import { FLAGS } from "./game/story/chapter1";
 import { CH2_FLAGS, CHALLENGES } from "./game/story/chapter2";
 import { CH3_FLAGS } from "./game/story/chapter3";
 import { CH4_FLAGS } from "./game/story/chapter4";
+import { CH5_FLAGS } from "./game/story/chapter5";
 import { getConversation } from "./game/story/conversations";
 import type { DialogueLine, InputMethod, PlayerResponse } from "./game/types/dialogue";
 import { useCompletionScreen } from "./hooks/useCompletionScreen";
@@ -111,7 +113,10 @@ export default function App() {
     SCENES.betrayal,
     activeScene,
   );
-  const showChapterComplete = showChapter1Complete || showChapter2Complete || showChapter3Complete || showChapter4Complete;
+  // The ending opens when Chapter 5 is completed. It is final: the only way on is to play again.
+  const [showEnding] = useCompletionScreen(gameState.flags[CH5_FLAGS.chapter5Complete] === true, SCENES.battle, activeScene);
+  const showChapterComplete =
+    showChapter1Complete || showChapter2Complete || showChapter3Complete || showChapter4Complete || showEnding;
 
   // Phaser asks for a dialogue; React decides whether to open one.
   useEffect(() => {
@@ -152,7 +157,8 @@ export default function App() {
     completedChallenge !== null ||
     showChapter2Complete ||
     showChapter3Complete ||
-    showChapter4Complete;
+    showChapter4Complete ||
+    showEnding;
   useEffect(() => {
     if (!overlayOpen) return;
     EventBus.emit("overlay:opened", { id: "app-overlay" });
@@ -228,7 +234,7 @@ export default function App() {
 
       const reply = getReply(current.conversation, current.repliesGiven, { ...response, text });
 
-      if (reply.freeform && isAiEligible(current.npcId) && aiModeRef.current !== "off") {
+      if (reply.freeform && isAiEligible(current.npcId, getGameState().chapter) && aiModeRef.current !== "off") {
         void askNpc(current, response.method, text, reply.step.text);
         return;
       }
@@ -295,6 +301,11 @@ export default function App() {
     closeChapter3Complete();
   }, [closeChapter3Complete]);
 
+  const continueToChapter5 = useCallback(() => {
+    EventBus.emit("scene:start", { key: SCENES.battle }); // refused by the scene unless Chapter 4 is complete
+    closeChapter4Complete();
+  }, [closeChapter4Complete]);
+
   const returnFromChallenge = useCallback(() => {
     EventBus.emit("scene:start", { key: SCENES.hub });
     setCompletedChallenge(null);
@@ -349,7 +360,8 @@ export default function App() {
       {showChapter2Complete && <ChapterComplete completedChapter={2} onContinue={continueToPalace} />}
       {import.meta.env.DEV && <DevToolsPanel mode={aiMode} onModeChange={setAiMode} />}
       {showChapter3Complete && <ChapterComplete completedChapter={3} onContinue={continueToChapter4} />}
-      {showChapter4Complete && <ChapterComplete completedChapter={4} onClose={closeChapter4Complete} />}
+      {showChapter4Complete && <ChapterComplete completedChapter={4} onContinue={continueToChapter5} />}
+      {showEnding && <EndingScreen />}
     </div>
   );
 }

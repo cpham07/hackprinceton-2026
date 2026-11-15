@@ -102,7 +102,7 @@ rate-limited, `504` timeout. Error bodies are `{"detail": "..."}` and never cont
 - **No tools.** No function calling, no actions, no state. Nothing is stored between requests.
 
 To add a character, add a `Persona` in `npc_personas.py` and its `Fact`s in `story_knowledge.py`, then add tests.
-The betrayal and necklace facts unlock in Chapter 4 only once the game sends the `betrayalRevealed` flag (the betrayal happens mid-chapter), and unconditionally from Chapter 5.
+The betrayal and necklace facts unlock in Chapter 4 only once the game sends the `betrayalRevealed` flag (the betrayal happens mid-chapter), and unconditionally from Chapter 5. In Chapter 5, Aphrodite's throne-room knowledge needs `enchantmentsBroken` and Zeus's needs `boltReturned`; both are told the outcome is not decided by talking, and replies announcing her surrender or the Guardian title are filtered, because those are scripted story beats.
 
 ## Privacy
 

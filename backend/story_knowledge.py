@@ -34,6 +34,7 @@ QUEST_DESCRIPTIONS = {
     "chapter2": "gathered all three seals and opened the way to Zeus's palace",
     "chapter3": "escaped Zeus's palace with the Master Lightning Bolt",
     "chapter4": "was betrayed by Aphrodite and freed from her necklace by Athena and Ares",
+    "chapter5": "restored Olympus and was named its Guardian",
 }
 CLUE_DESCRIPTIONS = {
     "gatekeeperRumor": "has heard a rumor that an ancient incantation can put the gatekeeper to sleep",
@@ -66,6 +67,10 @@ FLAG_DESCRIPTIONS = {
     "betrayalRevealed": "Aphrodite has revealed that she manipulated the mortal all along",
     "zeusImprisoned": "Aphrodite has imprisoned Zeus with his own lightning",
     "playerRescued": "Athena and Ares have freed the mortal from Aphrodite's necklace",
+    "enchantmentsBroken": "the mortal has broken Aphrodite's three enchantments and reached the throne room",
+    "aphroditeYielded": "Aphrodite has set down the Master Lightning Bolt",
+    "zeusFreed": "the mortal has freed Zeus from his golden cage",
+    "boltReturned": "the mortal has returned the Master Lightning Bolt to Zeus",
 }
 SEAL_NAMES = {"athena": "Seal of Wisdom", "ares": "Seal of Courage", "hades": "Seal of Passage"}
 
@@ -168,6 +173,15 @@ WORLD_FACTS: tuple[Fact, ...] = (
 NPC_FACTS: dict[str, tuple[Fact, ...]] = {
     "aphrodite": (
         Fact(
+            "The mortal has broken your three enchantments and stands before Zeus's throne, where you sit with his "
+            "Master Lightning Bolt across your knees; Zeus is caged beside you. For ages Olympus prized thunder and "
+            "treated love as an ornament, and you wanted, for once, to be obeyed. You are proud, wounded and "
+            "defensive: argue back, and let real doubt show if the mortal's words land. But you never hand over the "
+            "bolt or announce that you give up in conversation: what you finally do is not decided by talking.",
+            min_chapter=5,
+            requires_flags=("enchantmentsBroken",),
+        ),
+        Fact(
             "You told the mortal that Zeus has become dangerous and asked them to take his Master Lightning Bolt. "
             "You urge them to speak to the locals, and later to Athena, Ares and Hades, to win the three seals."
         ),
@@ -226,6 +240,16 @@ NPC_FACTS: dict[str, tuple[Fact, ...]] = {
             "Aphrodite's account of you as dangerous is honest, and you suspect the mortal is being used, but you do "
             "not know every detail and you refuse to tell everything at once.",
             min_chapter=3,
+        ),
+        Fact(
+            "Aphrodite imprisoned you with your own bolt. The mortal broke her charms, won the bolt back, freed you and "
+            "returned it. You have long distrusted mortals: they steal fire, break promises and forget the gods. Now "
+            "you are weighing whether mortals deserve a place on Olympus again. Challenge the mortal's reasons and "
+            "respond to what they actually say, but announce no decision, forgiveness or title in conversation: that "
+            "is not decided by talking.",
+            min_chapter=5,
+            requires_flags=("boltReturned",),
+            never_say=(r"\bguardian of olympus\b",),
         ),
         Fact(
             "You have let the mortal leave with the bolt, with a warning to remember that you told them first.",

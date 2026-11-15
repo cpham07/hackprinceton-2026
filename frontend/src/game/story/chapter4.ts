@@ -13,10 +13,6 @@ import { CH3_FLAGS, MASTER_BOLT } from "./chapter3";
 
 export const CHAPTER_4_TITLE = "Chapter 4: The Betrayal";
 
-/** What comes after Chapter 4. Chapter 5 is not playable yet; only its title is shown. */
-export const CHAPTER_5_TITLE = "Chapter 5: Guardian of Olympus";
-export const CHAPTER_5_TEASER = `${CHAPTER_5_TITLE} — Coming Next`;
-
 export const CH4_FLAGS = {
   chapter4Entered: "chapter4Entered",
   aphroditeConfronted: "aphroditeConfronted",

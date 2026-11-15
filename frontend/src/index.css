@@ -623,3 +623,30 @@ body,
 .dialogue-box:focus {
   outline: none;
 }
+
+/* The ending */
+.ending {
+  background: radial-gradient(circle at 50% 40%, rgba(80, 60, 20, 0.85), rgba(11, 16, 32, 0.92));
+}
+
+.ending-card {
+  max-width: min(680px, calc(100vw - 32px));
+  border-color: #f2c94c;
+  box-shadow: 0 0 60px rgba(242, 201, 76, 0.35);
+}
+
+.ending-card h1 {
+  font-size: 40px;
+}
+
+.ending-summary {
+  margin: 14px auto;
+  padding: 0;
+  list-style: none;
+  color: #f2c94c;
+  font-size: 16px;
+}
+
+.ending-summary li::before {
+  content: "\2726  ";
+}

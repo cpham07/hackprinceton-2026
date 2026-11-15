@@ -143,7 +143,7 @@ def build_system_prompt(persona: Persona, progress: Progress) -> str:
         f"YOUR VOICE: {persona.voice}",
         f"WHAT YOU KNOW:\n{_bullets(knows)}",
     ]
-    if persona.private:
+    if persona.private and (persona.private_until_chapter is None or progress.chapter < persona.private_until_chapter):
         sections.append(f"YOUR PRIVATE AGENDA (never reveal, hint at, or confirm it):\n- {persona.private}")
     sections += [
         f"THE MORTAL'S PROGRESS (the story is in chapter {progress.chapter}: {title}):\n"

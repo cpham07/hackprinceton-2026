@@ -69,6 +69,11 @@ export class Npc extends Phaser.GameObjects.Image implements Interactable {
     this.interactionEnabled = present;
   }
 
+  /** Shows or hides only the glow (e.g. an enchantment that has been broken). */
+  setGlowVisible(visible: boolean): void {
+    this.glow?.setVisible(visible);
+  }
+
   /** Moves the label and glow to follow the image after it has been moved (e.g. by a tween). */
   syncAttachments(): void {
     this.label.x = this.x;

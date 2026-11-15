@@ -2,11 +2,41 @@ import { CHAPTER_1_TITLE, CLUES, getCurrentObjective } from "../game/story/chapt
 import { CHAPTER_2_TITLE, countSeals, getChapter2Objective, hasAllSeals, SEALS } from "../game/story/chapter2";
 import { CHAPTER_3_STEPS, CHAPTER_3_TITLE, getChapter3Objective, MASTER_BOLT } from "../game/story/chapter3";
 import { APHRODITE_NECKLACE, CHAPTER_4_STEPS, CHAPTER_4_TITLE, getChapter4Objective } from "../game/story/chapter4";
+import { CH5_FLAGS, CHAPTER_5_STEPS, CHAPTER_5_TITLE, getChapter5Objective, GUARDIAN_TITLE } from "../game/story/chapter5";
 import { useGameState } from "../hooks/useGameState";
 
 /** Compact HUD: the current chapter's objective, plus clues (Chapter 1) or seals (Chapter 2). */
 export default function QuestTracker() {
   const state = useGameState();
+
+  if (state.chapter >= 5) {
+    const charms = state.flags[CH5_FLAGS.enchantmentsBroken] ? 3 : Math.min(Math.max(state.counters["ch5.enchantmentsBroken"] ?? 0, 0), 3);
+    return (
+      <aside className="quest-tracker" aria-label="Quest tracker">
+        <div className="quest-chapter">{CHAPTER_5_TITLE}</div>
+        <div className="quest-objective">
+          <span className="quest-label">Current objective</span>
+          {getChapter5Objective(state)}
+        </div>
+        <ol className="quest-steps">
+          {CHAPTER_5_STEPS.map((step) => {
+            const done = step.done(state);
+            return (
+              <li key={step.id} className={done ? "step-done" : "step-todo"} data-step={step.id}>
+                <span aria-hidden="true">{done ? "✓" : "○"}</span> {step.label}
+                {step.id === "charms" && !done && ` (${charms}/3)`}
+              </li>
+            );
+          })}
+        </ol>
+        <p className="quest-seals-line">
+          Seals: {countSeals(state)}/{SEALS.length}
+          {state.inventory.includes(MASTER_BOLT) && <span className="quest-item"> · ⚡ Master Lightning Bolt</span>}
+          {state.flags[CH5_FLAGS.guardianOfOlympus] && <span className="quest-item"> · ★ {GUARDIAN_TITLE}</span>}
+        </p>
+      </aside>
+    );
+  }
 
   if (state.chapter >= 4) {
     return (

@@ -5,6 +5,8 @@ import { CHAPTER_2_SCRIPTS } from "./chapter2Dialogue";
 import { CHAPTER_3_SCRIPTS } from "./chapter3Dialogue";
 import { CH4_FLAGS } from "./chapter4";
 import { CHAPTER_4_SCRIPTS } from "./chapter4Dialogue";
+import { CH5_FLAGS } from "./chapter5";
+import { CHAPTER_5_SCRIPTS } from "./chapter5Dialogue";
 
 /**
  * Scripts by interactable id. A character who appears in several chapters gets one
@@ -17,7 +19,8 @@ const SCRIPTS: Record<string, (state: Readonly<GameState>) => Conversation> = {
 };
 
 export function getConversation(id: string, state: Readonly<GameState>): Conversation | null {
-  // Aphrodite, Athena, Ares and Zeus return in Chapter 4 with new scripts once the player has arrived there.
+  // Characters who return in later chapters get that chapter's scripts once the player has arrived there.
+  if (state.flags[CH5_FLAGS.chapter5Entered] === true && CHAPTER_5_SCRIPTS[id]) return CHAPTER_5_SCRIPTS[id](state);
   if (state.flags[CH4_FLAGS.chapter4Entered] === true && CHAPTER_4_SCRIPTS[id]) return CHAPTER_4_SCRIPTS[id](state);
   return SCRIPTS[id]?.(state) ?? null;
 }

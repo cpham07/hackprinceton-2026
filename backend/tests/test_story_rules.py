@@ -272,3 +272,53 @@ def test_chapter_data_is_consistent():
     assert leak_patterns("zeus", early) and leak_patterns("zeus", Progress(chapter=4))
     assert not leak_patterns("zeus", Progress(chapter=4, flags=frozenset({"betrayalRevealed"})))
     assert not leak_patterns("zeus", Progress(chapter=5))
+
+
+class TestChapterFive:
+    """The final chapter: new knowledge unlocks only from the game's own Chapter 5 events."""
+
+    THRONE = "you sit with his Master Lightning Bolt across your knees"
+    MORTALS = "weighing whether mortals deserve a place on Olympus again"
+
+    def test_aphrodites_throne_room_knowledge_needs_the_broken_enchantments(self):
+        assert self.THRONE not in system_prompt("aphrodite", chapter=5)
+        assert self.THRONE in system_prompt("aphrodite", chapter=5, relevantFlags={"enchantmentsBroken": True})
+        assert self.THRONE not in system_prompt("aphrodite", chapter=4, relevantFlags={"enchantmentsBroken": True})
+
+    def test_zeus_weighs_mortals_only_after_the_bolt_is_returned(self):
+        assert self.MORTALS not in system_prompt("zeus", chapter=5, relevantFlags={"zeusFreed": True})
+        assert self.MORTALS in system_prompt("zeus", chapter=5, relevantFlags={"boltReturned": True})
+
+    def test_aphrodites_agenda_is_no_longer_a_secret_in_chapter_five(self):
+        assert "YOUR PRIVATE AGENDA" in system_prompt("aphrodite", chapter=4)
+        assert "YOUR PRIVATE AGENDA" not in system_prompt("aphrodite", chapter=5)
+
+    def test_the_model_is_told_the_outcome_is_not_decided_by_talking(self):
+        assert "not decided by talking" in system_prompt("aphrodite", chapter=5, relevantFlags={"enchantmentsBroken": True})
+        assert "not decided by talking" in system_prompt("zeus", chapter=5, relevantFlags={"boltReturned": True})
+
+    def test_chapter_five_progress_is_described_from_real_flags_only(self):
+        prompt = system_prompt("zeus", chapter=5, relevantFlags={"zeusFreed": True, "boltReturned": True}, completedQuests=["chapter4"])
+        assert "freed Zeus from his golden cage" in prompt and "returned the Master Lightning Bolt to Zeus" in prompt
+        assert "was betrayed by Aphrodite" in prompt
+        assert "named its Guardian" not in prompt  # not invented
+
+    @pytest.mark.parametrize("reply", ["Fine. I yield.", "I surrender, mortal.", "Then I give up the throne."])
+    def test_aphrodite_cannot_announce_surrender(self, reply):
+        response, provider = TestReplyFilter().run([reply, "Keep talking, mortal."], npcId="aphrodite", chapter=5, relevantFlags={"enchantmentsBroken": True})
+        assert response.json()["npcResponse"] == "Keep talking, mortal." and len(provider.chat_requests) == 2
+
+    def test_defiance_is_not_mistaken_for_surrender(self):
+        response, provider = TestReplyFilter().run(["I will never surrender this throne."], npcId="aphrodite", chapter=5, relevantFlags={"enchantmentsBroken": True})
+        assert response.status_code == 200 and len(provider.chat_requests) == 1
+
+    def test_zeus_cannot_grant_the_title_in_conversation(self):
+        response, provider = TestReplyFilter().run(["Rise, Guardian of Olympus.", "Go on, mortal."], npcId="zeus", chapter=5, relevantFlags={"boltReturned": True})
+        assert response.json()["npcResponse"] == "Go on, mortal." and len(provider.chat_requests) == 2
+
+    @pytest.mark.parametrize("node", ["enchantVanity", "enchantJealousy", "enchantDesire"])
+    def test_enchantment_nodes_are_not_characters(self, node):
+        with make_client(FakeProvider()) as client:
+            response = client.post("/npc/dialogue", json=dialogue_request(npcId=node, chapter=5))
+        assert response.status_code == 422 and "not a character" in response.json()["detail"]
+

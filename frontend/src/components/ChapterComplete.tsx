@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { CHAPTER_2_TITLE } from "../game/story/chapter2";
 import { CHAPTER_3_TITLE } from "../game/story/chapter3";
-import { CHAPTER_4_TITLE, CHAPTER_5_TEASER, CHAPTER_5_TITLE } from "../game/story/chapter4";
+import { CHAPTER_4_TITLE } from "../game/story/chapter4";
+import { CHAPTER_5_TITLE } from "../game/story/chapter5";
 
 interface ChapterCompleteProps {
   /**
@@ -9,10 +10,8 @@ interface ChapterCompleteProps {
    * moved on to the next chapter by the time this screen is shown.
    */
   completedChapter: 1 | 2 | 3 | 4;
-  /** Chapters 1 to 3: called once when the player continues, to start the next scene. */
-  onContinue?: () => void;
-  /** Chapter 4: called when the player leaves the Chapter 5 placeholder and goes back to Olympus. */
-  onClose?: () => void;
+  /** Called once when the player continues, to start the next chapter's scene. */
+  onContinue: () => void;
 }
 
 const SCREENS = {
@@ -43,37 +42,15 @@ const SCREENS = {
 } as const;
 
 /** Full-screen transition shown once a chapter is complete, until the player continues. */
-export default function ChapterComplete({ completedChapter, onContinue, onClose }: ChapterCompleteProps) {
+export default function ChapterComplete({ completedChapter, onContinue }: ChapterCompleteProps) {
   const [continuing, setContinuing] = useState(false);
-  const [showPlaceholder, setShowPlaceholder] = useState(false);
   const screen = SCREENS[completedChapter];
 
   const handleContinue = () => {
     if (continuing) return;
     setContinuing(true);
-    if (completedChapter === 4) setShowPlaceholder(true); // Chapter 5 is not playable yet: no scene change.
-    else onContinue?.();
+    onContinue();
   };
-
-  if (showPlaceholder) {
-    return (
-      <div className="chapter-complete" role="dialog" aria-label="Chapter 5 coming next">
-        <div className="chapter-complete-card">
-          <p className="chapter-complete-kicker">The story continues</p>
-          <h1>{CHAPTER_5_TEASER}</h1>
-          <p>With Athena and Ares at your side, you will take Olympus back.</p>
-          <div className="chapter-complete-actions">
-            <button type="button" className="primary" onClick={onClose} autoFocus>
-              Back to Olympus
-            </button>
-            <button type="button" onClick={() => window.location.reload()}>
-              Play again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="chapter-complete" role="dialog" aria-label="Chapter complete">

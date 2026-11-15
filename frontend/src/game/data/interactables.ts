@@ -301,6 +301,57 @@ export const BETRAYAL_INTERACTABLES: Record<string, InteractableDefinition> = {
   },
 };
 
+/**
+ * Chapter 5: the courtyard, Aphrodite's three enchantments, and the throne room. Characters reuse their
+ * ids; the enchantments are objects. The scene shows, hides and moves things as the story unfolds.
+ */
+export const BATTLE_INTERACTABLES: Record<string, InteractableDefinition> = {
+  athena: { id: "athena", name: "Athena", textureKey: "npc-athena", x: 480, displaySize: { width: 78, height: 140 }, interactionRadius: 130, prompt: TALK },
+  ares: { id: "ares", name: "Ares", textureKey: "npc-ares", x: 610, displaySize: { width: 84, height: 146 }, interactionRadius: 110, prompt: TALK },
+  enchantDesire: {
+    id: "enchantDesire",
+    name: "III \u00b7 Desire",
+    textureKey: "enchant-node",
+    x: 950,
+    displaySize: { width: 70, height: 130 },
+    interactionRadius: 100,
+    prompt: "Press E to break the enchantment",
+    glowColor: 0xff7ad9,
+  },
+  enchantVanity: {
+    id: "enchantVanity",
+    name: "I \u00b7 Vanity",
+    textureKey: "enchant-node",
+    x: 1150,
+    displaySize: { width: 70, height: 130 },
+    interactionRadius: 100,
+    prompt: "Press E to break the enchantment",
+    glowColor: 0xff7ad9,
+  },
+  enchantJealousy: {
+    id: "enchantJealousy",
+    name: "II \u00b7 Jealousy",
+    textureKey: "enchant-node",
+    x: 1350,
+    displaySize: { width: 70, height: 130 },
+    interactionRadius: 100,
+    prompt: "Press E to break the enchantment",
+    glowColor: 0xff7ad9,
+  },
+  aphrodite: { id: "aphrodite", name: "Aphrodite", textureKey: "npc-aphrodite", x: 2700, displaySize: { width: 72, height: 132 }, interactionRadius: 160, prompt: TALK },
+  masterBolt: {
+    id: "masterBolt",
+    name: "Master Lightning Bolt",
+    textureKey: "master-bolt",
+    x: 2520,
+    displaySize: { width: 60, height: 120 },
+    interactionRadius: 100,
+    prompt: "Press E to take the Master Lightning Bolt",
+    glowColor: 0xffe066,
+  },
+  zeus: { id: "zeus", name: "Zeus", textureKey: "npc-zeus", x: 3000, displaySize: { width: 110, height: 200 }, interactionRadius: 160, prompt: TALK },
+};
+
 /** Every interactable by id, for lookups that don't care which scene it is in. */
 export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...ENTRANCE_INTERACTABLES,
@@ -309,4 +360,5 @@ export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...HADES_INTERACTABLES,
   ...PALACE_INTERACTABLES,
   ...BETRAYAL_INTERACTABLES,
+  ...BATTLE_INTERACTABLES,
 };

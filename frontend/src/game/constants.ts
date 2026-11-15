@@ -10,5 +10,6 @@ export const SCENES = {
   hades: "HadesChamber",
   palace: "ZeusPalace",
   betrayal: "OlympusBetrayal",
+  battle: "BattleForOlympus",
 } as const;
 export type SceneKey = (typeof SCENES)[keyof typeof SCENES];
