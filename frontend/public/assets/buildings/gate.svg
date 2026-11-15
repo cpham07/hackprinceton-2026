@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="480" viewBox="0 0 360 480">
+  <!-- The gate to Olympus (Chapter 1), shut. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- steps -->
+    <path d="M0 450 L360 450 L360 480 L0 480 Z" fill="#f1e4cc"/>
+    <path d="M10 462 L350 462" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M80 140 L180 140 L180 450 L80 450 Z" fill="#e0b04a"/>
+    <path d="M180 140 L280 140 L280 450 L180 450 Z" fill="#e0b04a"/>
+    <path d="M250 146 L276 146 L276 446 L250 446 Z" fill="#c8923a" stroke="none"/>
+    <path d="M96 160 L164 160 L164 290 L96 290 Z M196 160 L264 160 L264 290 L196 290 Z M96 310 L164 310 L164 432 L96 432 Z M196 310 L264 310 L264 432 L196 432 Z" fill="none" stroke="#a8742a" stroke-width="3"/>
+    <circle cx="168" cy="300" r="6" fill="#a8742a"/><circle cx="192" cy="300" r="6" fill="#a8742a"/>
+    <path d="M185.2 186.0 L164.4 230.2 L180.0 230.2 L172.2 264.0 L198.2 217.2 L182.6 217.2 Z" fill="#fff1c9" stroke-width="2.5"/>
+    <path d="M14 126 L86 126 L86 140 L14 140 Z" fill="#f1e4cc"/>
+    <path d="M22 140 L78 140 L78 440 L22 440 Z" fill="#f1e4cc"/>
+    <path d="M62.3 141 L76.5 141 L76.5 439 L62.3 439 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M27 146 L27 434" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M16 440 L84 440 L86 452 L14 452 Z" fill="#f1e4cc"/>
+    <path d="M36.0 146 L36.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M50.0 146 L50.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M64.0 146 L64.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M274 126 L346 126 L346 140 L274 140 Z" fill="#f1e4cc"/>
+    <path d="M282 140 L338 140 L338 440 L282 440 Z" fill="#f1e4cc"/>
+    <path d="M322.3 141 L336.5 141 L336.5 439 L322.3 439 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M287 146 L287 434" fill="none" stroke="#fffaf0" stroke-width="4"/>
+    <path d="M276 440 L344 440 L346 452 L274 452 Z" fill="#f1e4cc"/>
+    <path d="M296.0 146 L296.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M310.0 146 L310.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <path d="M324.0 146 L324.0 434" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <!-- entablature with a meander band -->
+    <path d="M0 104 L360 104 L360 128 L0 128 Z" fill="#f1e4cc"/>
+    <path d="M10 116 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0 l0 6 l10 0 l0 -6 l10 0" fill="none" stroke="#a8742a" stroke-width="2"/>
+    <!-- pediment -->
+    <path d="M-2 106 L180 8 L362 106 Z" fill="#f1e4cc"/>
+    <path d="M36 96 L180 24 L324 96 Z" fill="#e7d6b8"/>
+    <path d="M250 62 L324 96 L288 96 Z" fill="#d6bf9b" stroke="none"/>
+    <circle cx="180" cy="70" r="20" fill="#e0b04a"/>
+    <path d="M182.4 52.0 L172.8 72.4 L180.0 72.4 L176.4 88.0 L188.4 66.4 L181.2 66.4 Z" fill="#fff1c9" stroke-width="2.5"/>
+  </g>
+</svg>
