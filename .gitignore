@@ -68,6 +68,7 @@ recording.wav
 backend/ml/data/
 backend/ml/results/
 backend/ml/checkpoints/
+backend/ml/models/
 # Voice recordings anywhere under backend/ml (scoped so game audio assets are unaffected)
 backend/ml/**/*.m4a
 backend/ml/**/*.wav

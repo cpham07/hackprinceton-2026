@@ -32,6 +32,7 @@ SCHEMA_VERSION = 1
 
 class Measurement(str, Enum):
     REAL = "real_provider"
+    LOCAL = "local_model"  # a model running on this machine (ml.local_asr), no provider calls
     MOCK = "mock"
 
 
@@ -95,7 +96,10 @@ async def run_benchmark(
             try:
                 hypothesis = await transcriber(audio, audio_format, mode)
             except ServiceError as exc:
-                result.outcomes[mode] = ModeOutcome(mode, False, error=f"{exc.status_code}: {exc.detail}")
+                error = f"{exc.status_code}: {exc.detail}"
+                if exc.diagnostic:  # sanitized provider explanation; kept in the local report only
+                    error += f" [provider: {exc.diagnostic}]"
+                result.outcomes[mode] = ModeOutcome(mode, False, error=error)
                 logger.warning("utterance %s mode=%s failed status=%d", utterance.id, mode.value, exc.status_code)
                 continue
             except Exception as exc:  # noqa: BLE001 - one bad call must not lose the whole run
@@ -206,14 +210,26 @@ def build_report(
     results: Sequence[UtteranceResult],
     *,
     measurement: Measurement,
-    settings: Settings,
+    settings: Settings | None,
     split: str,
     manifest_path: Path,
     hint: str | None = None,
     modes: Sequence[Mode] = ALL_MODES,
     include_transcripts: bool = False,
+    provider: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """The machine-readable result. `measurement` has no default so no caller can forget to label a mock run."""
+    """The machine-readable result. `measurement` has no default so no caller can forget to label a mock run.
+
+    `provider` describes a non-hosted transcriber (keys: model, host, language); by default it comes from `settings`.
+    """
+    if provider is None:
+        if settings is None:
+            raise ValueError("build_report needs settings or an explicit provider description")
+        provider = {
+            "model": settings.transcription_model,
+            "host": urlparse(settings.transcription_credentials[1]).hostname,
+            "language": settings.transcription_language,
+        }
     hint = hint if hint is not None else hint_prompt()
     utterances = []
     for r in results:
@@ -249,11 +265,7 @@ def build_report(
     report.update(
         created_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         manifest={"file": manifest_path.name, "sha256": file_sha256(manifest_path), "split": split},
-        provider={
-            "model": settings.transcription_model,
-            "host": urlparse(settings.transcription_credentials[1]).hostname,
-            "language": settings.transcription_language,
-        },
+        provider=provider,
         modes={mode.value: {"prompt": prompt_for(mode, hint)} for mode in modes},
         vocabulary=[term.canonical for term in MYTHOLOGY_TERMS],
         transcripts_included=include_transcripts,
@@ -277,13 +289,16 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines = [f"# ASR benchmark: {report['manifest']['split']} split", ""]
     if report["measurement"] == Measurement.MOCK.value:
         lines += [f"> **{report['warning']}**", ""]
+    elif report["measurement"] == Measurement.LOCAL.value:
+        lines += ["Local model measurement (no provider calls).", ""]
     else:
         lines += ["Real provider measurement.", ""]
     lines += [
         f"- Model: `{report['provider']['model']}` at `{report['provider']['host']}`, language `{report['provider']['language']}`",
         f"- Manifest: `{report['manifest']['file']}` (sha256 {report['manifest']['sha256'][:12]}), created {report['created_at']}",
         f"- Utterances: {s['utterances_total']} ({s['audio_missing']} audio missing, {s['invalid_audio']} invalid audio)",
-        f"- Hint prompt: `{report['modes'].get(Mode.MYTHOLOGY_HINTS.value, {}).get('prompt')}`",
+        *([f"- Hint prompt: `{report['modes'][Mode.MYTHOLOGY_HINTS.value]['prompt']}`"]
+          if Mode.MYTHOLOGY_HINTS.value in report["modes"] else ["- Prompt: none"]),
         "",
         "## All successful calls per mode",
         "",

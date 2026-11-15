@@ -141,6 +141,32 @@ def test_a_failed_request_fails_only_that_mode_and_leaves_the_pair(tmp_path):
     assert summary["paired_comparison"]["paired_utterances"] == 2
 
 
+def test_m4a_recordings_are_sent_as_m4a_not_mp4(tmp_path):
+    """Regression: MacBook .m4a files went out as recording.mp4 and the provider answered 400 'Invalid file format'."""
+    from helpers import M4A
+
+    audio = tmp_path / "recordings" / "01.m4a"
+    audio.parent.mkdir()
+    audio.write_bytes(M4A)
+    manifest = tmp_path / "manifest.jsonl"
+    manifest.write_text(json.dumps({"id": "c-01", "audio_path": "recordings/01.m4a", "transcript": "Zeus.",
+                                    "speaker_id": "c", "split": "dev"}) + "\n")
+    provider = FakeProvider()
+    results = run(manifest, provider)
+    assert results[0].status == "ok" and len(provider.transcription_requests) == 2
+    for request in provider.transcription_requests:
+        assert b'filename="recording.m4a"' in request.content and b'filename="recording.mp4"' not in request.content
+        assert M4A in request.content  # the bytes are sent unchanged
+
+
+def test_provider_error_explanation_is_recorded_in_the_report(tmp_path):
+    provider = FakeProvider()
+    provider.always(400, json={"error": {"message": "Invalid file format.", "type": "invalid_request_error"}})
+    results = run(make_dataset(tmp_path, ids=("u1",)), provider)
+    error = results[0].outcomes[Mode.BASELINE].error
+    assert error == "502: The speech recognition provider returned an error (400). [provider: type=invalid_request_error; Invalid file format.]"
+
+
 def test_unexpected_exceptions_are_contained(tmp_path):
     provider = FakeProvider()
     provider.fail_with(RuntimeError("boom"))

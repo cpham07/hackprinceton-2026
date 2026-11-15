@@ -7,6 +7,7 @@ audio and player text are never put in a message or a log line (only status code
 from __future__ import annotations
 
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -15,15 +16,52 @@ from errors import ServiceError
 
 logger = logging.getLogger("backend.provider")
 
+_IDENTIFIER = re.compile(r"^[A-Za-z0-9_.\-]{1,64}$")
+_SECRETS = re.compile(r"(sk-[A-Za-z0-9_\-*]{4,}|Bearer\s+\S+|[A-Za-z0-9_\-]{40,})")
+_MAX_MESSAGE = 200
 
-def _status_error(status: int, service: str) -> ServiceError:
+
+def _identifier(value: Any) -> str | None:
+    """A provider error type/code/param, only if it is a short plain identifier."""
+    return value if isinstance(value, str) and _IDENTIFIER.match(value) else None
+
+
+def provider_error_fields(response: httpx.Response) -> dict[str, str]:
+    """Sanitized fields of an OpenAI-style error body: {"error": {"type", "code", "param", "message"}}.
+
+    Identifiers are kept only if they are plain short tokens. The message has anything that looks like a key or
+    token redacted, whitespace collapsed and is truncated. Anything else in the body is ignored.
+    """
+    try:
+        body = response.json()
+    except ValueError:
+        return {}
+    error = body.get("error") if isinstance(body, dict) else None
+    if not isinstance(error, dict):
+        return {}
+    fields = {name: v for name in ("type", "code", "param") if (v := _identifier(error.get(name)))}
+    message = error.get("message")
+    if isinstance(message, str) and message.strip():
+        cleaned = " ".join(_SECRETS.sub("[redacted]", message).split())
+        fields["message"] = cleaned[:_MAX_MESSAGE] + ("…" if len(cleaned) > _MAX_MESSAGE else "")
+    return fields
+
+
+def _diagnostic(fields: dict[str, str]) -> str | None:
+    if not fields:
+        return None
+    ids = " ".join(f"{name}={fields[name]}" for name in ("type", "code", "param") if name in fields)
+    return "; ".join(part for part in (ids, fields.get("message")) if part)
+
+
+def _status_error(status: int, service: str, diagnostic: str | None = None) -> ServiceError:
     if status == 429:
-        return ServiceError(503, f"The {service} provider is busy. Please try again shortly.", {"Retry-After": "5"})
+        return ServiceError(503, f"The {service} provider is busy. Please try again shortly.", {"Retry-After": "5"}, diagnostic)
     if status in (401, 403):
-        return ServiceError(502, f"The {service} provider rejected the server's credentials.")
+        return ServiceError(502, f"The {service} provider rejected the server's credentials.", diagnostic=diagnostic)
     if status == 404:
-        return ServiceError(502, f"The {service} provider could not find the configured model or endpoint.")
-    return ServiceError(502, f"The {service} provider returned an error ({status}).")
+        return ServiceError(502, f"The {service} provider could not find the configured model or endpoint.", diagnostic=diagnostic)
+    return ServiceError(502, f"The {service} provider returned an error ({status}).", diagnostic=diagnostic)
 
 
 async def post_json_to_provider(
@@ -53,8 +91,13 @@ async def post_json_to_provider(
         raise ServiceError(502, f"Could not reach the {service} provider.") from None
 
     if response.status_code >= 400:
-        logger.warning("%s provider returned HTTP %d", service, response.status_code)
-        raise _status_error(response.status_code, service)
+        fields = provider_error_fields(response)
+        # Identifiers only: the (already sanitized) message stays out of the logs.
+        logger.warning(
+            "%s provider returned HTTP %d type=%s code=%s param=%s",
+            service, response.status_code, fields.get("type"), fields.get("code"), fields.get("param"),
+        )
+        raise _status_error(response.status_code, service, _diagnostic(fields))
 
     try:
         data = response.json()

@@ -86,6 +86,26 @@ backend/ml/data/manifest.jsonl
 backend/ml/data/recordings/p01/dev-001.webm
 ```
 
+## Local pretrained Whisper (M3)
+
+An unmodified local checkpoint as a second transcriber, scored by the same code (`ml.evaluate`, baseline mode only,
+no prompt). Not used by `/transcribe`.
+
+```bash
+pip install -r requirements-ml.txt            # torch 2.15.0 + transformers 5.23.0 (~1 GB in .venv)
+python -m ml.local_benchmark --manifest ml/data/manifest.jsonl --limit 1              # smoke test; first run downloads ~290 MB
+python -m ml.local_benchmark --manifest ml/data/manifest.jsonl --offline --include-transcripts   # 60 dev recordings
+python -m ml.local_benchmark --manifest ml/data/manifest.jsonl --offline --device cpu  # same model on CPU
+```
+
+- Models: `openai/whisper-base.en` (default) or `openai/whisper-tiny.en`, each pinned to a commit in `ml/local_asr.py`
+  (`PINNED_REVISIONS`). Only `model.safetensors` and config/tokenizer files are downloaded, into `ml/models/` (git-ignored).
+- `--device auto` uses PyTorch MPS when available. The report records where the weights actually were (`mps:0` or `cpu`).
+- Audio is decoded with macOS `afconvert` to 16 kHz mono (no ffmpeg); recordings are never modified.
+- Greedy decoding. One untimed warm-up transcription precedes the run (`--warmup`). The report's `local_model` section has
+  model-only latency; the summary latency also includes audio decoding.
+- `--speakers charles xin` restricts the run. The test split needs `--allow-test-split`, as in the hosted benchmark.
+
 ## Metrics
 
 - **WER**: word-level Levenshtein, (S + D + I) / reference words, after normalization (case, punctuation, accents and
