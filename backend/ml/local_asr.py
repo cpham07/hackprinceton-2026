@@ -105,8 +105,55 @@ class LocalModelInfo:
         }
 
 
+def load_pretrained(
+    model_id: str = DEFAULT_MODEL,
+    *,
+    device: str = "auto",
+    cache_dir: Path = MODELS_DIR,
+    offline: bool = False,
+) -> tuple[Any, Any, LocalModelInfo, Path]:
+    """The pinned checkpoint, unchanged: (processor, model in eval mode on the device, info, snapshot folder).
+
+    The single loading path for local inference and for adaptation (ml.adaptation), so both use the same weights,
+    tokenizer, feature extractor, dtype and device selection.
+    """
+    import torch
+    from huggingface_hub import snapshot_download
+    from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
+    if model_id not in PINNED_REVISIONS:
+        raise LocalASRError(f"unknown model {model_id!r}; pinned: {', '.join(PINNED_REVISIONS)}")
+    os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+    started = time.perf_counter()
+    path = Path(snapshot_download(
+        model_id,
+        revision=PINNED_REVISIONS[model_id],
+        cache_dir=cache_dir,
+        allow_patterns=CHECKPOINT_FILES,
+        local_files_only=offline,
+    ))
+    target = pick_device(device)
+    processor = WhisperProcessor.from_pretrained(path)
+    model = WhisperForConditionalGeneration.from_pretrained(path, dtype=torch.float32).to(target).eval()
+    first = next(model.parameters())
+    info = LocalModelInfo(
+        model_id=model_id,
+        revision=PINNED_REVISIONS[model_id],
+        device=str(first.device),
+        dtype=str(first.dtype).removeprefix("torch."),
+        parameters=sum(p.numel() for p in model.parameters()),
+        weights_bytes=(path / "model.safetensors").stat().st_size,
+        load_seconds=time.perf_counter() - started,
+    )
+    return processor, model, info, path
+
+
 class LocalWhisperTranscriber:
-    """A `Transcriber` (see ml.asr) backed by an unmodified local Whisper checkpoint. Baseline mode only."""
+    """A `Transcriber` (see ml.asr) backed by a local Whisper checkpoint. Baseline mode (no prompt) only.
+
+    Built from the pinned checkpoint by default; `from_loaded` wraps an already loaded model (for example the same
+    checkpoint with an adapter, see ml.adaptation) so every condition is decoded by exactly the same code.
+    """
 
     def __init__(
         self,
@@ -116,45 +163,33 @@ class LocalWhisperTranscriber:
         cache_dir: Path = MODELS_DIR,
         offline: bool = False,
     ) -> None:
-        import torch
-        from huggingface_hub import snapshot_download
-        from transformers import WhisperForConditionalGeneration, WhisperProcessor
+        processor, model, info, _ = load_pretrained(model_id, device=device, cache_dir=cache_dir, offline=offline)
+        self._init(processor, model, info)
 
-        if model_id not in PINNED_REVISIONS:
-            raise LocalASRError(f"unknown model {model_id!r}; pinned: {', '.join(PINNED_REVISIONS)}")
-        os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
-        started = time.perf_counter()
-        path = Path(snapshot_download(
-            model_id,
-            revision=PINNED_REVISIONS[model_id],
-            cache_dir=cache_dir,
-            allow_patterns=CHECKPOINT_FILES,
-            local_files_only=offline,
-        ))
-        target = pick_device(device)
+    @classmethod
+    def from_loaded(cls, processor: Any, model: Any, info: Any) -> "LocalWhisperTranscriber":
+        transcriber = cls.__new__(cls)
+        transcriber._init(processor, model, info)
+        return transcriber
+
+    def _init(self, processor: Any, model: Any, info: Any) -> None:
+        import torch
+
         self._torch = torch
-        self.processor = WhisperProcessor.from_pretrained(path)
-        self.model = WhisperForConditionalGeneration.from_pretrained(path, dtype=torch.float32).to(target).eval()
-        first = next(self.model.parameters())
-        self.info = LocalModelInfo(
-            model_id=model_id,
-            revision=PINNED_REVISIONS[model_id],
-            device=str(first.device),
-            dtype=str(first.dtype).removeprefix("torch."),
-            parameters=sum(p.numel() for p in self.model.parameters()),
-            weights_bytes=(path / "model.safetensors").stat().st_size,
-            load_seconds=time.perf_counter() - started,
-        )
+        self.processor = processor
+        self.model = model
+        self.info = info
         self.inference_ms: list[float] = []  # model time only (features + generate), excludes audio decoding
 
     def transcribe_samples(self, samples: Any) -> str:
         torch = self._torch
-        device = self.model.device
+        device = next(self.model.parameters()).device
         inputs = self.processor(samples, sampling_rate=SAMPLE_RATE, return_tensors="pt", return_attention_mask=True)
         started = time.perf_counter()
+        self.model.eval()
         with torch.inference_mode():
             ids = self.model.generate(
-                inputs.input_features.to(device),
+                input_features=inputs.input_features.to(device),
                 attention_mask=inputs.attention_mask.to(device),
                 num_beams=1,
                 do_sample=False,

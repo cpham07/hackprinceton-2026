@@ -106,6 +106,32 @@ python -m ml.local_benchmark --manifest ml/data/manifest.jsonl --offline --devic
   model-only latency; the summary latency also includes audio decoding.
 - `--speakers charles xin` restricts the run. The test split needs `--allow-test-split`, as in the hosted benchmark.
 
+## Speaker adaptation with LoRA (M4, experimental)
+
+`ml/adaptation/` trains a LoRA adapter for one speaker on top of the frozen, pinned local checkpoint, then compares the
+base model with base + adapter through the same transcriber (`LocalWhisperTranscriber.transcribe_samples`) and the same
+scoring (`run_benchmark` / `summarize`). Needs `pip install -r requirements-ml.txt` (adds `peft`).
+
+```bash
+python -m ml.adaptation.train --speaker xin --run-name smoke-xin --max-steps 2 --no-compare    # smoke test
+python -m ml.adaptation.train --speaker xin --run-name pilot-xin --include-transcripts         # train + compare
+python -m ml.adaptation.compare --run ml/checkpoints/pilot-xin                                 # re-run the comparison
+pytest tests/test_ml_adaptation.py
+```
+
+- Only the dev split is loaded. The speaker's 20 dev sentences are split by sentence number (seeded, stratified by
+  whether a sentence has a mythology name) into 14 train / 6 validation. The other-speaker check uses the other speakers'
+  recordings of the same 6 held-out sentences.
+- Configuration (`ml/adaptation/config.py`, fixed before any validation result): LoRA r=8, alpha 16, dropout 0.1 on
+  `q_proj`/`v_proj` of every attention block (294,912 trainable parameters), AdamW lr 5e-4, batch 4, 10 epochs, 4 warm-up
+  steps then linear decay, gradient clipping at 1.0, fp32, seed 1234. The final epoch is the reported adapter.
+- Labels are `<|notimestamps|> text <|endoftext|>` with a leading space, as the checkpoint itself emits; padding is
+  `-100`. Audio is decoded in memory exactly as for inference and never written.
+- Runs go to `ml/checkpoints/<run-name>/` (git-ignored, never overwritten): the adapter, plus `run.json` with the base
+  revision, the sha256 of the base weights (checked before an adapter is loaded), the split ids, the loss history and
+  library versions. Comparisons go to `ml/results/adaptation-<run-name>/`.
+- The references are still the unverified script text, so every adaptation result is provisional.
+
 ## Metrics
 
 - **WER**: word-level Levenshtein, (S + D + I) / reference words, after normalization (case, punctuation, accents and

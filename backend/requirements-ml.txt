@@ -3,3 +3,4 @@
 -r requirements-dev.txt
 torch==2.15.0
 transformers==5.23.0
+peft==0.21.3
