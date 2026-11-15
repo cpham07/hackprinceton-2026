@@ -3,6 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { EventBus } from "../EventBus";
 import { BETRAYAL_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
+import { addBackground, BACKGROUNDS, preloadBackground } from "../graphics/backgrounds";
 import { GOD_SCALE, HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { getGameState, hasItem, subscribe } from "../state/gameState";
@@ -69,6 +70,11 @@ export class OlympusBetrayal extends GameplayScene {
     super(SCENES.betrayal);
   }
 
+  preload(): void {
+    super.preload();
+    preloadBackground(this, BACKGROUNDS.palace);
+  }
+
   create(): void {
     createPlaceholderTextures(this);
     this.zeusShown = false;
@@ -82,6 +88,8 @@ export class OlympusBetrayal extends GameplayScene {
 
     this.buildBackdrop();
     const ground = this.buildGround();
+    // The painting has its own paved walkway; the strip stays as the (invisible) floor the player stands on.
+    if (this.textures.exists(BACKGROUNDS.palace.key)) ground.setVisible(false);
     this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: START_X, ground });
 
     for (const def of Object.values(BETRAYAL_INTERACTABLES)) {
@@ -292,19 +300,27 @@ export class OlympusBetrayal extends GameplayScene {
   }
 
   private buildBackdrop(): void {
-    this.add
-      .image(0, 0, TEXTURES.skyOlympus)
-      .setOrigin(0)
-      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-      .setScrollFactor(0)
-      .setTint(0x9a8cc4); // a dusky, wrong-feeling sky
-    for (const [x, y, scale] of [[200, 120, 1.2], [700, 200, 0.9], [1300, 110, 1.1], [1800, 210, 1.3]] as const) {
-      this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3).setAlpha(0.55).setTint(0xb7a9d6);
+    // Zeus's palace terrace, faintly tinted lavender: the betrayal should feel a little wrong.
+    const painted = addBackground(this, BACKGROUNDS.palace, { worldWidth: WORLD_WIDTH, groundY: GROUND_Y });
+    if (painted) {
+      painted.setTint(0xe6def5);
+    } else {
+      // Placeholder dusky sky, temple, fountain and columns, used if the painting failed to load.
+      this.add
+        .image(0, 0, TEXTURES.skyOlympus)
+        .setOrigin(0)
+        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+        .setScrollFactor(0)
+        .setTint(0x9a8cc4); // a dusky, wrong-feeling sky
+      for (const [x, y, scale] of [[200, 120, 1.2], [700, 200, 0.9], [1300, 110, 1.1], [1800, 210, 1.3]] as const) {
+        this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3).setAlpha(0.55).setTint(0xb7a9d6);
+      }
+      this.add.image(1500, GROUND_Y, TEXTURES.temple).setOrigin(0.5, 1).setDisplaySize(680, 460).setTint(0xd8d0ec);
+      this.add.image(1250, GROUND_Y, TEXTURES.fountain).setOrigin(0.5, 1).setTint(0xd8d0ec);
+      for (const x of [780, 1880]) this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1).setTint(0xd8d0ec);
     }
+    // The palace gates the player has just walked out of.
     this.add.image(PALACE_X, GROUND_Y, TEXTURES.palaceOpen).setOrigin(0.5, 1).setDisplaySize(260, 370);
-    this.add.image(1500, GROUND_Y, TEXTURES.temple).setOrigin(0.5, 1).setDisplaySize(680, 460).setTint(0xd8d0ec);
-    this.add.image(1250, GROUND_Y, TEXTURES.fountain).setOrigin(0.5, 1).setTint(0xd8d0ec);
-    for (const x of [780, 1880]) this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1).setTint(0xd8d0ec);
     this.add
       .text(GAME_WIDTH / 2 + 170, 80, "The Steps of Zeus's Palace", {
         fontFamily: "Georgia, serif",

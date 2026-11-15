@@ -20,14 +20,15 @@ export interface BackgroundArt {
 }
 
 export const BACKGROUNDS = {
-  // Chapter 1, the road up to Olympus. 1672x941: grassy hills, a waterfall and a stone path whose front
-  // edge is at y ~835, with rocks in the foreground below it.
+  // Chapter 1, the road up to Olympus. 1672x941: grassy hills, a waterfall and a stone path (y ~705 to
+  // ~835) with rocks in the foreground. The ground line runs along the middle of the path (y 790), so the
+  // characters stand ON the path with paving in front of their feet, not on its front edge.
   chapter1: {
     key: "bg-chapter1",
     path: "assets/backgrounds/chapter1_bg.webp",
     width: 1672,
     height: 941,
-    floorEdgeY: 835,
+    floorEdgeY: 790,
     parallax: 0.1,
   },
   // Chapter 2, inside Olympus (the hub). 1672x941. Painted floor runs from y 586 to its front edge at
@@ -40,14 +41,15 @@ export const BACKGROUNDS = {
     floorEdgeY: 777,
     parallax: 0.1,
   },
-  // Chapter 3, Zeus's palace. 1672x941: arches with banners over a sky view; the walkway between the
-  // two gold lines has its front edge at y ~770, with the palace wall below it.
+  // Zeus's palace (Chapter 3 inside, Chapter 4 on its steps). 1672x941: arches with banners over a sky
+  // view; a terrace with chests, then a paved walkway between two gold lines (y ~645 to ~770) and the
+  // palace wall below. The ground line runs inside the walkway (y 750), so the paving shows under the feet.
   palace: {
     key: "bg-zeus-palace",
-    path: "assets/backgrounds/zeus_palace_bg.png",
+    path: "assets/backgrounds/zeus_palace_bg.webp",
     width: 1672,
     height: 941,
-    floorEdgeY: 770,
+    floorEdgeY: 750,
     parallax: 0.1,
   },
   // Ares's training arena. 1672x941 SVG (hand-authored, editable): tiered stands with a crowd, banners and

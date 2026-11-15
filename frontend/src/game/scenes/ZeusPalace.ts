@@ -66,6 +66,8 @@ export class ZeusPalace extends GameplayScene {
     this.statues.clear();
     this.buildBackdrop();
     const ground = this.buildGround();
+    // The painting has its own paved walkway; the strip stays as the (invisible) floor the player stands on.
+    if (this.textures.exists(BACKGROUNDS.palace.key)) ground.setVisible(false);
     this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: START_X, ground });
 
     this.passageBarrier = this.addBarrier(PASSAGE_X);
