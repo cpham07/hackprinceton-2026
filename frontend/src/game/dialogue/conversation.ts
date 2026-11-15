@@ -27,6 +27,12 @@ export interface ReplyResult {
   step: DialogueStep;
   /** The conversation has nothing further to respond to. */
   ended: boolean;
+  /**
+   * True when the script has nothing left to say and this is only its filler line. That is the one
+   * place a conversational backend may answer instead. Scripted steps, which carry story actions,
+   * and passphrase checks are never freeform.
+   */
+  freeform: boolean;
 }
 
 /**
@@ -43,10 +49,10 @@ export function getReply(
   if (conversation.passphrase) {
     const { phrase, success, failure } = conversation.passphrase;
     return containsPhrase(response.text, phrase)
-      ? { step: success, ended: true }
-      : { step: { text: failure }, ended: false };
+      ? { step: success, ended: true, freeform: false }
+      : { step: { text: failure }, ended: false, freeform: false };
   }
   const scripted = conversation.replies?.[repliesGiven];
-  if (scripted) return { step: scripted, ended: false };
-  return { step: { text: conversation.fallback ?? "..." }, ended: false };
+  if (scripted) return { step: scripted, ended: false, freeform: false };
+  return { step: { text: conversation.fallback ?? "..." }, ended: false, freeform: true };
 }

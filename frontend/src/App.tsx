@@ -3,6 +3,7 @@ import ChallengeComplete from "./components/ChallengeComplete";
 import ChapterComplete from "./components/ChapterComplete";
 import ClueToast from "./components/ClueToast";
 import SealToast from "./components/SealToast";
+import DevToolsPanel from "./components/DevToolsPanel";
 import DialogueBox from "./components/DialogueBox";
 import GameCanvas from "./components/GameCanvas";
 import QuestTracker from "./components/QuestTracker";
@@ -10,6 +11,7 @@ import SymbolPuzzle from "./components/SymbolPuzzle";
 import { SCENES, type SceneKey } from "./game/constants";
 import { EventBus } from "./game/EventBus";
 import { INTERACTABLES } from "./game/data/interactables";
+import { AI_ACTION_POLICY, AI_ELIGIBLE_NPCS, isAiEligible, type AiMode } from "./game/dialogue/aiPolicy";
 import { getReply, type Conversation } from "./game/dialogue/conversation";
 import { isCorrectSequence, shuffledStart } from "./game/puzzles/sequencePuzzle";
 import { PUZZLES } from "./game/puzzles/wisdomPuzzle";
@@ -19,11 +21,16 @@ import { FLAGS } from "./game/story/chapter1";
 import { CH2_FLAGS, CHALLENGES } from "./game/story/chapter2";
 import { CH3_FLAGS } from "./game/story/chapter3";
 import { getConversation } from "./game/story/conversations";
-import type { DialogueLine, PlayerResponse } from "./game/types/dialogue";
+import type { DialogueLine, InputMethod, PlayerResponse } from "./game/types/dialogue";
 import { useCompletionScreen } from "./hooks/useCompletionScreen";
 import { useGameState } from "./hooks/useGameState";
+import { useNpcDialogue } from "./hooks/useNpcDialogue";
+import { buildNpcDialogueRequest, type ConversationTurn } from "./services/npc/contract";
+import { validateProposedAction } from "./services/npc/proposedAction";
 
 interface DialogueSession {
+  /** Unique per opened dialogue. A reply that arrives for an older session is ignored. */
+  id: number;
   npcId: string;
   conversation: Conversation;
   lines: DialogueLine[];
@@ -31,7 +38,11 @@ interface DialogueSession {
   repliesGiven: number;
   /** Nothing further to answer; the input is hidden. */
   ended: boolean;
+  /** An NPC reply is being fetched: further submissions are blocked until it arrives. */
+  pending: boolean;
 }
+
+let nextSessionId = 1;
 
 export default function App() {
   const [session, setSessionState] = useState<DialogueSession | null>(null);
@@ -41,6 +52,17 @@ export default function App() {
     sessionRef.current = next;
     setSessionState(next);
   }, []);
+
+  // How free conversation with AI-enabled characters is answered. Development builds can pick the
+  // simulated mode in the dev panel; production always uses the backend, and a failing backend is
+  // reported, never swapped for simulated replies.
+  const [aiMode, setAiMode] = useState<AiMode>("backend");
+  const aiModeRef = useRef(aiMode);
+  aiModeRef.current = aiMode;
+  const npcAi = useNpcDialogue({ useMock: aiMode === "mock" });
+  const askRef = useRef(npcAi.ask);
+  askRef.current = npcAi.ask;
+  const cancelNpcRequest = npcAi.cancel;
 
   // The open puzzle, and each puzzle's current arrangement (kept while the page lives,
   // so closing a puzzle does not lose progress). Whether it is solved comes from the game state.
@@ -92,15 +114,18 @@ export default function App() {
       if (!conversation) return;
       // The opening line is shown now, so its story actions apply now.
       applyStoryActions(conversation.opening.actions);
+      cancelNpcRequest(); // nothing from an earlier conversation may land in this one
       setSession({
+        id: nextSessionId++,
         npcId,
         conversation,
-        lines: [{ speaker: "npc", text: conversation.opening.text }],
+        lines: [{ speaker: "npc", text: conversation.opening.text, source: "scripted" }],
         repliesGiven: 0,
         ended: conversation.readOnly === true,
+        pending: false,
       });
     });
-  }, [setSession]);
+  }, [setSession, cancelNpcRequest]);
 
   // Phaser asks for a puzzle.
   useEffect(() => {
@@ -127,16 +152,79 @@ export default function App() {
   }, [overlayOpen]);
 
   /**
-   * The single entry point for player replies. Typed text comes through here now;
-   * voice transcriptions will call it later with method "voice".
+   * Free conversation: the script has nothing left to say, so an AI-enabled character may be answered
+   * by the conversation backend. Reached only through submitPlayerResponse, and never for a scripted step,
+   * so story actions never depend on generated text.
+   */
+  const askNpc = useCallback(
+    async (current: DialogueSession, method: InputMethod, text: string, scriptedFallback: string) => {
+      const history: ConversationTurn[] = current.lines.flatMap((line) =>
+        line.speaker === "system" ? [] : [{ speaker: line.speaker, text: line.text }],
+      );
+      setSession({
+        ...current,
+        pending: true,
+        lines: [...current.lines, { speaker: "player", text, method }],
+      });
+
+      const request = buildNpcDialogueRequest({
+        npcId: current.npcId,
+        playerText: text,
+        state: getGameState(),
+        history,
+        relevantFlagNames: AI_ELIGIBLE_NPCS[current.npcId].relevantFlags,
+      });
+      const result = await askRef.current(request);
+
+      // The dialogue may have been closed (and even reopened) while waiting: drop outdated replies.
+      const latest = sessionRef.current;
+      if (!latest || latest.id !== current.id) return;
+      if (result.kind === "cancelled") {
+        setSession({ ...latest, pending: false });
+        return;
+      }
+
+      const lines = [...latest.lines];
+      if (result.kind === "reply") {
+        const { reply } = result;
+        lines.push({ speaker: "npc", text: reply.npcResponse, source: reply.source === "mock" ? "simulated" : "ai" });
+        // A reply may only suggest an action. It is applied only if the (default-empty) policy allows it.
+        const verdict = validateProposedAction(reply.proposedAction, current.npcId, getGameState(), AI_ACTION_POLICY);
+        if (verdict.ok) applyStoryActions([verdict.action]);
+        else if (reply.proposedAction && import.meta.env.DEV) {
+          lines.push({
+            speaker: "system",
+            text: `[dev] The reply proposed "${JSON.stringify(reply.proposedAction)}" but it was not applied: ${verdict.reason}`,
+          });
+        }
+      } else {
+        // A real failure is shown as such, then the game's own scripted line stands in. Never a simulated reply.
+        lines.push({ speaker: "system", text: `${result.message} Showing the scripted reply instead.` });
+        lines.push({ speaker: "npc", text: scriptedFallback, source: "scripted" });
+      }
+      setSession({ ...latest, pending: false, repliesGiven: latest.repliesGiven + 1, lines });
+    },
+    [setSession],
+  );
+
+  /**
+   * The single entry point for player replies: typed text arrives with method "text", confirmed
+   * voice transcripts with method "voice". Scripted steps, which carry the story actions, are
+   * always decided here by getReply; only the free-conversation tail may go to the backend.
    */
   const submitPlayerResponse = useCallback(
     (response: PlayerResponse) => {
       const current = sessionRef.current;
       const text = response.text.trim();
-      if (!current || current.ended || current.npcId !== response.npcId || !text) return;
+      if (!current || current.ended || current.pending || current.npcId !== response.npcId || !text) return;
 
       const reply = getReply(current.conversation, current.repliesGiven, { ...response, text });
+
+      if (reply.freeform && isAiEligible(current.npcId) && aiModeRef.current !== "off") {
+        void askNpc(current, response.method, text, reply.step.text);
+        return;
+      }
+
       // The reply is revealed by this update, so its story actions apply with it.
       applyStoryActions(reply.step.actions);
       setSession({
@@ -145,15 +233,19 @@ export default function App() {
         ended: reply.ended,
         lines: [
           ...current.lines,
-          { speaker: "player", text },
-          { speaker: "npc", text: reply.step.text },
+          { speaker: "player", text, method: response.method },
+          { speaker: "npc", text: reply.step.text, source: "scripted" },
         ],
       });
     },
-    [setSession],
+    [setSession, askNpc],
   );
 
-  const closeDialogue = useCallback(() => setSession(null), [setSession]);
+  /** Closing the dialogue cancels any reply in flight; the recorder releases the microphone as it unmounts. */
+  const closeDialogue = useCallback(() => {
+    cancelNpcRequest();
+    setSession(null);
+  }, [setSession, cancelNpcRequest]);
 
   /** Checks a puzzle arrangement and applies its reward. Rewards are idempotent story actions. */
   const submitPuzzle = useCallback((puzzleId: string, order: string[]): boolean => {
@@ -185,11 +277,14 @@ export default function App() {
       {!showChapterComplete && <SealToast />}
       {session && (
         <DialogueBox
-          key={session.npcId}
+          key={session.id}
           npcName={INTERACTABLES[session.npcId].name}
           lines={session.lines}
           hideInput={session.ended}
+          pending={session.pending}
+          npcId={session.npcId}
           onSubmit={(text) => submitPlayerResponse({ npcId: session.npcId, text, method: "text" })}
+          onSubmitResponse={submitPlayerResponse}
           onClose={closeDialogue}
         />
       )}
@@ -214,6 +309,7 @@ export default function App() {
       )}
       {showChapter1Complete && <ChapterComplete completedChapter={1} onContinue={continueToOlympus} />}
       {showChapter2Complete && <ChapterComplete completedChapter={2} onContinue={continueToPalace} />}
+      {import.meta.env.DEV && <DevToolsPanel mode={aiMode} onModeChange={setAiMode} />}
       {showChapter3Complete && (
         <ChapterComplete completedChapter={3} onClose={closeChapter3Complete} />
       )}

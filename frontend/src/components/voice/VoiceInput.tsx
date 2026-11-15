@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { PlayerResponse } from "../../game/types/dialogue";
 import type { Recording } from "../../hooks/useVoiceRecorder";
 import { transcribeAudio, TranscriptionError, type TranscriptionConfig } from "../../services/transcriptionClient";
@@ -13,6 +13,10 @@ interface VoiceInputProps {
   transcriptionConfig?: Partial<TranscriptionConfig>;
   /** Mock transcripts are development-only regardless of this prop. */
   allowMockTranscript?: boolean;
+  /** Blocks only the final "Confirm & Send" (e.g. while an NPC reply is pending). Recording and editing still work. */
+  disabled?: boolean;
+  /** Show the "Type instead" shortcut. Turn off where a typed field is already on screen. */
+  allowTyping?: boolean;
 }
 
 type Stage =
@@ -22,9 +26,14 @@ type Stage =
   | { kind: "review"; source: "real" | "mock" | "typed" };
 
 function Playback({ blob }: { blob: Blob }) {
-  const url = useMemo(() => URL.createObjectURL(blob), [blob]);
-  useEffect(() => () => URL.revokeObjectURL(url), [url]);
-  return <audio controls src={url} className="voice-audio" />;
+  // Created and revoked in the same effect, so React StrictMode's simulated unmount can't revoke a URL still in use.
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(blob);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [blob]);
+  return url ? <audio controls src={url} className="voice-audio" /> : null;
 }
 
 const SAMPLE_TRANSCRIPT = "I seek the wisdom of Athena, please let me pass.";
@@ -38,6 +47,8 @@ export default function VoiceInput({
   onSubmit,
   transcriptionConfig,
   allowMockTranscript = true,
+  disabled = false,
+  allowTyping = true,
 }: VoiceInputProps) {
   const mockEnabled = import.meta.env.DEV && allowMockTranscript;
   const [stage, setStage] = useState<Stage>({ kind: "record" });
@@ -102,7 +113,7 @@ export default function VoiceInput({
 
   const confirm = () => {
     const text = draft.trim();
-    if (!text || stage.kind !== "review") return;
+    if (!text || stage.kind !== "review" || disabled) return;
     // Text the player typed from scratch is honestly a text response.
     onSubmit({ npcId, text, method: stage.source === "typed" ? "text" : "voice" });
     reset();
@@ -119,9 +130,11 @@ export default function VoiceInput({
         <>
           <VoiceRecorder onRecorded={handleRecorded} />
           <div className="voice-row">
-            <button type="button" className="voice-btn voice-btn-secondary" onClick={typeInstead}>
-              ⌨ Type instead
-            </button>
+            {allowTyping && (
+              <button type="button" className="voice-btn voice-btn-secondary" onClick={typeInstead}>
+                ⌨ Type instead
+              </button>
+            )}
             {mockEnabled && (
               <button type="button" className="voice-btn voice-btn-mock" onClick={useMock}>
                 Use sample transcript (DEV MOCK)
@@ -144,9 +157,11 @@ export default function VoiceInput({
             <button type="button" className="voice-btn voice-btn-secondary" onClick={reset}>
               Record again
             </button>
-            <button type="button" className="voice-btn voice-btn-secondary" onClick={typeInstead}>
-              ⌨ Type instead
-            </button>
+            {allowTyping && (
+              <button type="button" className="voice-btn voice-btn-secondary" onClick={typeInstead}>
+                ⌨ Type instead
+              </button>
+            )}
             {mockEnabled && (
               <button type="button" className="voice-btn voice-btn-mock" onClick={useMock}>
                 Use sample transcript (DEV MOCK)
@@ -189,7 +204,7 @@ export default function VoiceInput({
             }}
           />
           <div className="voice-row">
-            <button type="button" className="voice-btn" onClick={confirm} disabled={!draft.trim()}>
+            <button type="button" className="voice-btn" onClick={confirm} disabled={!draft.trim() || disabled}>
               Confirm &amp; Send
             </button>
             <button type="button" className="voice-btn voice-btn-secondary" onClick={reset}>

@@ -479,3 +479,118 @@ body,
 .quest-item {
   color: #f2c94c;
 }
+
+/* Dialogue: AI/voice integration */
+.dialogue-box {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.dialogue-note {
+  margin: 0 0 8px;
+  padding: 4px 8px;
+  border-left: 3px solid #f5b041;
+  color: #f5d6a0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.dialogue-thinking {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.dialogue-badge {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border: 1px solid #7d6a94;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.dialogue-badge-sim {
+  border-color: #f5b041;
+  color: #f5b041;
+}
+
+.dialogue-badge-voice {
+  border: none;
+  padding: 0;
+  font-size: 14px;
+}
+
+.dialogue-voice {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.dialogue-input[readonly] {
+  opacity: 0.7;
+}
+
+.dev-tools {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 8px 10px;
+  border: 1px dashed #f5b041;
+  border-radius: 8px;
+  background: rgba(20, 14, 30, 0.88);
+  color: #f6f1e7;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
+.dev-tools-title {
+  color: #f5b041;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.dev-tools-modes {
+  margin: 4px 0;
+  padding: 4px 8px;
+  border: 1px solid rgba(245, 176, 65, 0.4);
+  border-radius: 6px;
+}
+
+.dev-tools-modes legend {
+  padding: 0 4px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.dev-tools-modes label {
+  display: block;
+  cursor: pointer;
+}
+
+.dev-tools-health button {
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dev-tools-health[data-health="online"] {
+  color: #8ee0a0;
+}
+
+.dev-tools-health[data-health="offline"] {
+  color: #ff9b8a;
+}
+
+.dialogue-voice .voice-textarea {
+  background: #100a1a;
+  color: inherit;
+  border-color: #7d6a94;
+}
