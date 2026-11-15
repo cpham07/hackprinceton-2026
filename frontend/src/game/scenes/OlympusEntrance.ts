@@ -113,11 +113,12 @@ export class OlympusEntrance extends GameplayScene {
       for (const [x, y, scale] of clouds) {
         this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3);
       }
+      // Placeholder columns: only without the painting, which has its own balustrade.
+      for (const x of COLUMN_XS) {
+        this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
+      }
     }
 
-    for (const x of COLUMN_XS) {
-      this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
-    }
     this.gate = this.add.image(GATE_X, GROUND_Y, TEXTURES.gate).setOrigin(0.5, 1);
   }
 
