@@ -39,6 +39,8 @@ unmounts), including mid-recording and mid-transcription (the upload is aborted)
 (`overlay:opened`) is held for as long as the dialogue is open, so the player cannot move while recording, editing or
 waiting for a reply. Escape closes the dialogue even if focus has left it.
 
+> Update: Backend Milestone B1 has since implemented these routes; see `backend/README.md`. The section below is the original list.
+
 ## Backend dependencies (not implemented in this repo's backend)
 `backend/main.py` currently has only `GET /health`; `backend/speech.py` is a stub. For real ASR/AI the backend team must add:
 1. `POST /transcribe`: multipart field `audio` (`recording.webm` on Chrome/Firefox, `.m4a`/mp4 on Safari), responds `{ "text": "..." }`.
