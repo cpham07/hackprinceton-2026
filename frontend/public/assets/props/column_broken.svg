@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="560" viewBox="0 0 180 560">
+  <!-- A broken marble column (ruin) for the Chapter 1 meadow; same style and plinth as column.svg. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-5%" width="120%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+    </filter>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- plinth -->
+    <path d="M12 504 L168 504 L172 550 L8 550 Z" fill="#e3cfae"/>
+    <path d="M130 508 L166 508 L169 546 L134 546 Z" fill="#c9ad86" stroke="none"/>
+    <!-- base torus -->
+    <path d="M26 474 C26 466 154 466 154 474 L158 504 L22 504 Z" fill="#f1e4cc"/>
+    <path d="M120 472 L154 474 L158 504 L124 504 Z" fill="#d6bf9b" stroke="none"/>
+    <!-- shaft snapped off with a jagged top -->
+    <path d="M42 300 L56 286 L66 302 L82 270 L94 292 L108 278 L120 300 L138 290 C140 360 141 420 140 472 L40 472 C39 420 40 360 42 300 Z" fill="#f1e4cc"/>
+    <path d="M120 300 L138 290 C140 360 141 420 140 472 L122 472 C122 420 121 360 120 300 Z" fill="#d6bf9b" stroke="none"/>
+    <path d="M50 308 C48 380 48 420 48 466" fill="none" stroke="#fffaf0" stroke-width="5"/>
+    <path d="M62 304 C60 380 60 420 60 468 M80 286 C79 380 79 420 79 470 M98 294 C98 380 99 420 99 470 M116 296 C118 380 120 420 120 468" fill="none" stroke="#b9a07b" stroke-width="2.5"/>
+    <!-- broken face, seen from above -->
+    <path d="M56 286 L66 302 L82 270 L94 292 L108 278 L120 300 L108 306 L80 304 L60 306 Z" fill="#e7d6b8" stroke-width="2.5"/>
+    <!-- a fallen drum lying at the foot -->
+    <path d="M110 516 C110 500 176 500 176 516 L176 548 C176 562 110 562 110 548 Z" fill="#e3cfae" stroke-width="3.5"/>
+    <ellipse cx="143" cy="516" rx="33" ry="12" fill="#f1e4cc" stroke-width="3.5"/>
+    <path d="M128 512 L140 520 M150 510 L158 518" fill="none" stroke="#b9a07b" stroke-width="2"/>
+    <!-- grass and ivy reclaiming it -->
+    <path d="M34 480 C46 430 40 390 60 350" fill="none" stroke="#4f6e2a" stroke-width="3.5"/>
+    <g fill="#7fa83f" stroke="#3d5a22" stroke-width="2.5">
+      <path d="M40 446 c-14 -4 -18 -16 -10 -24 c10 4 14 14 10 24 Z"/>
+      <path d="M46 404 c14 -6 26 -2 26 8 c-10 8 -22 6 -26 -8 Z"/>
+      <path d="M58 362 c-14 -2 -20 -14 -12 -22 c10 2 16 12 12 22 Z"/>
+    </g>
+    <path d="M14 506 C20 490 38 488 50 498 C60 486 80 490 86 506 Z" fill="#8bb143" stroke="#3d5a22" stroke-width="2.5"/>
+    <path d="M96 506 C102 494 116 494 122 502" fill="none" stroke="#3d5a22" stroke-width="2.5"/>
+  </g>
+</svg>

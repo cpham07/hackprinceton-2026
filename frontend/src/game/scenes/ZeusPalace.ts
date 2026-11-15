@@ -3,6 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES, type SceneKey } from "../constants";
 import { EventBus } from "../EventBus";
 import { PALACE_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
+import { addBackground, BACKGROUNDS, preloadBackground } from "../graphics/backgrounds";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { advanceStatue, isPlateActive, resetStatues, STATUE_TRACKS, statueX } from "../puzzles/pressurePlates";
 import { getGameState, hasFlag, hasItem, subscribe } from "../state/gameState";
@@ -54,6 +55,11 @@ export class ZeusPalace extends GameplayScene {
     super(SCENES.palace);
   }
 
+  preload(): void {
+    super.preload();
+    preloadBackground(this, BACKGROUNDS.palace);
+  }
+
   create(): void {
     createPlaceholderTextures(this);
     this.plates.clear();
@@ -77,7 +83,7 @@ export class ZeusPalace extends GameplayScene {
       .text(GAME_WIDTH / 2, 150, "", {
         fontFamily: "Georgia, serif",
         fontSize: "34px",
-        color: "#fff6c2",
+        color: "#fbe4f0",
         stroke: "#5b4a36",
         strokeThickness: 7,
       })
@@ -235,7 +241,7 @@ export class ZeusPalace extends GameplayScene {
       .text(x, GROUND_Y - 40, "Plate activated!", {
         fontFamily: "Georgia, serif",
         fontSize: "22px",
-        color: "#fff6c2",
+        color: "#fbe4f0",
         stroke: "#5b4a36",
         strokeThickness: 5,
       })
@@ -245,16 +251,21 @@ export class ZeusPalace extends GameplayScene {
   }
 
   private buildBackdrop(): void {
-    this.add.tileSprite(0, 110, WORLD_WIDTH, GROUND_Y - 110, TEXTURES.palaceWall).setOrigin(0);
-    // The vault is darker and tinted, so the final room reads as a different place.
+    const painted = addBackground(this, BACKGROUNDS.palace, { worldWidth: WORLD_WIDTH, groundY: GROUND_Y });
+    if (!painted) {
+      // Placeholder hall, used if the painting failed to load.
+      this.add.tileSprite(0, 110, WORLD_WIDTH, GROUND_Y - 110, TEXTURES.palaceWall).setOrigin(0);
+      this.add.rectangle(0, 0, WORLD_WIDTH, 110, 0xf7f1e3).setOrigin(0);
+      this.add.rectangle(0, 104, WORLD_WIDTH, 8, 0xd4af37).setOrigin(0);
+      for (const x of COLUMN_XS) this.add.image(x, GROUND_Y, TEXTURES.goldColumn).setOrigin(0.5, 1);
+    }
+    // The vault is darker and tinted, drawn over the hall either way, so the final room reads as a different place.
     this.add.tileSprite(VAULT_X + 40, 110, WORLD_WIDTH - VAULT_X - 40, GROUND_Y - 110, TEXTURES.palaceWall).setOrigin(0).setTint(0x8f7fb8);
-    this.add.rectangle(0, 0, WORLD_WIDTH, 110, 0xf7f1e3).setOrigin(0);
-    this.add.rectangle(0, 104, WORLD_WIDTH, 8, 0xd4af37).setOrigin(0);
-
-    for (const x of COLUMN_XS) this.add.image(x, GROUND_Y, TEXTURES.goldColumn).setOrigin(0.5, 1);
+    this.add.rectangle(VAULT_X + 40, 0, WORLD_WIDTH - VAULT_X - 40, 110, 0xf7f1e3).setOrigin(0);
+    this.add.rectangle(VAULT_X + 40, 104, WORLD_WIDTH - VAULT_X - 40, 8, 0xd4af37).setOrigin(0);
     for (const [x, text] of LABELS) {
       this.add
-        .text(x, 150, text, { fontFamily: "Georgia, serif", fontSize: "28px", color: "#5b4a36", stroke: "#fff6c2", strokeThickness: 5 })
+        .text(x, 150, text, { fontFamily: "Georgia, serif", fontSize: "28px", color: "#5b4a36", stroke: "#fbe4f0", strokeThickness: 5 })
         .setOrigin(0.5, 1);
     }
 
@@ -274,7 +285,7 @@ export class ZeusPalace extends GameplayScene {
 
     this.passageGate = this.add.image(PASSAGE_X, GROUND_Y, TEXTURES.portcullis).setOrigin(0.5, 1).setDisplaySize(110, 420);
     this.add.text(PASSAGE_X, 190, "Sealed until both plates glow", {
-      fontFamily: "Georgia, serif", fontSize: "18px", color: "#5b4a36", stroke: "#fff6c2", strokeThickness: 4,
+      fontFamily: "Georgia, serif", fontSize: "18px", color: "#5b4a36", stroke: "#fbe4f0", strokeThickness: 4,
     }).setOrigin(0.5, 1);
 
     this.add
