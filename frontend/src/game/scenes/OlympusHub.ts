@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { HUB_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
+import { addBackground, BACKGROUNDS, preloadBackground } from "../graphics/backgrounds";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { getGameState, hasFlag, subscribe } from "../state/gameState";
 import { canEnterScene } from "../story/access";
@@ -78,11 +79,18 @@ export class OlympusHub extends GameplayScene {
     this.spawnX = data?.spawnX ?? DEFAULT_SPAWN_X;
   }
 
+  preload(): void {
+    super.preload();
+    preloadBackground(this, BACKGROUNDS.hub);
+  }
+
   create(): void {
     createPlaceholderTextures(this);
     this.buildHubBackdrop();
     this.buildLibrary();
     const ground = this.buildGround();
+    // The terrace painting has its own floor and terrace face; the strip stays as the (invisible) floor.
+    if (this.textures.exists(BACKGROUNDS.hub.key)) ground.setVisible(false);
     this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: this.spawnX, ground });
 
     for (const { x, y, width } of PLATFORMS) {
@@ -154,17 +162,24 @@ export class OlympusHub extends GameplayScene {
   }
 
   private buildHubBackdrop(): void {
-    this.add
-      .image(0, 0, TEXTURES.skyOlympus)
-      .setOrigin(0)
-      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-      .setScrollFactor(0);
+    const painted = addBackground(this, BACKGROUNDS.hub, { worldWidth: WORLD_WIDTH, groundY: GROUND_Y });
+    if (!painted) {
+      // Placeholder sky, clouds and columns, used if the painting failed to load.
+      this.add
+        .image(0, 0, TEXTURES.skyOlympus)
+        .setOrigin(0)
+        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+        .setScrollFactor(0);
 
-    const clouds: Array<[number, number, number]> = [
-      [200, 120, 1.3], [640, 220, 0.9], [1050, 100, 1.1], [1500, 240, 1.4], [1900, 140, 1],
-    ];
-    for (const [x, y, scale] of clouds) {
-      this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3).setAlpha(0.8);
+      const clouds: Array<[number, number, number]> = [
+        [200, 120, 1.3], [640, 220, 0.9], [1050, 100, 1.1], [1500, 240, 1.4], [1900, 140, 1],
+      ];
+      for (const [x, y, scale] of clouds) {
+        this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3).setAlpha(0.8);
+      }
+      for (const x of COLUMN_XS) {
+        this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
+      }
     }
 
     // The gate the player came through, then the central plaza.
@@ -172,10 +187,6 @@ export class OlympusHub extends GameplayScene {
     this.add.image(1230, GROUND_Y, TEXTURES.temple).setOrigin(0.5, 1).setDisplaySize(780, 520);
     this.add.image(700, GROUND_Y, TEXTURES.fountain).setOrigin(0.5, 1);
     this.add.text(700, GROUND_Y - 170, "Agora of the Gods", LABEL_STYLE).setOrigin(0.5, 1);
-
-    for (const x of COLUMN_XS) {
-      this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
-    }
   }
 
   private buildLibrary(): void {

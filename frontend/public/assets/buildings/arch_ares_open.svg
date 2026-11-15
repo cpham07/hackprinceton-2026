@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="300" viewBox="0 0 230 300">
+  <!-- The arch to Ares's arena, open onto the sand. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="6" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <path d="M40 300 L40 104 C40 64 190 64 190 104 L190 300 Z" fill="#f3b26b"/>
+    <path d="M40 210 C80 196 150 196 190 210 L190 248 L40 248 Z" fill="#c76a4a"/>
+    <path d="M56 212 L56 246 M84 204 L84 246 M115 202 L115 246 M146 204 L146 246 M174 212 L174 246" fill="none" stroke="#8e3d2a" stroke-width="2"/>
+    <path d="M40 248 L190 248 L190 300 L40 300 Z" fill="#e8a25a"/>
+    <path d="M56 270 C90 264 140 276 176 268" fill="none" stroke="#c98242" stroke-width="2"/>
+    
+    <!-- pillars and arch stones -->
+    <path d="M0 40 L40 40 L40 300 L0 300 Z" fill="#e3cfae"/>
+    <path d="M190 40 L230 40 L230 300 L190 300 Z" fill="#e3cfae"/>
+    <path d="M28 44 L40 44 L40 300 L28 300 Z M218 44 L230 44 L230 300 L218 300 Z" fill="#c9ad86" stroke="none"/>
+    <path d="M0 0 L230 0 L230 50 L190 50 C186 72 160 80 115 80 C70 80 44 72 40 50 L0 50 Z" fill="#e3cfae"/>
+    <path d="M40 50 C44 72 70 80 115 80 C160 80 186 72 190 50" fill="none" stroke="#c9ad86" stroke-width="6"/>
+    <path d="M0 120 L40 120 M0 200 L40 200 M190 120 L230 120 M190 200 L230 200 M70 0 L70 30 M160 0 L160 30" fill="none" stroke="#c9ad86" stroke-width="2"/>
+    <path d="M100 66 L130 66 L126 84 L104 84 Z" fill="#e3cfae"/>
+    <!-- banner -->
+    <path d="M62 50 L168 50 L168 110 L115 128 L62 110 Z" fill="#b3261e"/>
+    <path d="M62 56 L168 56" fill="none" stroke="#e0b04a" stroke-width="3"/>
+    <path d="M115 66 C126 66 132 76 132 88 L126 100 L104 100 L98 88 C98 76 104 66 115 66 Z" fill="#e0b04a" stroke-width="2.5"/>
+    <path d="M106 80 L112 92 M124 80 L118 92" fill="none" stroke="#7d1a14" stroke-width="3"/>
+    <path d="M104 64 C110 52 124 52 128 62" fill="none" stroke="#7d1a14" stroke-width="5"/>
+  </g>
+</svg>

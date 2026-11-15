@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="340" viewBox="0 0 240 340">
+  <!-- The vault door, open, all three seals glowing. Same size and proportions as its placeholder in placeholders.ts; drawn in the style of the painted backgrounds. -->
+  <defs>
+    <filter id="ink" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="10" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <radialGradient id="glow" cx="50%" cy="55%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#fff1df"/><stop offset="1" stop-color="#f7c9de"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#2b2836" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <path d="M0 0 L240 0 L240 340 L0 340 Z" fill="#e0b04a"/>
+    <path d="M216 0 L240 0 L240 340 L216 340 Z" fill="#a8742a" stroke="none"/>
+    <path d="M8 8 L232 8" fill="none" stroke="#fff1c9" stroke-width="3"/>
+    <path d="M24 24 L216 24 L216 340 L24 340 Z" fill="url(#glow)" stroke="none"/>
+    <path d="M24 24 L216 24 L216 340 L24 340 Z" fill="none"/>
+    <path d="M24 24 L48 34 L48 332 L24 340 Z M216 24 L192 34 L192 332 L216 340 Z" fill="#c8923a"/>
+    <circle cx="60" cy="70" r="21" fill="#e0b04a"/>
+    <circle cx="60" cy="70" r="16" fill="#3a5ba0"/>
+    <circle cx="55" cy="65" r="5.1" fill="#ffffff" stroke="none" opacity="0.75"/>
+    <circle cx="120" cy="70" r="21" fill="#e0b04a"/>
+    <circle cx="120" cy="70" r="16" fill="#c0392b"/>
+    <circle cx="115" cy="65" r="5.1" fill="#ffffff" stroke="none" opacity="0.75"/>
+    <circle cx="180" cy="70" r="21" fill="#e0b04a"/>
+    <circle cx="180" cy="70" r="16" fill="#5b3a9a"/>
+    <circle cx="175" cy="65" r="5.1" fill="#ffffff" stroke="none" opacity="0.75"/>
+  </g>
+</svg>

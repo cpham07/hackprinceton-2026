@@ -17,6 +17,22 @@ const GATE_BARRIER = { x: 3250, width: 40 };
 /** Crossing this x (beyond the gate) completes the chapter. */
 const EXIT_X = 3520;
 const COLUMN_XS = [500, 950, 1400, 1850, 2300, 2650];
+/**
+ * Marble ruins standing on the meadow path, between the characters (Aphrodite 720, Theron 1180, statue 1640,
+ * Lyra 2120, gatekeeper 3110). Broken ones first; the last two stand whole, closer together, near the gate.
+ */
+const RUIN_COLUMNS: Array<{ x: number; broken: boolean }> = [
+  { x: 430, broken: true },
+  { x: 950, broken: false },
+  { x: 1410, broken: true },
+  { x: 1880, broken: false },
+  { x: 2420, broken: true },
+  { x: 2800, broken: false },
+];
+const RUIN_ART = { whole: "ruin-column", broken: "ruin-column-broken", width: 180, height: 560, baseY: 550 };
+/** World height of a column, and how far back on the path it stands (so it reads as behind the characters). */
+const RUIN_HEIGHT = 330;
+const RUIN_SETBACK = 34;
 
 /** Chapter 1: the entrance to Olympus. */
 export class OlympusEntrance extends GameplayScene {
@@ -32,12 +48,18 @@ export class OlympusEntrance extends GameplayScene {
   preload(): void {
     super.preload();
     preloadBackground(this, BACKGROUNDS.chapter1);
+    const size = { width: RUIN_ART.width, height: RUIN_ART.height };
+    if (!this.textures.exists(RUIN_ART.whole)) this.load.svg(RUIN_ART.whole, "assets/props/column.svg", size);
+    if (!this.textures.exists(RUIN_ART.broken)) this.load.svg(RUIN_ART.broken, "assets/props/column_broken.svg", size);
   }
 
   create(): void {
     createPlaceholderTextures(this);
     this.buildBackdrop();
     const ground = this.buildGround();
+    // The meadow painting has its own grass and rocks below the path, so the stone strip is only a
+    // fallback look. Hidden, it still collides: the static body is what the player stands on.
+    if (this.textures.exists(BACKGROUNDS.chapter1.key)) ground.setVisible(false);
     this.initGameplay({ worldWidth: WORLD_WIDTH, groundY: GROUND_Y, playerX: 200, ground });
 
     // Full-height static wall (y = 0 to GROUND_Y), so the locked gate cannot be jumped over.
@@ -113,11 +135,23 @@ export class OlympusEntrance extends GameplayScene {
       for (const [x, y, scale] of clouds) {
         this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3);
       }
+      // Placeholder columns: only without the painting, which has its own balustrade.
+      for (const x of COLUMN_XS) {
+        this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
+      }
+    } else {
+      // Marble ruins drawn in the painting's style (public/assets/props). Visual only, no collision.
+      RUIN_COLUMNS.forEach(({ x, broken }, index) => {
+        const key = broken ? RUIN_ART.broken : RUIN_ART.whole;
+        if (!this.textures.exists(key)) return;
+        this.add
+          .image(x, GROUND_Y - RUIN_SETBACK, key)
+          .setOrigin(0.5, RUIN_ART.baseY / RUIN_ART.height)
+          .setScale(RUIN_HEIGHT / RUIN_ART.baseY)
+          .setFlipX(index % 4 >= 2); // mirror every other pair so the ivy is not always on the same side
+      });
     }
 
-    for (const x of COLUMN_XS) {
-      this.add.image(x, GROUND_Y, TEXTURES.column).setOrigin(0.5, 1);
-    }
     this.gate = this.add.image(GATE_X, GROUND_Y, TEXTURES.gate).setOrigin(0.5, 1);
   }
 

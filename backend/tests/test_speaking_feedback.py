@@ -205,3 +205,128 @@ class TestProviderFailures:
         logged = " ".join(record.getMessage() for record in caplog.records)
         assert "speaking feedback" in logged
         assert "I want help you" not in logged and GOOD["positive"] not in logged
+
+
+class TestFocusGoalIds:
+    """Regression: the prompt never named the goal ids, so a model answered `focus` with the goal's title
+    ("IMPROVE MY ENGLISH") and every answer was rejected twice -> 502 "The feedback service returned an error"."""
+
+    ALL_TEXT_GOALS = ["english", "clarity", "pacing", "clear_speech"]
+
+    def test_the_prompt_names_every_goal_id_the_parser_accepts(self):
+        provider = provider_with(dict(GOOD, focus="english"))
+        with make_client(provider) as client:
+            assert post(client, goals=self.ALL_TEXT_GOALS).status_code == 200
+        system = provider.chat_payload()["messages"][0]["content"]
+        for goal in ("english", "clarity", "clear_speech"):
+            assert f"`{goal}`" in system
+        assert "english, clarity, clear_speech" in system  # the exact list `focus` must be chosen from
+        assert "pacing" not in system.split("RULES:")[1]  # pacing is never a feedback focus
+
+    def test_only_the_players_own_goals_are_offered_as_focus(self):
+        provider = provider_with(GOOD)
+        with make_client(provider) as client:
+            post(client, goals=["clarity", "pacing"])
+        system = provider.chat_payload()["messages"][0]["content"]
+        assert "`clarity`" in system and "`english`" not in system and "`clear_speech`" not in system
+
+    @pytest.mark.parametrize(("answered", "expected"), [
+        ("IMPROVE MY ENGLISH", "english"),
+        ("Improve my English", "english"),
+        ("English", "english"),
+        ("EXPRESS MY IDEAS CLEARLY", "clarity"),
+        ("Clarity", "clarity"),
+        ("PRACTICE SPEAKING CLEARLY", "clear_speech"),
+        ("Practise speaking clearly", "clear_speech"),
+        ("clear speech", "clear_speech"),
+        ("clear-speech", "clear_speech"),
+        (" clear_speech ", "clear_speech"),
+    ])
+    def test_a_goal_title_or_differently_cased_id_is_accepted_first_time(self, answered, expected):
+        provider = provider_with(dict(GOOD, focus=answered))
+        with make_client(provider) as client:
+            response = post(client, goals=self.ALL_TEXT_GOALS)
+        assert response.status_code == 200 and response.json()["focus"] == expected  # the contract still returns the id
+        assert len(provider.chat_requests) == 1  # no retry needed
+
+    @pytest.mark.parametrize("answered", ["grammar", "pacing", "Improve my pacing", "", None, 3])
+    def test_unknown_or_non_text_focus_is_still_rejected(self, answered):
+        provider = provider_with(dict(GOOD, focus=answered), dict(GOOD, focus=answered))
+        with make_client(provider) as client:
+            assert post(client, goals=self.ALL_TEXT_GOALS).status_code == 502
+        assert len(provider.chat_requests) == 2
+
+    def test_a_title_for_a_goal_the_player_did_not_choose_is_rejected(self):
+        bad = dict(GOOD, focus="Practice speaking clearly")
+        provider = provider_with(bad, bad)
+        with make_client(provider) as client:
+            assert post(client, goals=["english", "clarity"]).status_code == 502
+
+    def test_safety_rules_still_apply_when_focus_is_a_title(self):
+        bad = dict(GOOD, focus="Improve my English", suggestion="Try to reduce your accent.")
+        provider = provider_with(bad, bad)
+        with make_client(provider) as client:
+            assert post(client).status_code == 502
+
+
+class TestFeedbackDiagnostics:
+    """Each 502 cause leaves a distinct, content-free log line."""
+
+    @staticmethod
+    def _logged(caplog) -> str:
+        return " ".join(record.getMessage() for record in caplog.records)
+
+    def test_each_rejected_attempt_logs_its_reason_without_content(self, caplog):
+        caplog.set_level(logging.INFO)
+        bad = dict(GOOD, focus="grammar")
+        with make_client(provider_with(bad, bad)) as client:
+            assert post(client).status_code == 502
+        logged = self._logged(caplog)
+        assert "attempt 1 rejected: focus is not a known goal" in logged
+        assert "attempt 2 rejected: focus is not a known goal" in logged and "model=gpt-4o-mini" in logged
+        assert "I want help you" not in logged and GOOD["positive"] not in logged and "grammar" not in logged
+
+    def test_a_truncated_answer_is_reported_as_truncation_and_retried(self, caplog):
+        caplog.set_level(logging.INFO)
+        provider = FakeProvider()
+        answers = iter([
+            {"choices": [{"message": {"content": '{"positive": "You answ'}, "finish_reason": "length"}]},
+            {"choices": [{"message": {"content": json.dumps(GOOD)}, "finish_reason": "stop"}]},
+        ])
+        provider.override = lambda request: httpx.Response(200, json=next(answers))
+        with make_client(provider) as client:
+            response = post(client)
+        assert response.status_code == 200 and len(provider.chat_requests) == 2
+        assert "attempt 1 rejected: truncated at the token limit" in self._logged(caplog)
+
+    def test_upstream_errors_log_status_and_safe_error_ids_only(self, caplog):
+        caplog.set_level(logging.INFO)
+        provider = FakeProvider()
+        provider.always(400, json={"error": {
+            "message": f"Unsupported parameter: key {FAKE_KEY} transcript I want help you",
+            "type": "invalid_request_error", "code": "unsupported_parameter", "param": "max_tokens",
+        }})
+        with make_client(provider) as client:
+            response = post(client)
+        assert response.status_code == 502 and FAKE_KEY not in response.text and "Unsupported" not in response.text
+        logged = self._logged(caplog)
+        assert "feedback provider returned HTTP 400" in logged
+        assert "code=unsupported_parameter" in logged and "param=max_tokens" in logged
+        assert FAKE_KEY not in logged and "I want help you" not in logged and "Unsupported" not in logged
+
+    def test_odd_error_bodies_never_reach_the_log(self, caplog):
+        caplog.set_level(logging.INFO)
+        provider = FakeProvider()
+        provider.always(500, json={"error": {"code": "has spaces I want help you", "param": ["x"]}})
+        with make_client(provider) as client:
+            assert post(client).status_code == 502
+        logged = self._logged(caplog)
+        assert "code=- param=-" in logged and "I want help you" not in logged
+
+    def test_a_missing_message_is_logged_as_a_shape_problem(self, caplog):
+        caplog.set_level(logging.INFO)
+        provider = FakeProvider()
+        provider.override = lambda request: httpx.Response(200, json={"choices": []})
+        with make_client(provider) as client:
+            assert post(client).status_code == 502
+        assert "no choices[0].message.content" in self._logged(caplog)

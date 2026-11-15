@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="1024" viewBox="0 0 512 1024">
+  <!-- Hades, lord of the underworld. An original design drawn to match the hand-inked style of zeus.png /
+       athena.png: wobbly dark outlines, flat muted colours, light shading. Feet at y=832, centred near x=256. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/>
+    </filter>
+    <radialGradient id="soul" cx="50%" cy="60%" r="50%">
+      <stop offset="0" stop-color="#e6fffb"/>
+      <stop offset="0.45" stop-color="#7fe0d2"/>
+      <stop offset="1" stop-color="#2f9c93" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#ink)" stroke="#221a26" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- bident (two-pronged spear), held in his right hand, viewer's left -->
+    <path d="M160 190 L160 836" fill="none" stroke="#221a26" stroke-width="10"/>
+    <path d="M160 190 L160 836" fill="none" stroke="#4b4f5c" stroke-width="6"/>
+    <path d="M136 120 L140 196 C142 208 178 208 180 196 L184 120 L172 150 L170 186 L150 186 L148 150 Z" fill="#5a5f6e"/>
+    <path d="M136 120 L132 104 L146 124 Z M184 120 L188 104 L174 124 Z" fill="#8d93a3"/>
+    <path d="M150 206 L170 206 L168 222 L152 222 Z" fill="#3f8f8a"/>
+
+    <!-- long dark under-robe (chiton) -->
+    <path d="M206 420 C196 560 180 700 168 826 L350 826 C338 700 322 560 312 420 Z" fill="#3a2742"/>
+
+    <!-- black-violet cloak (himation) wrapped over one shoulder and falling to the floor -->
+    <path d="M198 352 C186 450 176 600 158 826 L262 826 C258 700 270 560 300 470 C318 420 330 390 334 356 C300 340 236 338 198 352 Z" fill="#1f1a2b"/>
+    <path d="M300 470 C320 600 332 720 352 826 L292 826 C290 700 290 580 300 470 Z" fill="#2a2238"/>
+    <!-- folds -->
+    <path d="M214 420 C206 560 196 700 188 820 M240 440 C236 580 234 700 232 822 M286 520 C284 640 286 740 290 822 M318 560 C324 660 332 750 340 822" fill="none" stroke="#4a3d5e" stroke-width="2"/>
+    <g fill="none" stroke="#4a3d5e" stroke-width="1.4" opacity="0.9">
+      <path d="M170 700 L186 684 M168 720 L188 700 M166 740 L190 716 M164 760 L192 732 M163 780 L194 750 M162 800 L196 768"/>
+      <path d="M300 760 L316 744 M302 780 L320 762 M304 800 L324 780"/>
+    </g>
+    <!-- teal key-pattern trim along the hem and the cloak's edge -->
+    <path d="M160 812 L262 812 M292 812 L350 812" fill="none" stroke="#3f8f8a" stroke-width="12"/>
+    <path d="M166 812 l8 -5 l8 5 l8 -5 l8 5 l8 -5 l8 5 l8 -5 l8 5 l8 -5 l8 5 l8 -5 l8 5 M298 812 l8 -5 l8 5 l8 -5 l8 5 l8 -5 l8 5" fill="none" stroke="#9fe0d6" stroke-width="2"/>
+    <path d="M334 356 C330 390 318 420 300 470 C270 560 258 700 262 812" fill="none" stroke="#3f8f8a" stroke-width="7"/>
+
+    <!-- sandal toes peeking out -->
+    <path d="M196 826 C194 836 200 840 212 840 L238 840 C242 834 238 828 230 826 Z" fill="#3b2a24"/>
+    <path d="M282 826 C280 836 286 840 298 840 L322 840 C326 834 322 828 314 826 Z" fill="#3b2a24"/>
+
+    <!-- bident arm: sleeve, forearm and fist round the shaft -->
+    <path d="M198 360 C176 392 164 430 160 460 L190 470 C196 440 208 410 222 388 Z" fill="#1f1a2b"/>
+    <path d="M150 456 C148 446 164 442 180 448 C186 462 184 480 174 486 C160 488 150 478 150 456 Z" fill="#cdbfb3"/>
+    <path d="M154 464 L176 466 M154 474 L174 476" fill="none" stroke="#9e8f86" stroke-width="2"/>
+
+    <!-- raised open hand holding a soul-flame, viewer's right -->
+    <path d="M320 362 C344 384 360 410 368 440 L344 452 C336 426 322 402 304 386 Z" fill="#1f1a2b"/>
+    <path d="M340 444 C346 432 372 428 388 436 C396 440 392 450 382 452 L364 456 C356 462 344 460 340 444 Z" fill="#cdbfb3"/>
+    <path d="M388 436 L398 428 M384 440 L396 436" fill="none" stroke="#221a26" stroke-width="2.5"/>
+    <ellipse cx="372" cy="404" rx="30" ry="40" fill="url(#soul)" stroke="none"/>
+    <path d="M372 438 C352 426 352 404 364 388 C364 400 370 404 372 396 C372 380 380 370 386 362 C384 380 394 392 390 410 C388 426 382 434 372 438 Z" fill="#7fe0d2" stroke="#2f9c93" stroke-width="2"/>
+    <path d="M372 430 C364 422 364 410 372 400 C376 410 382 416 378 426 Z" fill="#e6fffb" stroke="none"/>
+
+    <!-- neck -->
+    <path d="M240 300 L238 350 L282 350 L280 300 Z" fill="#cdbfb3"/>
+
+    <!-- shoulder clasp of the cloak -->
+    <circle cx="214" cy="364" r="13" fill="#3f8f8a"/>
+    <circle cx="214" cy="364" r="5" fill="#9fe0d6"/>
+
+    <!-- long dark hair behind the face -->
+    <path d="M214 250 C206 300 210 350 222 380 L240 360 L280 360 L298 380 C310 350 314 300 306 250 C296 214 226 214 214 250 Z" fill="#17131c"/>
+
+    <!-- face: gaunt, pale, stern -->
+    <path d="M228 254 C226 228 244 214 260 214 C278 214 294 228 292 254 C292 284 280 306 260 310 C240 306 228 284 228 254 Z" fill="#d6c8bc"/>
+    <path d="M232 262 C236 286 246 302 260 306 C250 296 244 282 242 262 Z" fill="#b5a69c" stroke="none"/>
+    <!-- heavy brows and hard eyes -->
+    <path d="M238 248 L256 254 M282 248 L264 254" fill="none" stroke="#17131c" stroke-width="5"/>
+    <path d="M242 262 C246 258 252 258 256 262 C252 266 246 266 242 262 Z" fill="#efe6da" stroke-width="2"/>
+    <path d="M264 262 C268 258 274 258 278 262 C274 266 268 266 264 262 Z" fill="#efe6da" stroke-width="2"/>
+    <circle cx="250" cy="262" r="2.6" fill="#3f8f8a" stroke="none"/>
+    <circle cx="271" cy="262" r="2.6" fill="#3f8f8a" stroke="none"/>
+    <path d="M260 266 C258 278 256 284 262 286" fill="none" stroke="#9e8f86" stroke-width="2"/>
+    <!-- long pointed beard and a thin, unsmiling mouth -->
+    <path d="M236 286 C236 314 246 340 256 362 L262 376 L268 362 C278 340 286 314 286 286 C276 300 246 300 236 286 Z" fill="#17131c"/>
+    <path d="M250 300 C256 302 266 302 272 300" fill="none" stroke="#6b5a66" stroke-width="2.5"/>
+    <path d="M250 318 L254 344 M262 320 L262 352 M274 318 L270 344" fill="none" stroke="#3a3040" stroke-width="1.6"/>
+
+    <!-- iron crown with jagged spikes and a teal gem -->
+    <path d="M226 236 L224 196 L236 216 L244 182 L254 212 L262 172 L270 212 L280 182 L288 216 L298 196 L296 236 C276 228 246 228 226 236 Z" fill="#4b4f5c"/>
+    <path d="M226 236 C246 228 276 228 296 236" fill="none" stroke="#8d93a3" stroke-width="3"/>
+    <path d="M262 212 L270 222 L262 232 L254 222 Z" fill="#7fe0d2"/>
+  </g>
+</svg>

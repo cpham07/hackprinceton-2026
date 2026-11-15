@@ -12,7 +12,7 @@
   position: relative;
   width: 44px;
   height: 44px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 50%;
   background: rgba(27, 18, 40, 0.9);
   color: #f6f1e7;
@@ -31,7 +31,7 @@
 .companion-panel input:focus-visible,
 .companion-goals button:focus-visible,
 .companion-goals input:focus-visible {
-  outline: 3px solid #f2c94c;
+  outline: 3px solid #f4b6d2;
   outline-offset: 2px;
 }
 
@@ -42,7 +42,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #f2c94c;
+  background: #f4b6d2;
 }
 
 .companion-panel {
@@ -55,7 +55,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: 10px 14px 12px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 12px;
   background: rgba(27, 18, 40, 0.94);
   color: #f6f1e7;
@@ -80,7 +80,7 @@
 .companion-title {
   font-size: 16px;
   font-weight: bold;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .companion-icon-btn {
@@ -95,7 +95,7 @@
 .companion-section {
   margin: 0;
   padding: 8px 0;
-  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  border-top: 1px solid rgba(183, 155, 230, 0.3);
 }
 
 .companion-section p {
@@ -122,7 +122,7 @@
 
 .companion-chip {
   padding: 2px 8px;
-  border: 1px solid rgba(212, 175, 55, 0.6);
+  border: 1px solid rgba(183, 155, 230, 0.6);
   border-radius: 999px;
   font-size: 12px;
 }
@@ -141,7 +141,7 @@
 }
 
 .companion-error {
-  color: #f5b041;
+  color: #f4a3a8;
 }
 
 .companion-feedback p {
@@ -151,7 +151,7 @@
 .companion-details {
   margin: 4px 0 6px;
   padding-left: 8px;
-  border-left: 2px solid rgba(212, 175, 55, 0.5);
+  border-left: 2px solid rgba(183, 155, 230, 0.5);
 }
 
 .companion-source {
@@ -181,7 +181,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: #f2c94c;
+  color: #f4b6d2;
   font: inherit;
   text-decoration: underline;
   cursor: pointer;
@@ -189,9 +189,9 @@
 
 .companion-btn {
   padding: 6px 14px;
-  border: 1px solid #d4af37;
+  border: 1px solid #b79be6;
   border-radius: 8px;
-  background: #d4af37;
+  background: #b79be6;
   color: #1b1228;
   font: inherit;
   font-weight: bold;
@@ -221,7 +221,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   padding: 18px 22px;
-  border: 2px solid #d4af37;
+  border: 2px solid #b79be6;
   border-radius: 14px;
   background: rgba(27, 18, 40, 0.97);
   color: #f6f1e7;
@@ -234,7 +234,7 @@
 .companion-goals-title {
   margin: 0 0 8px;
   font-size: 22px;
-  color: #f2c94c;
+  color: #f4b6d2;
 }
 
 .companion-goals-intro {
