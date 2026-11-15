@@ -63,3 +63,15 @@ recording.wav
 # --- Claude Code: keep local settings and worktrees out of the repo ---------
 .claude/settings.local.json
 .claude/worktrees/
+
+# --- ML benchmark: real manifests, recordings and results stay local -------
+backend/ml/data/
+backend/ml/results/
+backend/ml/checkpoints/
+# Voice recordings anywhere under backend/ml (scoped so game audio assets are unaffected)
+backend/ml/**/*.m4a
+backend/ml/**/*.wav
+backend/ml/**/*.webm
+backend/ml/**/*.ogg
+backend/ml/**/*.mp3
+backend/ml/**/*.mp4
