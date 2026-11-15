@@ -49,4 +49,6 @@ Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to
 
 Chapter 3: after Chapter 2, choose "Continue to Zeus's Palace". Move the two statues onto their plates (E cycles a statue, the lever resets them), show the guards Ares's warrior badge (your Seal of Courage), open the vault with the three seals, take the Master Lightning Bolt, answer Zeus, and leave through the palace gate. Chapter 4 is not playable yet.
 
-For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal. `?chapter=3` starts inside Zeus's palace.
+For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal. `?chapter=3` starts inside Zeus's palace, `?chapter=4` starts Chapter 4.
+
+Chapter 4: after Chapter 3, choose "Continue". Outside Zeus's palace, talk to Aphrodite. You can argue (typed or spoken), but the story only moves when you press "Hand over the Master Lightning Bolt", or when she loses patience after three replies and takes it. Then Aphrodite reveals her betrayal, imprisons Zeus and leaves; talk to Athena (she and Ares arrive beside you) to break the necklace's hold. Chapter 5 is not playable yet.

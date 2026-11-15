@@ -1,6 +1,7 @@
 import {
   addClue,
   addItem,
+  removeItem,
   completeQuest,
   grantSeal,
   setChapter,
@@ -18,6 +19,7 @@ export type StoryAction =
   | { type: "addClue"; clue: string }
   | { type: "completeQuest"; quest: string }
   | { type: "addItem"; item: string }
+  | { type: "removeItem"; item: string }
   | { type: "grantSeal"; seal: SealId }
   | { type: "setChapter"; chapter: Chapter };
 
@@ -36,6 +38,9 @@ export function applyStoryActions(actions: StoryAction[] | undefined): void {
         break;
       case "addItem":
         addItem(action.item);
+        break;
+      case "removeItem":
+        removeItem(action.item);
         break;
       case "grantSeal":
         grantSeal(action.seal);

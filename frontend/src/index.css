@@ -48,7 +48,7 @@ body,
 }
 
 .dialogue-log {
-  max-height: 150px;
+  max-height: 200px;
   overflow-y: auto;
   margin-bottom: 12px;
 }
@@ -593,4 +593,33 @@ body,
   background: #100a1a;
   color: inherit;
   border-color: #7d6a94;
+}
+
+/* Chapter 4: an explicit dialogue action (e.g. handing over the bolt) */
+.dialogue-choice {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid #f2c94c;
+  border-radius: 8px;
+  background: #d4af37;
+  color: #1b1228;
+  font: inherit;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dialogue-choice:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.quest-necklace {
+  color: #ff9be0;
+}
+
+.dialogue-box:focus {
+  outline: none;
 }

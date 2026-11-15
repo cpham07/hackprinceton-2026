@@ -258,6 +258,49 @@ export const PALACE_INTERACTABLES: Record<string, InteractableDefinition> = {
   },
 };
 
+/**
+ * Chapter 4: the plaza outside Zeus's palace. These reuse the characters' ids (so their names, backend
+ * personas and Chapter 4 scripts line up); the scene shows, hides and moves them as the story unfolds.
+ */
+export const BETRAYAL_INTERACTABLES: Record<string, InteractableDefinition> = {
+  aphrodite: {
+    id: "aphrodite",
+    name: "Aphrodite",
+    textureKey: "npc-aphrodite",
+    x: 1060,
+    displaySize: { width: 72, height: 132 },
+    interactionRadius: 150,
+    prompt: TALK,
+  },
+  zeus: {
+    id: "zeus",
+    name: "Zeus",
+    textureKey: "npc-zeus",
+    x: 560,
+    displaySize: { width: 110, height: 200 },
+    interactionRadius: 150,
+    prompt: TALK,
+  },
+  athena: {
+    id: "athena",
+    name: "Athena",
+    textureKey: "npc-athena",
+    x: 1700,
+    displaySize: { width: 78, height: 140 },
+    interactionRadius: 150,
+    prompt: TALK,
+  },
+  ares: {
+    id: "ares",
+    name: "Ares",
+    textureKey: "npc-ares",
+    x: 1800,
+    displaySize: { width: 84, height: 146 },
+    interactionRadius: 140,
+    prompt: TALK,
+  },
+};
+
 /** Every interactable by id, for lookups that don't care which scene it is in. */
 export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...ENTRANCE_INTERACTABLES,
@@ -265,4 +308,5 @@ export const INTERACTABLES: Record<string, InteractableDefinition> = {
   ...ARENA_INTERACTABLES,
   ...HADES_INTERACTABLES,
   ...PALACE_INTERACTABLES,
+  ...BETRAYAL_INTERACTABLES,
 };

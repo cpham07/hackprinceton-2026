@@ -33,6 +33,7 @@ QUEST_DESCRIPTIONS = {
     "sealOfPassage": "answered Hades's questions and earned the Seal of Passage",
     "chapter2": "gathered all three seals and opened the way to Zeus's palace",
     "chapter3": "escaped Zeus's palace with the Master Lightning Bolt",
+    "chapter4": "was betrayed by Aphrodite and freed from her necklace by Athena and Ares",
 }
 CLUE_DESCRIPTIONS = {
     "gatekeeperRumor": "has heard a rumor that an ancient incantation can put the gatekeeper to sleep",
@@ -60,6 +61,11 @@ FLAG_DESCRIPTIONS = {
     "guardsPassed": "has passed the palace guards",
     "vaultOpen": "has opened Zeus's vault",
     "zeusConfrontationComplete": "has finished the confrontation with Zeus",
+    "aphroditeConfronted": "has met Aphrodite again outside Zeus's palace",
+    "boltSurrendered": "has given up the Master Lightning Bolt to Aphrodite",
+    "betrayalRevealed": "Aphrodite has revealed that she manipulated the mortal all along",
+    "zeusImprisoned": "Aphrodite has imprisoned Zeus with his own lightning",
+    "playerRescued": "Athena and Ares have freed the mortal from Aphrodite's necklace",
 }
 SEAL_NAMES = {"athena": "Seal of Wisdom", "ares": "Seal of Courage", "hades": "Seal of Passage"}
 
@@ -88,6 +94,8 @@ class Fact:
     requires_inventory: tuple[str, ...] = ()
     requires_quests: tuple[str, ...] = ()
     requires_flags: tuple[str, ...] = ()
+    # From this chapter on, `requires_flags` no longer apply (the event is simply in the past by then).
+    flags_waived_from_chapter: int | None = None
     # Regexes (case-insensitive) that must not appear in a reply while the fact is LOCKED.
     leak_patterns: tuple[str, ...] = ()
     # Regexes that must never appear in this character's replies, locked or not (e.g. a puzzle solution).
@@ -100,7 +108,10 @@ class Fact:
             and all(c in progress.clues for c in self.requires_clues)
             and all(i in progress.inventory for i in self.requires_inventory)
             and all(q in progress.quests for q in self.requires_quests)
-            and all(f in progress.flags for f in self.requires_flags)
+            and (
+                all(f in progress.flags for f in self.requires_flags)
+                or (self.flags_waived_from_chapter is not None and progress.chapter >= self.flags_waived_from_chapter)
+            )
         )
 
 
@@ -128,10 +139,14 @@ WORLD_FACTS: tuple[Fact, ...] = (
         topic="the inscription on the glowing statue",
         requires_clues=("statueWarning",),
     ),
-    # Future plot. Locked for everyone until Chapter 4; the model never sees the text before then.
+    # Future plot. The betrayal happens partway through Chapter 4, so during that chapter these unlock only
+    # once the game reports it (flag `betrayalRevealed`); from Chapter 5 on they are simply known.
+    # Until then the model never sees the text.
     Fact(
         "Aphrodite betrays the mortal: she takes the Master Lightning Bolt for herself and imprisons Zeus.",
         min_chapter=4,
+        requires_flags=("betrayalRevealed",),
+        flags_waived_from_chapter=5,
         leak_patterns=(
             r"\baphrodite\b[^.!?]{0,60}\bbetray\w*|\bbetray\w*[^.!?]{0,60}\baphrodite\b",
             r"\bimprison(?:s|ed|ing)?\b[^.!?]{0,30}\bzeus\b|\bzeus\b[^.!?]{0,30}\bimprison(?:s|ed|ing)?\b",
@@ -142,6 +157,8 @@ WORLD_FACTS: tuple[Fact, ...] = (
     Fact(
         "The necklace Aphrodite gives the mortal is a tracking charm: she uses it to follow them.",
         min_chapter=4,
+        requires_flags=("betrayalRevealed",),
+        flags_waived_from_chapter=5,
         leak_patterns=(r"\btracking (?:necklace|charm|spell|enchantment|amulet|pendant)\b",),
     ),
 )

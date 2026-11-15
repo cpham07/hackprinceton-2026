@@ -4,6 +4,7 @@ import { getDevStartScene } from "./devShortcuts";
 import { AresTraining } from "./scenes/AresTraining";
 import { HadesChamber } from "./scenes/HadesChamber";
 import { ZeusPalace } from "./scenes/ZeusPalace";
+import { OlympusBetrayal } from "./scenes/OlympusBetrayal";
 import { OlympusEntrance } from "./scenes/OlympusEntrance";
 import { OlympusHub } from "./scenes/OlympusHub";
 
@@ -15,6 +16,7 @@ export function createGame(parent: HTMLElement): Phaser.Game {
     [SCENES.ares, AresTraining],
     [SCENES.hades, HadesChamber],
     [SCENES.palace, ZeusPalace],
+    [SCENES.betrayal, OlympusBetrayal],
   ];
   const start = getDevStartScene();
   if (start) scenes.sort(([a], [b]) => Number(b === start) - Number(a === start));

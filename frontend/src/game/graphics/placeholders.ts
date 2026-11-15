@@ -66,6 +66,8 @@ export const TEXTURES = {
   vaultDoorOpen: "vault-door-open",
   masterBolt: "master-bolt",
   zeus: "npc-zeus",
+  // Chapter 4
+  goldenCage: "golden-cage",
   archHades: "arch-hades",
   libraryWall: "library-wall",
   libraryDoor: "library-door",
@@ -914,6 +916,17 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
     g.fillStyle(0xf2c21b); // crackling bolt in a raised hand
     g.fillTriangle(100, 10, 90, 44, 104, 44);
     g.fillTriangle(98, 40, 108, 40, 92, 70);
+  });
+
+  // ---- Chapter 4: the cage Aphrodite forges from Zeus's own lightning ----
+  bake(TEXTURES.goldenCage, 170, 250, () => {
+    g.fillStyle(0xd4af37); // top and base rings
+    g.fillRoundedRect(0, 0, 170, 18, 6);
+    g.fillRoundedRect(0, 232, 170, 18, 6);
+    g.fillStyle(0xffe066); // bars of light
+    for (let x = 10; x <= 154; x += 24) g.fillRect(x, 18, 7, 214);
+    g.fillStyle(0xfff6c2, 0.9);
+    for (let x = 12; x <= 156; x += 24) g.fillRect(x, 18, 2, 214);
   });
 
   g.destroy();

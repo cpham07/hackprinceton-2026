@@ -36,9 +36,25 @@ class TestFutureStoryIsRestrictedByChapter:
         assert BETRAYAL not in prompt and NECKLACE not in prompt
 
     @pytest.mark.parametrize("npc", ALL)
-    def test_from_chapter_four_the_story_may_be_discussed(self, npc):
+    def test_chapter_four_before_the_betrayal_still_hides_it(self, npc):
+        # The betrayal happens partway through Chapter 4: being in chapter 4 alone is not enough.
         prompt = system_prompt(npc, chapter=4)
+        assert BETRAYAL not in prompt and NECKLACE not in prompt
+
+    @pytest.mark.parametrize("npc", ALL)
+    def test_chapter_four_after_the_betrayal_may_discuss_it(self, npc):
+        prompt = system_prompt(npc, chapter=4, relevantFlags={"betrayalRevealed": True})
         assert BETRAYAL in prompt and NECKLACE in prompt
+        assert "Aphrodite has revealed that she manipulated the mortal" in prompt  # progress line
+
+    @pytest.mark.parametrize("npc", ALL)
+    def test_from_chapter_five_the_betrayal_is_simply_known(self, npc):
+        prompt = system_prompt(npc, chapter=5)
+        assert BETRAYAL in prompt and NECKLACE in prompt
+
+    def test_other_flags_cannot_unlock_the_betrayal_early(self):
+        prompt = system_prompt("zeus", chapter=3, relevantFlags={"betrayalRevealed": True})
+        assert BETRAYAL not in prompt  # chapter 4 is still required
 
     @pytest.mark.parametrize("npc", ALL)
     def test_locked_future_topics_are_named_only_generically(self, npc):
@@ -189,8 +205,12 @@ class TestReplyFilter:
         assert "betray" not in response.text and len(provider.chat_requests) == 2
 
     def test_the_same_words_are_fine_once_the_story_allows_them(self):
-        response, provider = self.run(["Aphrodite will betray you."], npcId="zeus", chapter=4)
+        response, provider = self.run(["Aphrodite will betray you."], npcId="zeus", chapter=4, relevantFlags={"betrayalRevealed": True})
         assert response.status_code == 200 and len(provider.chat_requests) == 1
+
+    def test_chapter_four_before_the_betrayal_still_filters_replies(self):
+        response, provider = self.run(["Aphrodite will betray you.", "Trust no one, mortal."], npcId="zeus", chapter=4)
+        assert response.json()["npcResponse"] == "Trust no one, mortal." and len(provider.chat_requests) == 2
 
     def test_ordinary_suspicion_is_not_blocked(self):
         fine = "You are being used, mortal. The sweetest voices on this mountain hide the sharpest knives."
@@ -249,4 +269,6 @@ def test_chapter_data_is_consistent():
     assert betrayal and all(f.topic == FUTURE_TOPIC for f in betrayal)
     early = Progress(chapter=3)
     assert not unlocked_facts("zeus", early) == [] and FUTURE_TOPIC in locked_topics("zeus", early)
-    assert leak_patterns("zeus", early) and not leak_patterns("zeus", Progress(chapter=4))
+    assert leak_patterns("zeus", early) and leak_patterns("zeus", Progress(chapter=4))
+    assert not leak_patterns("zeus", Progress(chapter=4, flags=frozenset({"betrayalRevealed"})))
+    assert not leak_patterns("zeus", Progress(chapter=5))

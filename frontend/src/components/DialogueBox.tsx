@@ -18,6 +18,8 @@ interface DialogueBoxProps {
   onSubmitResponse?: (response: PlayerResponse) => void;
   /** An NPC reply is on its way: submissions are blocked and a "thinking" line shows. */
   pending?: boolean;
+  /** One explicit, deterministic action offered beside the text field (e.g. handing over an item). */
+  choice?: { label: string; onChoose: () => void };
 }
 
 export default function DialogueBox({
@@ -29,6 +31,7 @@ export default function DialogueBox({
   npcId,
   onSubmitResponse,
   pending = false,
+  choice,
 }: DialogueBoxProps) {
   const [draft, setDraft] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -39,9 +42,10 @@ export default function DialogueBox({
   // drop auto-repeat keydowns so a held E doesn't fill the input with "eeee".
   const ignoreRepeats = useRef(true);
 
-  // Keep focus inside the box so Escape and typing always land here.
+  // Keep focus inside the box so Escape and typing always land here. A read-only box focuses itself rather
+  // than its Close button, so a stray Space or Enter (e.g. a player mashing jump) cannot dismiss unread text.
   useEffect(() => {
-    (hideInput ? closeRef.current : inputRef.current)?.focus();
+    (hideInput ? dialogRef.current : inputRef.current)?.focus();
   }, [hideInput]);
 
   // After a reply arrives, return focus to the text field unless the player moved it elsewhere in the box.
@@ -71,8 +75,12 @@ export default function DialogueBox({
     return () => window.removeEventListener("keyup", release, true);
   }, []);
 
+  // Show the newest line from its beginning: a long story beat must be readable from the top, not from
+  // its last sentence. (Short content simply ends up scrolled to the bottom.)
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
+    const log = logRef.current;
+    const newest = log?.lastElementChild as HTMLElement | null | undefined;
+    if (log && newest) log.scrollTop = newest.offsetTop - log.offsetTop;
   }, [lines, pending]);
 
   const handleSubmit = (event: FormEvent) => {
@@ -107,6 +115,7 @@ export default function DialogueBox({
   return (
     <div
       ref={dialogRef}
+      tabIndex={-1}
       className="dialogue-box"
       role="dialog"
       aria-label={`Conversation with ${npcName}`}
@@ -152,6 +161,12 @@ export default function DialogueBox({
           </p>
         )}
       </div>
+
+      {!hideInput && choice && (
+        <button type="button" className="dialogue-choice" onClick={choice.onChoose} disabled={pending}>
+          {choice.label}
+        </button>
+      )}
 
       {!hideInput && (
         <form className="dialogue-form" onSubmit={handleSubmit}>

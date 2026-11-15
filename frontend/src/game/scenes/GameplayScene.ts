@@ -107,6 +107,11 @@ export abstract class GameplayScene extends Phaser.Scene {
     this.interactions.update();
   }
 
+  /** True while a React overlay (dialogue, puzzle, completion screen) holds the keyboard. */
+  protected isInputLocked(): boolean {
+    return this.inputLocked;
+  }
+
   /** Whether E interactions are allowed when no overlay is open. Override to add conditions. */
   protected canInteract(): boolean {
     return true;

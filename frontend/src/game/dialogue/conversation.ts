@@ -6,6 +6,8 @@ import { containsPhrase } from "./phraseMatch";
 export interface DialogueStep {
   text: string;
   actions?: StoryAction[];
+  /** The conversation is over once this line is shown (the input is hidden). */
+  ends?: boolean;
 }
 
 /**
@@ -21,6 +23,18 @@ export interface Conversation {
   readOnly?: boolean;
   /** Every reply is checked for this phrase instead of advancing the script. */
   passphrase?: { phrase: string; success: DialogueStep; failure: string };
+  /**
+   * One explicit action offered as a button beside the text field, e.g. handing over an item.
+   * It is chosen by the player, never inferred from what they typed, so story beats that hinge on it
+   * stay deterministic. Choosing it shows `playerLine` and then `step`, and ends the conversation.
+   */
+  choice?: DialogueChoice;
+}
+
+export interface DialogueChoice {
+  label: string;
+  playerLine: string;
+  step: DialogueStep;
 }
 
 export interface ReplyResult {
@@ -53,6 +67,6 @@ export function getReply(
       : { step: { text: failure }, ended: false, freeform: false };
   }
   const scripted = conversation.replies?.[repliesGiven];
-  if (scripted) return { step: scripted, ended: false, freeform: false };
+  if (scripted) return { step: scripted, ended: scripted.ends === true, freeform: false };
   return { step: { text: conversation.fallback ?? "..." }, ended: false, freeform: true };
 }

@@ -89,6 +89,13 @@ export function addItem(itemId: string): boolean {
   return true;
 }
 
+/** Removes an item from the inventory. Returns true if it was held. */
+export function removeItem(itemId: string): boolean {
+  if (!state.inventory.includes(itemId)) return false;
+  update({ ...state, inventory: state.inventory.filter((item) => item !== itemId) });
+  return true;
+}
+
 export function hasItem(itemId: string): boolean {
   return state.inventory.includes(itemId);
 }

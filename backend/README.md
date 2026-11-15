@@ -102,7 +102,7 @@ rate-limited, `504` timeout. Error bodies are `{"detail": "..."}` and never cont
 - **No tools.** No function calling, no actions, no state. Nothing is stored between requests.
 
 To add a character, add a `Persona` in `npc_personas.py` and its `Fact`s in `story_knowledge.py`, then add tests.
-Chapter-4 facts are written but locked until `chapter >= 4`.
+The betrayal and necklace facts unlock in Chapter 4 only once the game sends the `betrayalRevealed` flag (the betrayal happens mid-chapter), and unconditionally from Chapter 5.
 
 ## Privacy
 

@@ -20,6 +20,7 @@ import { applyStoryActions } from "./game/story/actions";
 import { FLAGS } from "./game/story/chapter1";
 import { CH2_FLAGS, CHALLENGES } from "./game/story/chapter2";
 import { CH3_FLAGS } from "./game/story/chapter3";
+import { CH4_FLAGS } from "./game/story/chapter4";
 import { getConversation } from "./game/story/conversations";
 import type { DialogueLine, InputMethod, PlayerResponse } from "./game/types/dialogue";
 import { useCompletionScreen } from "./hooks/useCompletionScreen";
@@ -104,7 +105,13 @@ export default function App() {
     SCENES.palace,
     activeScene,
   );
-  const showChapterComplete = showChapter1Complete || showChapter2Complete || showChapter3Complete;
+  // The Chapter 4 screen opens when Chapter 4 is completed, until the Chapter 5 placeholder is closed.
+  const [showChapter4Complete, closeChapter4Complete] = useCompletionScreen(
+    gameState.flags[CH4_FLAGS.chapter4Complete] === true,
+    SCENES.betrayal,
+    activeScene,
+  );
+  const showChapterComplete = showChapter1Complete || showChapter2Complete || showChapter3Complete || showChapter4Complete;
 
   // Phaser asks for a dialogue; React decides whether to open one.
   useEffect(() => {
@@ -144,7 +151,8 @@ export default function App() {
     openPuzzleId !== null ||
     completedChallenge !== null ||
     showChapter2Complete ||
-    showChapter3Complete;
+    showChapter3Complete ||
+    showChapter4Complete;
   useEffect(() => {
     if (!overlayOpen) return;
     EventBus.emit("overlay:opened", { id: "app-overlay" });
@@ -241,6 +249,26 @@ export default function App() {
     [setSession, askNpc],
   );
 
+  /**
+   * The conversation's explicit action (e.g. handing over the bolt). Deterministic: the player chose it,
+   * nothing was inferred from text. Its line is shown, its story actions apply, and the conversation ends.
+   */
+  const chooseDialogueOption = useCallback(() => {
+    const current = sessionRef.current;
+    const choice = current?.conversation.choice;
+    if (!current || !choice || current.ended || current.pending) return;
+    applyStoryActions(choice.step.actions);
+    setSession({
+      ...current,
+      ended: true,
+      lines: [
+        ...current.lines,
+        { speaker: "player", text: choice.playerLine },
+        { speaker: "npc", text: choice.step.text, source: "scripted" },
+      ],
+    });
+  }, [setSession]);
+
   /** Closing the dialogue cancels any reply in flight; the recorder releases the microphone as it unmounts. */
   const closeDialogue = useCallback(() => {
     cancelNpcRequest();
@@ -261,6 +289,11 @@ export default function App() {
     EventBus.emit("scene:start", { key: SCENES.palace }); // refused by the scene unless the seals are held
     closeChapter2Complete();
   }, [closeChapter2Complete]);
+
+  const continueToChapter4 = useCallback(() => {
+    EventBus.emit("scene:start", { key: SCENES.betrayal }); // refused by the scene unless Chapter 3 is complete
+    closeChapter3Complete();
+  }, [closeChapter3Complete]);
 
   const returnFromChallenge = useCallback(() => {
     EventBus.emit("scene:start", { key: SCENES.hub });
@@ -286,6 +319,11 @@ export default function App() {
           onSubmit={(text) => submitPlayerResponse({ npcId: session.npcId, text, method: "text" })}
           onSubmitResponse={submitPlayerResponse}
           onClose={closeDialogue}
+          choice={
+            session.conversation.choice && !session.ended
+              ? { label: session.conversation.choice.label, onChoose: chooseDialogueOption }
+              : undefined
+          }
         />
       )}
       {openPuzzle && (
@@ -310,9 +348,8 @@ export default function App() {
       {showChapter1Complete && <ChapterComplete completedChapter={1} onContinue={continueToOlympus} />}
       {showChapter2Complete && <ChapterComplete completedChapter={2} onContinue={continueToPalace} />}
       {import.meta.env.DEV && <DevToolsPanel mode={aiMode} onModeChange={setAiMode} />}
-      {showChapter3Complete && (
-        <ChapterComplete completedChapter={3} onClose={closeChapter3Complete} />
-      )}
+      {showChapter3Complete && <ChapterComplete completedChapter={3} onContinue={continueToChapter4} />}
+      {showChapter4Complete && <ChapterComplete completedChapter={4} onClose={closeChapter4Complete} />}
     </div>
   );
 }

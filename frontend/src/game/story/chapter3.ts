@@ -6,10 +6,6 @@ import { CH2_FLAGS, hasAllSeals } from "./chapter2";
 
 export const CHAPTER_3_TITLE = "Chapter 3: The Forbidden Vault";
 
-/** What comes after Chapter 3. Chapter 4 is not playable yet; only its title is shown. */
-export const CHAPTER_4_TITLE = "Chapter 4: The Betrayal";
-export const CHAPTER_4_TEASER = `${CHAPTER_4_TITLE} \u2014 Coming Next`;
-
 export const CH3_FLAGS = {
   palaceEntered: "palaceEntered",
   statuePuzzleSolved: "statuePuzzleSolved",

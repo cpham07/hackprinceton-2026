@@ -1,11 +1,39 @@
 import { CHAPTER_1_TITLE, CLUES, getCurrentObjective } from "../game/story/chapter1";
 import { CHAPTER_2_TITLE, countSeals, getChapter2Objective, hasAllSeals, SEALS } from "../game/story/chapter2";
 import { CHAPTER_3_STEPS, CHAPTER_3_TITLE, getChapter3Objective, MASTER_BOLT } from "../game/story/chapter3";
+import { APHRODITE_NECKLACE, CHAPTER_4_STEPS, CHAPTER_4_TITLE, getChapter4Objective } from "../game/story/chapter4";
 import { useGameState } from "../hooks/useGameState";
 
 /** Compact HUD: the current chapter's objective, plus clues (Chapter 1) or seals (Chapter 2). */
 export default function QuestTracker() {
   const state = useGameState();
+
+  if (state.chapter >= 4) {
+    return (
+      <aside className="quest-tracker" aria-label="Quest tracker">
+        <div className="quest-chapter">{CHAPTER_4_TITLE}</div>
+        <div className="quest-objective">
+          <span className="quest-label">Current objective</span>
+          {getChapter4Objective(state)}
+        </div>
+        <ol className="quest-steps">
+          {CHAPTER_4_STEPS.map((step) => {
+            const done = step.done(state);
+            return (
+              <li key={step.id} className={done ? "step-done" : "step-todo"} data-step={step.id}>
+                <span aria-hidden="true">{done ? "✓" : "○"}</span> {step.label}
+              </li>
+            );
+          })}
+        </ol>
+        <p className="quest-seals-line">
+          Seals: {countSeals(state)}/{SEALS.length}
+          {state.inventory.includes(MASTER_BOLT) && <span className="quest-item"> · ⚡ Master Lightning Bolt</span>}
+          {state.inventory.includes(APHRODITE_NECKLACE) && <span className="quest-item quest-necklace"> · ✦ Aphrodite's necklace</span>}
+        </p>
+      </aside>
+    );
+  }
 
   if (state.chapter >= 3) {
     return (
