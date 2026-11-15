@@ -1,0 +1,7 @@
+{"id": "p01-dev-001", "audio_path": "recordings/p01/dev-001.webm", "transcript": "Somnus, let the heavens dream.", "speaker_id": "p01", "split": "dev", "tags": ["incantation"]}
+{"id": "p01-dev-002", "audio_path": "recordings/p01/dev-002.webm", "transcript": "Aphrodite said Zeus was dangerous.", "speaker_id": "p01", "split": "dev"}
+{"id": "p01-dev-003", "audio_path": "recordings/p01/dev-003.webm", "transcript": "Why should Hades help me find the Master Lightning Bolt?", "speaker_id": "p01", "split": "dev"}
+{"id": "p01-dev-004", "audio_path": "recordings/p01/dev-004.webm", "transcript": "I want to talk to you about the weather.", "speaker_id": "p01", "split": "dev", "tags": ["no-names"]}
+{"id": "p01-dev-005", "audio_path": "recordings/p01/dev-005.webm", "transcript": "", "speaker_id": "p01", "split": "dev", "tags": ["silence"]}
+{"id": "p01-test-001", "audio_path": "recordings/p01/test-001.webm", "transcript": "Theron and Lyra told me Argos guards the gates of Olympus.", "speaker_id": "p01", "split": "test"}
+{"id": "p01-test-002", "audio_path": "recordings/p01/test-002.webm", "transcript": "Athena and Ares both gave me their seals.", "speaker_id": "p01", "split": "test"}

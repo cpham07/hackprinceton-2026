@@ -14,7 +14,9 @@ from main import create_app
 FAKE_KEY = "sk-test-NOT-A-REAL-KEY-0123456789"
 WEBM = b"\x1a\x45\xdf\xa3" + b"\x00" * 400  # EBML header: sniffed as WebM
 OGG = b"OggS" + b"\x00" * 400
-MP4 = b"\x00\x00\x00\x18ftypM4A " + b"\x00" * 400
+MP4 = b"\x00\x00\x00\x18ftypisom" + b"\x00" * 400  # generic MP4 (e.g. Safari MediaRecorder)
+# Header of a real MacBook recording (QuickTime/Voice Memos): ftyp, major brand "M4A ", then mdat.
+M4A = b"\x00\x00\x00\x1cftypM4A \x00\x00\x00\x00M4A isommp42" + b"\x00\x01\xc4\x66mdat" + b"\x00" * 400
 MP3 = b"ID3" + b"\x00" * 400
 WAV = b"RIFF\x00\x00\x00\x00WAVE" + b"\x00" * 400
 

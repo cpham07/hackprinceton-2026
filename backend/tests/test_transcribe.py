@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from config import MYTHOLOGY_TRANSCRIPTION_PROMPT, Settings
-from helpers import FAKE_KEY, MP3, MP4, OGG, WAV, WEBM, FakeProvider, audio_upload, make_client
+from helpers import FAKE_KEY, M4A, MP3, MP4, OGG, WAV, WEBM, FakeProvider, audio_upload, make_client
 
 
 def post(client, **kwargs):
@@ -48,6 +48,8 @@ def test_whole_recording_is_sent_untouched():
         (WEBM, "audio/webm;codecs=opus", "recording.webm", "audio/webm"),
         (OGG, "audio/ogg", "recording.ogg", "audio/ogg"),
         (MP4, "audio/mp4", "recording.mp4", "audio/mp4"),
+        (M4A, "audio/x-m4a", "recording.m4a", "audio/mp4"),
+        (M4A, "audio/mp4", "recording.m4a", "audio/mp4"),
         (MP3, "audio/mpeg", "recording.mp3", "audio/mpeg"),
         (WAV, "audio/wav", "recording.wav", "audio/wav"),
         (WEBM, "application/octet-stream", "recording.webm", "audio/webm"),
