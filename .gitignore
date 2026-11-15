@@ -1,9 +1,65 @@
+# --- Environment files and secrets -------------------------------------------
+# Real env files hold API keys. Only the *.example template is committed.
 .env
 .env.*
-node_modules/
+!.env.example
+
+# --- Python ------------------------------------------------------------------
 .venv/
+venv/
 __pycache__/
-.DS_Store
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# --- Node / frontend (React + TypeScript + Vite + Phaser) -------------------
+node_modules/
 dist/
 *.tsbuildinfo
-!.env.example
+.vite/
+vite.config.*.timestamp-*
+
+# --- Logs and temporary files ------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# --- Local recordings, uploads and model files -------------------------------
+# Targeted on purpose: .mp3/.wav/.webm are also valid game-asset formats, so
+# only recording/upload folders and files named exactly recording.<ext> are ignored.
+recordings/
+uploads/
+recording.webm
+recording.ogg
+recording.m4a
+recording.mp4
+recording.mp3
+recording.wav
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.gguf
+*.ckpt
+.cache/
+
+# --- OS and editor files -----------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+
+# --- Claude Code: keep local settings and worktrees out of the repo ---------
+.claude/settings.local.json
+.claude/worktrees/
