@@ -5,6 +5,11 @@ export interface PlayerResponse {
   npcId: string;
   text: string;
   method: InputMethod;
+  /**
+   * Voice only: the real elapsed recording time (from the recorder's clock, pauses included) of the
+   * recording this transcript came from. Absent for typed replies and whenever it is not reliably known.
+   */
+  durationMs?: number;
 }
 
 /**

@@ -1,6 +1,6 @@
 # Backend
 
-FastAPI server for the Olympus adventure: **speech-to-text** and **contextual NPC dialogue**, both through an
+FastAPI server for the Olympus adventure: **speech-to-text**, **contextual NPC dialogue** and **speaking feedback**, all through an
 OpenAI-compatible provider. The browser never sees an API key; it only talks to this server.
 
 | Route | Purpose |
@@ -8,6 +8,7 @@ OpenAI-compatible provider. The browser never sees an API key; it only talks to 
 | `GET /health` | `{"status": "ok"}` |
 | `POST /transcribe` | multipart field `audio` → `{"text": "..."}` |
 | `POST /npc/dialogue` | JSON (see below) → `{"npcResponse": "...", "proposedAction": null}` |
+| `POST /speaking/feedback` | JSON (see below) → one positive observation and one suggestion for the Speaking Companion |
 | `GET /docs` | interactive API docs (OpenAPI at `/openapi.json`) |
 
 ## Run it
@@ -105,10 +106,38 @@ rate-limited, `504` timeout. Error bodies are `{"detail": "..."}` and never cont
 To add a character, add a `Persona` in `npc_personas.py` and its `Fact`s in `story_knowledge.py`, then add tests.
 The betrayal and necklace facts unlock in Chapter 4 only once the game sends the `betrayalRevealed` flag (the betrayal happens mid-chapter), and unconditionally from Chapter 5. In Chapter 5, Aphrodite's throne-room knowledge needs `enchantmentsBroken` and Zeus's needs `boltReturned`; both are told the outcome is not decided by talking, and replies announcing her surrender or the Guardian title are filtered, because those are scripted story beats.
 
+## `POST /speaking/feedback`
+
+Transcript-based feedback for the Speaking Companion (`speaking_feedback.py`). Uses the same provider, key and model
+as NPC dialogue (`NPC_DIALOGUE_*` / `OPENAI_*`); there is nothing extra to configure.
+
+```json
+{ "transcript": "I want help you, Athena.", "goals": ["english", "clarity", "pacing"],
+  "npcName": "Athena", "npcLine": "Will you help me, mortal?" }
+```
+
+- `transcript` is the text the player **confirmed** (they can edit the transcription before sending), 1–1000 characters.
+- `goals`: any of `english`, `clarity`, `pacing`, `clear_speech`; at least one besides `pacing` (pacing is measured in
+  the browser from the real recording time and is never sent to the model). No audio and no duration are sent.
+
+Response (validated here before it is returned; fields for goals the player did not choose are always empty):
+
+```json
+{ "positive": "You answered Athena's question directly.", "suggestion": "Add one reason, for example why you want to help.",
+  "focus": "clarity", "rephrasing": "I want to help you, Athena.", "vocabulary": [{ "word": "willing", "meaning": "ready to do something" }],
+  "answersQuestion": true, "givesReason": false }
+```
+
+Rules: exactly one positive observation and one suggestion. The model is told it only sees text, so it never comments on
+pronunciation, accent, speed, pauses, repetitions or fluency, never mentions speech disorders or disabilities, and never
+gives scores or compares the player to native speakers. Its JSON is checked against those rules and the player's goals; an
+answer that breaks them is retried once, then the endpoint returns `502`. Errors: `422` empty transcript or bad goals,
+`502` / `503` / `504` as for the other routes. Feedback never touches game state.
+
 ## Privacy
 
 Audio is held in memory for the request only and is never written to disk or kept. Neither audio, transcripts, player
-text nor replies are logged (only sizes, formats, models, status codes and timings). No conversation history is stored.
+text, replies nor feedback are logged (only sizes, formats, models, status codes and timings). No conversation history is stored.
 
 ## Try it with curl
 

@@ -1,4 +1,4 @@
-"""FastAPI server: health check, speech-to-text, and contextual NPC dialogue.
+"""FastAPI server: health check, speech-to-text, contextual NPC dialogue, and speaking feedback.
 
 Routes are thin. Validation, prompts and provider calls live in speech.py, npc_dialogue.py and provider.py;
 configuration is in config.py (environment variables, see .env.example).
@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from config import Settings, load_settings
 from errors import ServiceError
 from npc_dialogue import NpcDialogueRequest, NpcDialogueResponse, generate_reply
+from speaking_feedback import SpeakingFeedback, SpeakingFeedbackRequest, generate_feedback
 from speech import SUPPORTED_FORMATS_TEXT, transcribe, validate_audio
 
 logger = logging.getLogger("backend")
@@ -133,6 +134,29 @@ def create_app(settings: Settings | None = None, transport: httpx.AsyncBaseTrans
     ) -> NpcDialogueResponse:
         reply = await generate_reply(body, settings, client)
         return NpcDialogueResponse(npcResponse=reply, proposedAction=None)
+
+    @app.post(
+        "/speaking/feedback",
+        response_model=SpeakingFeedback,
+        summary="Feedback on a confirmed spoken reply",
+        description=(
+            "Transcript-based communication feedback for the Speaking Companion: one positive observation and one "
+            "suggestion, shaped by the player's goals. Never judges pronunciation, accent or fluency, never scores. "
+            "Nothing is stored and game state is never touched."
+        ),
+        responses={
+            422: {"description": "Empty transcript, unknown goal, or no text-based goal (pacing alone is measured in the browser)."},
+            502: {"description": "The provider failed, or its feedback broke the rules twice."},
+            503: {"description": "Speaking feedback is not configured, or the provider is busy."},
+            504: {"description": "The provider timed out."},
+        },
+    )
+    async def speaking_feedback_endpoint(
+        body: SpeakingFeedbackRequest,
+        settings: Annotated[Settings, Depends(get_settings)],
+        client: Annotated[httpx.AsyncClient, Depends(get_http_client)],
+    ) -> SpeakingFeedback:
+        return await generate_feedback(body, settings, client)
 
     return app
 

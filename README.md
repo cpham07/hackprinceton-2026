@@ -34,6 +34,27 @@ npm install
 npm run dev
 ```
 
+Tests: `cd frontend && npm test` (unit tests, Vitest) and `cd backend && pytest` (no network, no paid calls).
+
+## Speaking Companion
+
+An optional coach for players practising spoken English. On the first visit a small window asks for goals (Improve my
+English, Express my ideas clearly, Improve my pacing, Practice speaking clearly); you can skip it. The 🗣 button in the
+top-right corner opens the panel, where you can change goals, show or hide detailed tips, reset your practice totals, or
+turn the companion off.
+
+After each **voice** reply you confirm, the panel shows:
+- **Measured:** the number of words in your confirmed reply, the real recording time, an approximate words-per-minute
+  figure (approximate because the recording includes pauses; slower is not wrong), your voice-reply count and total
+  speaking time. If the recording time is not available it says so instead of guessing.
+- **From an AI coach (backend, `POST /speaking/feedback`):** one thing you did well and one suggestion, based only on the
+  words you confirmed, with optional details (a rephrasing, useful words, whether you answered the question and gave a
+  reason). It never judges pronunciation, accent or fluency and never gives scores.
+
+The tip is fetched in the background: the conversation never waits for it, and it never affects the story. Typed replies
+work everywhere and are never analysed. This browser stores only your goals, panel preferences and practice totals;
+recordings and transcripts are not kept.
+
 ## Playing the Chapter 1 prototype
 
 - Move: A/D or left/right arrows

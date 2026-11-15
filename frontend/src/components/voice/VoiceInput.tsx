@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "re
 import type { PlayerResponse } from "../../game/types/dialogue";
 import type { Recording } from "../../hooks/useVoiceRecorder";
 import { transcribeAudio, TranscriptionError, type TranscriptionConfig } from "../../services/transcriptionClient";
+import { buildConfirmedResponse, type TranscriptSource } from "./confirmedResponse";
 import VoiceRecorder from "./VoiceRecorder";
 import "./voice.css";
 
@@ -23,7 +24,8 @@ type Stage =
   | { kind: "record" }
   | { kind: "recorded"; recording: Recording }
   | { kind: "transcribing" }
-  | { kind: "review"; source: "real" | "mock" | "typed" };
+  /** durationMs: the recorder's elapsed time for a real transcription (carried to the confirmed response). */
+  | { kind: "review"; source: TranscriptSource; durationMs?: number };
 
 function Playback({ blob }: { blob: Blob }) {
   // Created and revoked in the same effect, so React StrictMode's simulated unmount can't revoke a URL still in use.
@@ -76,7 +78,7 @@ export default function VoiceInput({
     try {
       const text = await transcribeAudio(recording.blob, { signal: controller.signal, config: transcriptionConfig });
       setDraft(text);
-      setStage({ kind: "review", source: "real" });
+      setStage({ kind: "review", source: "real", durationMs: recording.durationMs });
     } catch (err) {
       if (err instanceof TranscriptionError && err.kind === "cancelled") return;
       setError(
@@ -114,8 +116,8 @@ export default function VoiceInput({
   const confirm = () => {
     const text = draft.trim();
     if (!text || stage.kind !== "review" || disabled) return;
-    // Text the player typed from scratch is honestly a text response.
-    onSubmit({ npcId, text, method: stage.source === "typed" ? "text" : "voice" });
+    // Text the player typed from scratch is honestly a text response; a real recording's time travels with it.
+    onSubmit(buildConfirmedResponse(npcId, text, stage.source, stage.durationMs));
     reset();
   };
 

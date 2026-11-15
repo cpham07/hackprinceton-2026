@@ -1,0 +1,284 @@
+/* Speaking Companion. Top-right corner: clear of the quest tracker (top-left), the dialogue box (which
+   narrows while the panel is open, see below), the dev panel (bottom-left) and the toasts (bottom-right). */
+
+.companion-launcher-wrap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+}
+
+.companion-launcher {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 2px solid #d4af37;
+  border-radius: 50%;
+  background: rgba(27, 18, 40, 0.9);
+  color: #f6f1e7;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.companion-launcher-off {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.companion-launcher:focus-visible,
+.companion-panel button:focus-visible,
+.companion-panel input:focus-visible,
+.companion-goals button:focus-visible,
+.companion-goals input:focus-visible {
+  outline: 3px solid #f2c94c;
+  outline-offset: 2px;
+}
+
+.companion-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f2c94c;
+}
+
+.companion-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+  width: 300px;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 10px 14px 12px;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  background: rgba(27, 18, 40, 0.94);
+  color: #f6f1e7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* While the panel is open, the dialogue box ends before it instead of running underneath. */
+.game-shell.companion-open .dialogue-box {
+  width: min(860px, calc(100vw - 364px - 332px));
+}
+
+.companion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.companion-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #f2c94c;
+}
+
+.companion-icon-btn {
+  border: none;
+  background: transparent;
+  color: #f6f1e7;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.companion-section {
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.companion-section p {
+  margin: 0 0 6px;
+}
+
+.companion-heading {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #cbb8e6;
+}
+
+.companion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.companion-chip {
+  padding: 2px 8px;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.companion-muted {
+  color: #cbb8e6;
+}
+
+.companion-measure {
+  color: #e8e0f2;
+}
+
+.companion-pending {
+  font-style: italic;
+  color: #cbb8e6;
+}
+
+.companion-error {
+  color: #f5b041;
+}
+
+.companion-feedback p {
+  margin: 0 0 6px;
+}
+
+.companion-details {
+  margin: 4px 0 6px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(212, 175, 55, 0.5);
+}
+
+.companion-source {
+  font-size: 12px;
+  color: #a998c4;
+}
+
+.companion-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.companion-toggle {
+  cursor: pointer;
+}
+
+.companion-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.companion-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #f2c94c;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.companion-btn {
+  padding: 6px 14px;
+  border: 1px solid #d4af37;
+  border-radius: 8px;
+  background: #d4af37;
+  color: #1b1228;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.companion-btn-secondary {
+  background: transparent;
+  color: #f6f1e7;
+}
+
+/* Goal picker (modal) */
+
+.companion-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 6, 16, 0.55);
+}
+
+.companion-goals {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 18px 22px;
+  border: 2px solid #d4af37;
+  border-radius: 14px;
+  background: rgba(27, 18, 40, 0.97);
+  color: #f6f1e7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.companion-goals-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  color: #f2c94c;
+}
+
+.companion-goals-intro {
+  margin: 0 0 10px;
+}
+
+.companion-goals-list {
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+}
+
+.companion-goals-list legend {
+  margin-bottom: 6px;
+  color: #cbb8e6;
+}
+
+.companion-goal {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+
+.companion-goal input {
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+}
+
+.companion-goal-hint {
+  display: block;
+  font-size: 13px;
+  color: #cbb8e6;
+}
+
+.companion-privacy {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #a998c4;
+}
+
+.companion-actions {
+  display: flex;
+  gap: 10px;
+}

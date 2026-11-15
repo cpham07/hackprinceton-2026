@@ -9,6 +9,9 @@ import EndingScreen from "./components/EndingScreen";
 import GameCanvas from "./components/GameCanvas";
 import QuestTracker from "./components/QuestTracker";
 import SymbolPuzzle from "./components/SymbolPuzzle";
+import SpeakingCompanion from "./components/companion/SpeakingCompanion";
+import { speakingCompanion } from "./companion/companionStore";
+import { useSpeakingCompanion } from "./hooks/useSpeakingCompanion";
 import { SCENES, type SceneKey } from "./game/constants";
 import { EventBus } from "./game/EventBus";
 import { INTERACTABLES } from "./game/data/interactables";
@@ -232,6 +235,17 @@ export default function App() {
       const text = response.text.trim();
       if (!current || current.ended || current.pending || current.npcId !== response.npcId || !text) return;
 
+      // A confirmed voice reply also goes to the Speaking Companion (measurements and an optional tip). It runs
+      // in the background, has no access to the story state, and cannot delay or change the conversation.
+      if (response.method === "voice") {
+        try {
+          const npcLine = [...current.lines].reverse().find((line) => line.speaker === "npc")?.text;
+          speakingCompanion.recordVoiceTurn(response, { npcName: INTERACTABLES[current.npcId].name, npcLine });
+        } catch {
+          /* the companion is optional: never let it interfere with the dialogue */
+        }
+      }
+
       const reply = getReply(current.conversation, current.repliesGiven, { ...response, text });
 
       if (reply.freeform && isAiEligible(current.npcId, getGameState().chapter) && aiModeRef.current !== "off") {
@@ -313,10 +327,16 @@ export default function App() {
 
   const openPuzzle = openPuzzleId ? PUZZLES[openPuzzleId] : null;
 
+  // The Speaking Companion appears once a scene is running (so its goal picker's input lock reaches the
+  // scene) and steps aside for the full-screen chapter screens.
+  const companion = useSpeakingCompanion();
+  const showCompanion = activeScene !== null && !showChapterComplete;
+
   return (
-    <div className="game-shell">
+    <div className={`game-shell${showCompanion && companion.prefs.expanded ? " companion-open" : ""}`}>
       <GameCanvas />
       {activeScene && !showChapterComplete && <QuestTracker />}
+      {showCompanion && <SpeakingCompanion />}
       {!showChapterComplete && <ClueToast />}
       {!showChapterComplete && <SealToast />}
       {session && (
