@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { BATTLE_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
-import { HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
+import { GOD_SCALE, HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { brokenCount, ENCHANTMENTS, isEnchantmentBroken, strikeEnchantment } from "../puzzles/enchantmentNodes";
 import { getGameState, subscribe } from "../state/gameState";
@@ -90,9 +90,9 @@ export class BattleForOlympus extends GameplayScene {
       }
     }
 
-    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170, 250).setDepth(6);
+    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170 * GOD_SCALE, 250 * GOD_SCALE).setDepth(6);
     // In Aphrodite's hand (her art's hand point; the offset is for the placeholder).
-    const hand = aphrodite?.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET) ?? { x: THRONE_X + 34, y: GROUND_Y - 118 };
+    const hand = aphrodite?.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET) ?? { x: THRONE_X + HELD_BOLT_PLACEHOLDER_OFFSET.x, y: GROUND_Y + HELD_BOLT_PLACEHOLDER_OFFSET.y };
     this.heldBolt = this.add.image(hand.x, hand.y, TEXTURES.masterBolt).setDisplaySize(30, 60).setDepth(6);
     this.darkness = this.add
       .rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x1a0b2e)

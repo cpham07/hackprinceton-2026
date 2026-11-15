@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import type { InteractableDefinition } from "../data/interactables";
-import { ensureIdleAnimation, getCharacterArt, type CharacterArt } from "../graphics/characterArt";
+import { ensureIdleAnimation, getCharacterArt, GOD_SCALE, GOD_TEXTURES, type CharacterArt } from "../graphics/characterArt";
 import { TEXTURES } from "../graphics/placeholders";
 import type { Interactable } from "../systems/InteractionManager";
 
@@ -35,9 +35,11 @@ export class Npc extends Phaser.GameObjects.Sprite implements Interactable {
     this.prompt = def.prompt;
     this.kind = def.kind ?? "dialogue";
 
+    const sizeFactor = GOD_TEXTURES.has(def.textureKey) ? GOD_SCALE : 1;
     this.art = getCharacterArt(scene, def.textureKey);
     if (this.art) {
-      const { visible, feetY: artFeetY, anchorX, frameWidth, frameHeight, worldHeight } = this.art;
+      const { visible, feetY: artFeetY, anchorX, frameWidth, frameHeight } = this.art;
+      const worldHeight = this.art.worldHeight * sizeFactor;
       const scale = worldHeight / (artFeetY - visible.y);
       this.setCrop(visible.x, visible.y, visible.width, visible.height);
       this.setOrigin(anchorX / frameWidth, artFeetY / frameHeight);
@@ -47,8 +49,8 @@ export class Npc extends Phaser.GameObjects.Sprite implements Interactable {
       if (idle) this.play(idle);
     } else {
       this.setOrigin(0.5, 1);
-      this.setDisplaySize(def.displaySize.width, def.displaySize.height);
-      this.size = { ...def.displaySize };
+      this.size = { width: def.displaySize.width * sizeFactor, height: def.displaySize.height * sizeFactor };
+      this.setDisplaySize(this.size.width, this.size.height);
     }
 
     if (def.glowColor !== undefined) {

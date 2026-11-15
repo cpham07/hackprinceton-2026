@@ -3,7 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { EventBus } from "../EventBus";
 import { BETRAYAL_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
-import { HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
+import { GOD_SCALE, HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { getGameState, hasItem, subscribe } from "../state/gameState";
 import { applyStoryActions } from "../story/actions";
@@ -93,7 +93,7 @@ export class OlympusBetrayal extends GameplayScene {
       if (def.id === "ares") this.ares = npc;
     }
 
-    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170, 250).setDepth(6).setVisible(false);
+    this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170 * GOD_SCALE, 250 * GOD_SCALE).setDepth(6).setVisible(false);
     const hand = this.aphrodite.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET); // her art's hand point, if she has art
     this.heldBolt = this.add
       .image(hand.x, hand.y, TEXTURES.masterBolt)

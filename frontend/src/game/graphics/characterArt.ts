@@ -74,8 +74,21 @@ export const CHARACTER_ART: Partial<Record<string, CharacterArt>> = {
   },
 };
 
+/**
+ * The gods are drawn this many times larger than their measurements above (or their placeholder's
+ * displaySize), so they tower over the mortals. Their name label, E prompt, glow and held props follow.
+ */
+export const GOD_SCALE = 2;
+export const GOD_TEXTURES: ReadonlySet<string> = new Set([
+  TEXTURES.zeus,
+  TEXTURES.athena,
+  TEXTURES.aphrodite,
+  TEXTURES.ares,
+  TEXTURES.hades,
+]);
+
 /** Where the bolt sits relative to the placeholder Aphrodite's feet, used only if her art did not load. */
-export const HELD_BOLT_PLACEHOLDER_OFFSET = { x: 34, y: -118 };
+export const HELD_BOLT_PLACEHOLDER_OFFSET = { x: 34 * GOD_SCALE, y: -118 * GOD_SCALE };
 
 const frameKey =(textureKey: string, index: number) => (index === 0 ? textureKey : `${textureKey}-${index}`);
 
