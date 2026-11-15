@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="1024" viewBox="0 0 512 1024">
+  <!-- Ares, god of war. Drawn to match the hand-inked style of zeus.png / athena.png:
+       wobbly dark-brown outlines, flat muted colours, light shading. Feet at y=830, centred near x=256. -->
+  <defs>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/>
+    </filter>
+  </defs>
+  <g filter="url(#ink)" stroke="#3d2b1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- cape, behind everything -->
+    <path d="M196 352 C170 440 160 560 150 700 C190 730 230 720 262 735 C300 720 340 735 372 705 C360 580 345 450 322 350 Z" fill="#8e2620"/>
+    <path d="M175 520 C172 600 165 660 160 700 M345 520 C350 600 356 650 362 700" fill="none" stroke="#5e1712" stroke-width="2"/>
+
+    <!-- spear shaft (held in his right hand, viewer's left) -->
+    <path d="M150 128 L150 836" fill="none" stroke="#3d2b1f" stroke-width="9"/>
+    <path d="M150 128 L150 836" fill="none" stroke="#8a5a32" stroke-width="5"/>
+    <!-- spear head -->
+    <path d="M150 68 C162 95 164 118 156 140 L144 140 C136 118 138 95 150 68 Z" fill="#c9c6bd"/>
+    <path d="M150 74 L150 138" fill="none" stroke="#8d8a82" stroke-width="2"/>
+    <path d="M142 140 L158 140 L156 152 L144 152 Z" fill="#c98f3c"/>
+
+    <!-- back leg (his left, viewer's right) -->
+    <path d="M284 590 C286 630 296 650 298 672 C294 710 300 760 304 800 L326 800 C334 760 336 712 326 676 C322 650 322 620 320 590 Z" fill="#c98a5e"/>
+    <!-- front leg -->
+    <path d="M202 590 C198 620 196 648 200 672 C188 712 190 760 196 800 L222 800 C228 760 234 712 226 676 C232 650 238 620 240 590 Z" fill="#c98a5e"/>
+    <path d="M206 660 C212 668 222 668 228 660 M300 660 C306 668 316 668 324 660" fill="none" stroke="#a86c45" stroke-width="2"/>
+
+    <!-- greaves -->
+    <path d="M190 690 C186 728 190 772 196 806 L224 806 C230 772 234 728 230 690 C216 682 202 682 190 690 Z" fill="#b8372b"/>
+    <path d="M194 690 C204 684 216 684 228 690" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M298 690 C296 728 300 772 304 806 L330 806 C336 772 338 728 332 690 C320 682 308 682 298 690 Z" fill="#b8372b"/>
+    <path d="M302 690 C310 684 318 684 328 690" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M204 700 C203 740 204 775 206 800 M312 700 C312 740 312 775 314 800" fill="none" stroke="#8e2620" stroke-width="2"/>
+
+    <!-- sandals -->
+    <path d="M186 806 C184 820 186 830 194 832 L238 832 C242 826 238 816 228 806 Z" fill="#6b4226"/>
+    <path d="M298 806 C296 820 298 830 306 832 L348 832 C352 826 348 816 336 806 Z" fill="#6b4226"/>
+
+
+    <g fill="none" stroke="#5e1712" stroke-width="1.4" opacity="0.8">
+      <path d="M160 600 L176 584 M158 620 L178 600 M156 640 L180 616 M155 660 L182 634 M154 680 L184 652"/>
+      <path d="M350 590 L362 604 M348 614 L364 630 M350 640 L366 656 M352 664 L368 680"/>
+      <path d="M304 372 L314 362 M304 392 L316 380 M304 412 L318 398 M304 432 L318 418 M304 452 L318 438 M304 472 L316 460 M304 492 L314 482"/>
+    </g>
+    <g fill="none" stroke="#a86c45" stroke-width="1.4">
+      <path d="M228 616 L238 606 M228 632 L238 622 M228 648 L236 640 M310 612 L318 604 M310 628 L318 620 M310 644 L318 636"/>
+    </g>
+    <!-- leather skirt (pteruges) -->
+    <path d="M196 515 L188 610 L326 610 L318 515 Z" fill="#7a4a2a"/>
+    <path d="M212 520 L208 610 M232 520 L230 610 M252 520 L252 610 M272 520 L274 610 M292 520 L296 610" fill="none" stroke="#4f2f1a" stroke-width="2.5"/>
+    <g fill="#d9a441" stroke="none">
+      <circle cx="200" cy="600" r="4"/><circle cx="220" cy="600" r="4"/><circle cx="241" cy="600" r="4"/>
+      <circle cx="262" cy="600" r="4"/><circle cx="284" cy="600" r="4"/><circle cx="306" cy="600" r="4"/>
+    </g>
+
+    <!-- muscle cuirass -->
+    <path d="M192 352 C186 410 190 470 198 522 L316 522 C324 470 328 410 322 352 C290 338 226 338 192 352 Z" fill="#b8372b"/>
+    <path d="M222 410 C238 425 256 425 257 405 C258 425 278 425 294 410" fill="none" stroke="#7d1f18" stroke-width="2.5"/>
+    <path d="M226 462 C240 470 252 470 257 460 C262 470 276 470 290 462" fill="none" stroke="#7d1f18" stroke-width="2.5"/>
+    <path d="M257 430 L257 515" fill="none" stroke="#7d1f18" stroke-width="2"/>
+    <path d="M198 515 L316 515" fill="none" stroke="#d9a441" stroke-width="6"/>
+    <path d="M200 356 C232 346 284 346 316 356" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <!-- shading down the side -->
+    <path d="M300 360 C312 420 312 470 306 515 L316 515 C324 470 326 410 320 356 Z" fill="#8e2620" stroke="none"/>
+
+    <!-- shoulder guards -->
+    <path d="M182 352 C186 330 214 322 232 340 C228 360 206 376 184 376 Z" fill="#b8372b"/>
+    <path d="M330 352 C326 330 298 322 280 340 C284 360 306 376 328 376 Z" fill="#b8372b"/>
+
+    <!-- spear arm: upper arm, bracer, fist round the shaft -->
+    <path d="M186 372 C170 400 160 430 156 458 L180 466 C186 440 196 410 206 384 Z" fill="#c98a5e"/>
+    <path d="M150 452 L182 460 L178 486 L148 480 Z" fill="#b8372b"/>
+    <path d="M150 452 L182 460 M148 480 L178 486" fill="none" stroke="#d9a441" stroke-width="3"/>
+    <path d="M134 478 C132 470 146 466 166 470 C172 482 170 500 160 506 C146 508 136 500 134 478 Z" fill="#c98a5e"/>
+    <path d="M140 486 L162 488 M140 496 L160 498" fill="none" stroke="#a86c45" stroke-width="2"/>
+
+    <!-- neck and beard -->
+    <path d="M236 300 L234 346 L282 346 L280 300 Z" fill="#c98a5e"/>
+    <path d="M228 296 C224 322 236 346 250 356 L258 366 L266 356 C280 346 292 322 288 296 C278 306 238 306 228 296 Z" fill="#3b2418"/><path d="M246 312 C252 316 264 316 270 312" fill="none" stroke="#1a0f0b" stroke-width="3"/><path d="M238 326 L240 340 M252 330 L254 348 M266 330 L264 348 M278 326 L276 340" fill="none" stroke="#5a3a28" stroke-width="1.6"/>
+
+    <!-- Corinthian helmet -->
+    <path d="M206 262 C204 216 226 190 258 190 C292 190 314 216 312 262 C312 292 302 318 290 326 L282 296 L268 300 L266 330 L250 330 L248 300 L234 296 L226 326 C214 318 206 292 206 262 Z" fill="#c0452f"/>
+    <!-- eye slits and nose guard -->
+    <path d="M226 262 C236 256 246 258 252 266 L250 276 C242 274 232 274 226 270 Z" fill="#241712"/>
+    <path d="M290 262 C280 256 270 258 264 266 L266 276 C274 274 284 274 290 270 Z" fill="#241712"/>
+    <path d="M254 248 L262 248 L262 300 L254 300 Z" fill="#c0452f"/>
+    <circle cx="240" cy="268" r="2.5" fill="#f2e6c9" stroke="none"/>
+    <circle cx="276" cy="268" r="2.5" fill="#f2e6c9" stroke="none"/>
+    <!-- brow ridge and rim -->
+    <path d="M214 244 C236 236 280 236 304 244" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M226 326 C214 318 206 292 206 262" fill="none" stroke="#d9a441" stroke-width="3"/>
+    <path d="M290 326 C302 318 312 292 312 262" fill="none" stroke="#d9a441" stroke-width="3"/>
+    <path d="M296 220 C306 236 310 252 310 268" fill="none" stroke="#8e2620" stroke-width="4"/>
+
+    <!-- crest: black horsehair with a red ridge, front to back -->
+    <path d="M216 222 C212 170 246 140 290 146 C326 152 346 186 338 232 C326 212 312 196 292 190 C262 182 236 196 216 222 Z" fill="#2a1a1a"/>
+    <path d="M222 206 C232 172 262 156 292 160 C318 166 332 186 334 212" fill="none" stroke="#7a1f1f" stroke-width="5"/>
+    <path d="M236 186 L244 168 M256 176 L260 156 M278 172 L284 152 M300 176 L310 158 M318 188 L330 174" fill="none" stroke="#4a2a2a" stroke-width="2"/>
+    <path d="M250 190 L246 178 L266 178 L262 190 Z" fill="#d9a441"/>
+
+    <!-- round shield on his left arm (viewer's right), in front of the body -->
+    <circle cx="352" cy="470" r="98" fill="#b8372b"/>
+    <circle cx="352" cy="470" r="98" fill="none" stroke="#d9a441" stroke-width="8"/>
+    <circle cx="352" cy="470" r="70" fill="none" stroke="#d9a441" stroke-width="4"/>
+    <path d="M300 400 C330 380 378 382 402 404" fill="none" stroke="#e07a62" stroke-width="5" opacity="0.7"/>
+    <path d="M410 520 C390 556 340 572 300 552 C340 560 382 546 410 520 Z" fill="#8e2620" stroke="none"/>
+    <!-- a spear emblem in the middle -->
+    <polygon points="352.0,424.0 358.9,453.4 384.5,437.5 368.6,463.1 398.0,470.0 368.6,476.9 384.5,502.5 358.9,486.6 352.0,516.0 345.1,486.6 319.5,502.5 335.4,476.9 306.0,470.0 335.4,463.1 319.5,437.5 345.1,453.4" fill="#d9a441"/>
+    <circle cx="352" cy="470" r="9" fill="#b8372b"/>
+  </g>
+</svg>
