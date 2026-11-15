@@ -1,0 +1,6 @@
+# Optional: local Whisper experiments in ml/ (M3). Not needed by the server or its tests.
+# pip install -r requirements-ml.txt
+-r requirements-dev.txt
+torch==2.15.0
+transformers==5.23.0
+peft==0.21.3
