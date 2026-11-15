@@ -40,7 +40,8 @@ pytest
 | `NPC_DIALOGUE_MODEL` | `gpt-4o-mini` | Chat model. |
 | `TRANSCRIPTION_API_KEY` / `_BASE_URL`, `NPC_DIALOGUE_API_KEY` / `_BASE_URL` | *(fall back to the above)* | Use a different provider per service. |
 | `TRANSCRIPTION_LANGUAGE` | `en` | Language hint. Blank = auto-detect (can misjudge accented English). |
-| `TRANSCRIPTION_PROMPT` | *(off)* | Optional vocabulary hint. Off by default: some models echo a prompt back as the transcript of silence. |
+| `TRANSCRIPTION_VOCABULARY_HINTS` | `true` | Sends the mythology vocabulary hint (`MYTHOLOGY_TRANSCRIPTION_PROMPT` in `config.py`) to the transcription model. `false` = plain transcription. A transcript that only echoes the hint (typical for silence) is returned as empty text. |
+| `TRANSCRIPTION_PROMPT` | *(the mythology hint)* | Replaces the vocabulary hint text. |
 | `MAX_AUDIO_BYTES` | `10485760` | Upload limit (10 MB). |
 | `TRANSCRIPTION_TIMEOUT_SECONDS` / `NPC_DIALOGUE_TIMEOUT_SECONDS` | `45` / `20` | Provider timeouts (kept under the frontend's 60 s / 30 s). |
 | `NPC_DIALOGUE_MAX_TOKENS`, `NPC_DIALOGUE_TEMPERATURE` | `220`, `0.8` | Reply length and variety. |

@@ -3,6 +3,7 @@ import logging
 import httpx
 import pytest
 
+from config import MYTHOLOGY_TRANSCRIPTION_PROMPT, Settings
 from helpers import FAKE_KEY, MP3, MP4, OGG, WAV, WEBM, FakeProvider, audio_upload, make_client
 
 
@@ -29,7 +30,7 @@ def test_sends_a_correct_request_to_the_provider():
     assert request.headers["authorization"] == f"Bearer {FAKE_KEY}"
     assert b'name="model"\r\n\r\nwhisper-1' in body
     assert b'name="language"\r\n\r\nen' in body and b'name="response_format"\r\n\r\njson' in body
-    assert b'name="prompt"' not in body  # off by default: a prompt can be echoed back as a fake transcript
+    assert b'name="prompt"\r\n\r\n' + MYTHOLOGY_TRANSCRIPTION_PROMPT.encode() in body  # on by default
     assert b'name="file"; filename="recording.webm"' in body and b"Content-Type: audio/webm" in body
 
 
@@ -147,6 +148,135 @@ def test_optional_prompt_and_language_are_forwarded_only_when_configured():
         post(client)
     body = provider.transcription_requests[0].content
     assert b'name="prompt"\r\n\r\nZeus, Hades' in body and b'name="language"' not in body
+
+
+VALIDATED_PROMPT = "Aphrodite, Athena, Ares, Hades, Zeus, Olympus, Argos, Theron, Lyra, Somnus, Master Lightning Bolt."
+
+
+class TestMythologyVocabulary:
+    """The validated vocabulary hint reaches whisper-1 server-side; disabling it restores plain transcription."""
+
+    def test_the_configured_prompt_is_the_validated_one(self):
+        assert MYTHOLOGY_TRANSCRIPTION_PROMPT == VALIDATED_PROMPT
+        assert Settings.from_env({}).transcription_prompt == VALIDATED_PROMPT
+
+    @pytest.mark.parametrize(("data", "declared", "name", "mime"), [
+        (WEBM, "audio/webm;codecs=opus", "recording.webm", "audio/webm"),
+        (OGG, "audio/ogg", "recording.ogg", "audio/ogg"),
+        (MP3, "audio/mpeg", "recording.mp3", "audio/mpeg"),
+        (WAV, "audio/wav", "recording.wav", "audio/wav"),
+    ])
+    def test_enabled_request_carries_prompt_audio_and_mime(self, data, declared, name, mime):
+        provider = FakeProvider()
+        settings = Settings.from_env({"OPENAI_API_KEY": FAKE_KEY})
+        with make_client(provider, **{"transcription_prompt": settings.transcription_prompt}) as client:
+            response = post(client, data=data, content_type=declared)
+        assert response.status_code == 200 and response.json() == {"text": "I came here to speak with you."}
+        body = provider.transcription_requests[0].content
+        assert b'name="prompt"\r\n\r\n' + VALIDATED_PROMPT.encode() + b"\r\n" in body
+        assert b'name="model"\r\n\r\nwhisper-1' in body
+        assert f'filename="{name}"'.encode() in body and f"Content-Type: {mime}".encode() in body
+        assert data in body
+
+    @pytest.mark.parametrize("value", ["false", "0", "off", "no"])
+    def test_disabled_omits_the_prompt(self, value):
+        settings = Settings.from_env({"OPENAI_API_KEY": FAKE_KEY, "TRANSCRIPTION_VOCABULARY_HINTS": value})
+        assert settings.transcription_prompt is None
+        provider = FakeProvider()
+        with make_client(provider, transcription_prompt=settings.transcription_prompt) as client:
+            response = post(client)
+        assert response.json() == {"text": "I came here to speak with you."}
+        body = provider.transcription_requests[0].content
+        assert b'name="prompt"' not in body and WEBM in body and b"Content-Type: audio/webm" in body
+
+    def test_disabled_wins_over_a_custom_prompt(self):
+        env = {"TRANSCRIPTION_VOCABULARY_HINTS": "false", "TRANSCRIPTION_PROMPT": "Zeus"}
+        assert Settings.from_env(env).transcription_prompt is None
+
+    def test_custom_prompt_replaces_the_default(self):
+        assert Settings.from_env({"TRANSCRIPTION_PROMPT": "Zeus, Hades"}).transcription_prompt == "Zeus, Hades"
+
+    def test_unusable_flag_fails_loudly(self):
+        from config import ConfigError
+        with pytest.raises(ConfigError):
+            Settings.from_env({"TRANSCRIPTION_VOCABULARY_HINTS": "maybe"})
+
+    @pytest.mark.parametrize("echo", [
+        VALIDATED_PROMPT,
+        VALIDATED_PROMPT.rstrip("."),
+        "  aphrodite athena ares hades zeus olympus argos theron lyra somnus master lightning bolt  ",
+        "Aphrodite. Athena. Ares. Hades. Zeus. Olympus. Argos. Theron. Lyra. Somnus. Master lightning-bolt!",
+        f"{VALIDATED_PROMPT} {VALIDATED_PROMPT}",  # repeated back to back
+    ])
+    def test_a_full_prompt_echo_is_returned_as_silence(self, echo):
+        provider = FakeProvider()
+        provider.transcript = echo
+        with make_client(provider) as client:
+            assert post(client).json() == {"text": ""}
+
+    @pytest.mark.parametrize("names", [
+        # Leading runs of the prompt: the old prefix rule discarded these as silence.
+        "Aphrodite, Athena, Ares",
+        "Aphrodite, Athena, Ares, Hades.",
+        "aphrodite athena ares hades zeus",
+        "Aphrodite, Athena, Ares, Hades, Zeus, Olympus, Argos, Theron, Lyra, Somnus, Master Lightning",
+        # Other short sequences of names, in and out of the prompt's order.
+        "Aphrodite, Athena",
+        "Hades, Zeus, Athena",
+        "Zeus, Olympus, Argos",
+        "Master Lightning Bolt",
+        "Athena, Ares, Aphrodite",
+    ])
+    def test_short_sequences_of_mythology_names_are_kept(self, names):
+        provider = FakeProvider()
+        provider.transcript = names
+        with make_client(provider) as client:
+            assert post(client).json() == {"text": names}
+
+    @pytest.mark.parametrize("speech", [
+        "Zeus",
+        "Athena sent me.",
+        "I seek the Master Lightning Bolt.",
+        "Aphrodite, Athena, Ares and Hades all helped me.",
+        "Please give the bolt back to Zeus.",
+        "I came here to speak with you.",
+        # The whole prompt plus anything else is something the player said, not a bare echo.
+        f"I know them all: {VALIDATED_PROMPT}",
+        f"{VALIDATED_PROMPT} That is everyone I met.",
+    ])
+    def test_normal_sentences_are_kept(self, speech):
+        provider = FakeProvider()
+        provider.transcript = speech
+        with make_client(provider) as client:
+            assert post(client).json() == {"text": speech}
+
+    def test_echo_detection_follows_a_custom_prompt(self):
+        provider = FakeProvider()
+        provider.transcript = "Zeus, Hades."
+        with make_client(provider, transcription_prompt="Zeus, Hades") as client:
+            assert post(client).json() == {"text": ""}
+        provider.transcript = "Zeus"
+        with make_client(provider, transcription_prompt="Zeus, Hades") as client:
+            assert post(client).json() == {"text": "Zeus"}
+
+    def test_nothing_is_discarded_when_prompting_is_off(self):
+        provider = FakeProvider()
+        provider.transcript = VALIDATED_PROMPT
+        with make_client(provider, transcription_prompt=None) as client:
+            assert post(client).json() == {"text": VALIDATED_PROMPT}
+
+    def test_response_shape_is_unchanged(self):
+        provider = FakeProvider()
+        with make_client(provider) as client:
+            assert set(post(client).json()) == {"text"}
+
+    def test_failures_stay_sanitized_with_the_prompt_enabled(self):
+        provider = FakeProvider()
+        provider.always(500, text=f"boom {VALIDATED_PROMPT} {FAKE_KEY}")
+        with make_client(provider) as client:
+            response = post(client)
+        assert response.status_code == 502 and set(response.json()) == {"detail"}
+        assert FAKE_KEY not in response.text and "boom" not in response.text
 
 
 class TestProviderFailures:

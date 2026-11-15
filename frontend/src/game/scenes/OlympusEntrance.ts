@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { ENTRANCE_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
+import { addBackground, BACKGROUNDS, preloadBackground } from "../graphics/backgrounds";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { getGameState, hasFlag, subscribe } from "../state/gameState";
 import { applyStoryActions } from "../story/actions";
@@ -26,6 +27,11 @@ export class OlympusEntrance extends GameplayScene {
 
   constructor() {
     super(SCENES.entrance);
+  }
+
+  preload(): void {
+    super.preload();
+    preloadBackground(this, BACKGROUNDS.chapter1);
   }
 
   create(): void {
@@ -90,18 +96,23 @@ export class OlympusEntrance extends GameplayScene {
   }
 
   private buildBackdrop(): void {
-    this.add
-      .image(0, 0, TEXTURES.sky)
-      .setOrigin(0)
-      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-      .setScrollFactor(0);
+    // The painted background is visual only; the ground and barriers below are the real collision.
+    const painted = addBackground(this, BACKGROUNDS.chapter1, { worldWidth: WORLD_WIDTH, groundY: GROUND_Y });
+    if (!painted) {
+      // Placeholder sky and clouds, used if the painting failed to load.
+      this.add
+        .image(0, 0, TEXTURES.sky)
+        .setOrigin(0)
+        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+        .setScrollFactor(0);
 
-    const clouds: Array<[number, number, number]> = [
-      [150, 110, 1.2], [520, 200, 0.8], [900, 90, 1], [1300, 230, 1.4],
-      [1700, 130, 0.9], [2050, 210, 1.1], [2400, 100, 1.3],
-    ];
-    for (const [x, y, scale] of clouds) {
-      this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3);
+      const clouds: Array<[number, number, number]> = [
+        [150, 110, 1.2], [520, 200, 0.8], [900, 90, 1], [1300, 230, 1.4],
+        [1700, 130, 0.9], [2050, 210, 1.1], [2400, 100, 1.3],
+      ];
+      for (const [x, y, scale] of clouds) {
+        this.add.image(x, y, TEXTURES.cloud).setScale(scale).setScrollFactor(0.3);
+      }
     }
 
     for (const x of COLUMN_XS) {

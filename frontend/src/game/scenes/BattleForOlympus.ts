@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { BATTLE_INTERACTABLES } from "../data/interactables";
 import { Npc } from "../entities/Npc";
+import { HELD_BOLT_PLACEHOLDER_OFFSET } from "../graphics/characterArt";
 import { createPlaceholderTextures, TEXTURES } from "../graphics/placeholders";
 import { brokenCount, ENCHANTMENTS, isEnchantmentBroken, strikeEnchantment } from "../puzzles/enchantmentNodes";
 import { getGameState, subscribe } from "../state/gameState";
@@ -70,9 +71,11 @@ export class BattleForOlympus extends GameplayScene {
     this.physics.add.existing(this.barrier, true);
     this.physics.add.collider(this.player, this.barrier);
 
+    let aphrodite: Npc | undefined;
     for (const def of Object.values(BATTLE_INTERACTABLES)) {
       const npc = new Npc(this, def, GROUND_Y);
       this.interactions.register(npc);
+      if (def.id === "aphrodite") aphrodite = npc;
       if (def.id.startsWith("enchant")) {
         this.nodes.set(def.id, npc);
         npc.onInteract = () => this.strike(def.id);
@@ -88,7 +91,9 @@ export class BattleForOlympus extends GameplayScene {
     }
 
     this.cage = this.add.image(ZEUS_X, GROUND_Y, TEXTURES.goldenCage).setOrigin(0.5, 1).setDisplaySize(170, 250).setDepth(6);
-    this.heldBolt = this.add.image(THRONE_X + 34, GROUND_Y - 118, TEXTURES.masterBolt).setDisplaySize(30, 60).setDepth(6);
+    // In Aphrodite's hand (her art's hand point; the offset is for the placeholder).
+    const hand = aphrodite?.holdPoint(HELD_BOLT_PLACEHOLDER_OFFSET) ?? { x: THRONE_X + 34, y: GROUND_Y - 118 };
+    this.heldBolt = this.add.image(hand.x, hand.y, TEXTURES.masterBolt).setDisplaySize(30, 60).setDepth(6);
     this.darkness = this.add
       .rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x1a0b2e)
       .setOrigin(0)

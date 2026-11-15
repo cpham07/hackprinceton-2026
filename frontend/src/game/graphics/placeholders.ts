@@ -2,9 +2,11 @@ import Phaser from "phaser";
 
 /**
  * Placeholder art, drawn with Phaser Graphics and registered under texture keys.
- * To use real art, load images under these same keys in the scene's preload()
- * and stop calling createPlaceholderTextures(). Display sizes and collision
- * boxes are set by the entities' configs, not by these textures.
+ * To use real art, load an image under the same key in preload(): a key that already exists
+ * is never overwritten here, so only the art that is still missing gets a placeholder (and a
+ * file that fails to load falls back to its placeholder). Character art is listed in
+ * characterArt.ts. Display sizes and collision boxes are set by the entities' configs,
+ * not by these textures.
  */
 export const TEXTURES = {
   sky: "bg-sky",
@@ -90,6 +92,7 @@ export function createPlaceholderTextures(scene: Phaser.Scene): void {
   const g = scene.make.graphics({}, false);
 
   const bake = (key: string, width: number, height: number, draw: () => void) => {
+    if (scene.textures.exists(key)) return; // real art loaded under this key
     g.clear();
     draw();
     g.generateTexture(key, width, height);

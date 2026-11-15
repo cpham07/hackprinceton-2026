@@ -1,6 +1,6 @@
 import pytest
 
-from config import ConfigError, Settings, load_env_file
+from config import MYTHOLOGY_TRANSCRIPTION_PROMPT, ConfigError, Settings, load_env_file
 from helpers import FAKE_KEY, FakeProvider, make_client
 
 
@@ -41,7 +41,7 @@ class TestSettings:
         s = Settings.from_env({})
         assert s.api_key is None and s.transcription_model == "whisper-1" and s.dialogue_model == "gpt-4o-mini"
         assert s.base_url == "https://api.openai.com/v1" and s.cors_origins == ("http://localhost:5173",)
-        assert s.transcription_language == "en" and s.transcription_prompt is None
+        assert s.transcription_language == "en" and s.transcription_prompt == MYTHOLOGY_TRANSCRIPTION_PROMPT
 
     def test_environment_overrides(self):
         s = Settings.from_env({

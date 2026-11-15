@@ -15,6 +15,14 @@ DEFAULT_BASE_URL = "https://api.openai.com/v1"
 DEFAULT_CORS_ORIGINS = ("http://localhost:5173",)
 ENV_FILE = Path(__file__).parent / ".env"
 
+# The vocabulary hint sent to the hosted transcription model (whisper-1) so the game's proper names are
+# spelled correctly. This is the one place to change it. It is the exact prompt validated by the ASR
+# experiment (scripted recordings, baseline vs. hint); it only biases spelling, transcripts are never
+# rewritten. TRANSCRIPTION_PROMPT replaces it; TRANSCRIPTION_VOCABULARY_HINTS=false turns prompting off.
+MYTHOLOGY_TRANSCRIPTION_PROMPT = (
+    "Aphrodite, Athena, Ares, Hades, Zeus, Olympus, Argos, Theron, Lyra, Somnus, Master Lightning Bolt."
+)
+
 T = TypeVar("T", int, float)
 
 
@@ -59,6 +67,24 @@ def _number(environ: Mapping[str, str], name: str, default: T, cast: Callable[[s
     return value
 
 
+def _flag(environ: Mapping[str, str], name: str, default: bool) -> bool:
+    raw = _text(environ, name)
+    if raw is None:
+        return default
+    value = raw.lower()
+    if value in ("1", "true", "yes", "on"):
+        return True
+    if value in ("0", "false", "no", "off"):
+        return False
+    raise ConfigError(f"{name} must be true or false, got {raw!r}.")
+
+
+def _transcription_prompt(environ: Mapping[str, str]) -> str | None:
+    if not _flag(environ, "TRANSCRIPTION_VOCABULARY_HINTS", True):
+        return None
+    return _text(environ, "TRANSCRIPTION_PROMPT") or MYTHOLOGY_TRANSCRIPTION_PROMPT
+
+
 @dataclass(frozen=True)
 class Settings:
     # --- provider (OpenAI-compatible) ---
@@ -78,8 +104,9 @@ class Settings:
     max_audio_bytes: int = 10 * 1024 * 1024
     transcription_timeout_s: float = 45.0  # the frontend gives up after 60 s
     transcription_language: str | None = "en"  # blank = let the provider detect it
-    # Off by default: a vocabulary prompt can be echoed back as a "transcript" of silence.
-    transcription_prompt: str | None = None
+    # None = no prompt (plain transcription). A transcript that merely echoes the prompt is discarded
+    # in speech.py, since Whisper can return the prompt as the "transcript" of silence.
+    transcription_prompt: str | None = MYTHOLOGY_TRANSCRIPTION_PROMPT
 
     # --- dialogue ---
     dialogue_timeout_s: float = 20.0  # the frontend gives up after 30 s
@@ -114,7 +141,7 @@ class Settings:
             max_audio_bytes=_number(env, "MAX_AUDIO_BYTES", cls.max_audio_bytes, int, 1024),
             transcription_timeout_s=_number(env, "TRANSCRIPTION_TIMEOUT_SECONDS", cls.transcription_timeout_s, float, 1.0),
             transcription_language=(language.strip() or None) if language is not None else cls.transcription_language,
-            transcription_prompt=_text(env, "TRANSCRIPTION_PROMPT"),
+            transcription_prompt=_transcription_prompt(env),
             dialogue_timeout_s=_number(env, "NPC_DIALOGUE_TIMEOUT_SECONDS", cls.dialogue_timeout_s, float, 1.0),
             dialogue_max_tokens=_number(env, "NPC_DIALOGUE_MAX_TOKENS", cls.dialogue_max_tokens, int, 16),
             dialogue_temperature=_number(env, "NPC_DIALOGUE_TEMPERATURE", cls.dialogue_temperature, float, 0.0),

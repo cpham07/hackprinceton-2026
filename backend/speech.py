@@ -85,6 +85,26 @@ def validate_audio(data: bytes, declared_content_type: str | None, max_bytes: in
     return detected
 
 
+def _normalized_words(text: str) -> str:
+    return " ".join("".join(c if c.isalnum() else " " for c in text.lower()).split())
+
+
+def _echoes_prompt(text: str, prompt: str) -> bool:
+    """True only when the transcript is unmistakably the vocabulary prompt itself, not something the player said.
+
+    Whisper can return its prompt as the "transcript" of silence. That is detected only as the complete
+    prompt, word for word (ignoring case, punctuation and spacing), optionally repeated back to back. A
+    partial run of it ("Aphrodite, Athena, Ares") or the prompt with anything added is kept, because a
+    player can say exactly that; when in doubt the transcript is kept rather than silently discarded.
+    """
+    words = _normalized_words(text).split()
+    prompt_words = _normalized_words(prompt).split()
+    size = len(prompt_words)
+    if not words or not size or len(words) % size:
+        return False
+    return all(words[start : start + size] == prompt_words for start in range(0, len(words), size))
+
+
 async def transcribe(audio: bytes, audio_format: AudioFormat, settings: Settings, client: httpx.AsyncClient) -> str:
     """Send the recording to the provider and return the recognized text (possibly empty for silence).
 
@@ -119,6 +139,8 @@ async def transcribe(audio: bytes, audio_format: AudioFormat, settings: Settings
     text = data.get("text")
     if not isinstance(text, str):
         raise ServiceError(502, "The speech recognition provider sent a response without text.")
+    if settings.transcription_prompt and _echoes_prompt(text, settings.transcription_prompt):
+        text = ""  # the model returned the vocabulary hint itself (typical for silence), not speech
     # Metadata only: never the audio, never the transcript.
     logger.info(
         "transcribed format=%s bytes=%d model=%s chars=%d ms=%d",
