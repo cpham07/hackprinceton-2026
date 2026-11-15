@@ -24,9 +24,15 @@ describe("recording duration reaches the confirmed PlayerResponse", () => {
     },
   );
 
-  it("the dev sample transcript is voice without a duration (no real recording)", () => {
+  it("the dev sample transcript is a simulated voice reply without a duration (no real recording)", () => {
     const response = buildConfirmedResponse("athena", "Sample", "mock", 5000);
-    expect(response).toEqual({ npcId: "athena", text: "Sample", method: "voice" });
+    expect(response).toEqual({ npcId: "athena", text: "Sample", method: "voice", simulated: true });
+  });
+
+  it("real recordings and typed text are never marked simulated", () => {
+    expect("simulated" in buildConfirmedResponse("athena", "Real", "real", 3000)).toBe(false);
+    expect("simulated" in buildConfirmedResponse("athena", "Real", "real", undefined)).toBe(false);
+    expect("simulated" in buildConfirmedResponse("athena", "Typed", "typed")).toBe(false);
   });
 
   it("typed text is a text reply and never has a duration", () => {

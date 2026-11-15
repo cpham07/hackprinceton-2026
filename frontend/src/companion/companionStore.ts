@@ -210,10 +210,12 @@ export function createCompanionStore(options: { storage?: StorageLike | null; re
 
     /**
      * Call once per confirmed voice reply that was accepted by the dialogue. Returns immediately: feedback
-     * is fetched in the background and never blocks or alters the conversation. Typed replies are ignored.
+     * is fetched in the background and never blocks or alters the conversation. Typed replies and the
+     * development sample transcript (`simulated`) are ignored: they are not speaking practice.
      */
     recordVoiceTurn(response: PlayerResponse, context: VoiceTurnContext): void {
-      if (response.method !== "voice" || seen.has(response)) return;
+      // Only real speech counts: the dev sample transcript (simulated) was never recorded or spoken.
+      if (response.method !== "voice" || response.simulated || seen.has(response)) return;
       seen.add(response);
       if (!snapshot.prefs.enabled) return;
       const transcript = response.text.trim();

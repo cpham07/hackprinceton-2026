@@ -10,6 +10,11 @@ export interface PlayerResponse {
    * recording this transcript came from. Absent for typed replies and whenever it is not reliably known.
    */
   durationMs?: number;
+  /**
+   * Development only: the text is the dev sample transcript, not a recording. It still goes through the voice
+   * path so dialogue can be tested, but it is never counted or coached as real speaking practice.
+   */
+  simulated?: true;
 }
 
 /**

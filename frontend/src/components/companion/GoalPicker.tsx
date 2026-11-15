@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { GOALS, toggleGoal, type GoalId } from "../../companion/goals";
 import { EventBus } from "../../game/EventBus";
+import { trapTab } from "./focusTrap";
 
 interface GoalPickerProps {
   /** First visit: worded as a welcome, and closing it means "skip". */
@@ -9,16 +10,23 @@ interface GoalPickerProps {
   onSave: (goals: GoalId[]) => void;
   /** Skip (onboarding) or cancel (editing): goals are unchanged. */
   onClose: () => void;
+  /** Focus goes back here when the picker closes (the control that opened it). Null: nothing to restore. */
+  returnFocusTo?: HTMLElement | null;
 }
 
 /** Shared input-lock id: the active scene freezes gameplay while any overlay id is open. */
 export const GOAL_PICKER_OVERLAY_ID = "speaking-companion-goals";
 
-/** Compact modal to choose speaking goals. Locks gameplay input while open, like the dialogue box. */
-export default function GoalPicker({ onboarding, initialGoals, onSave, onClose }: GoalPickerProps) {
+/**
+ * Compact modal to choose speaking goals. Locks gameplay input while open, like the dialogue box, keeps
+ * Tab / Shift+Tab inside itself, and returns focus to the control that opened it when it closes.
+ */
+export default function GoalPicker({ onboarding, initialGoals, onSave, onClose, returnFocusTo = null }: GoalPickerProps) {
   const [goals, setGoals] = useState<GoalId[]>(initialGoals);
   const boxRef = useRef<HTMLDivElement>(null);
   const firstRef = useRef<HTMLInputElement>(null);
+  const returnFocusRef = useRef(returnFocusTo);
+  returnFocusRef.current = returnFocusTo;
 
   // Lock gameplay through the same mechanism as the dialogue and puzzles. Re-announced when a scene becomes
   // ready, because a scene that starts while this is open begins with an empty lock list.
@@ -31,19 +39,28 @@ export default function GoalPicker({ onboarding, initialGoals, onSave, onClose }
     };
   }, []);
 
+  // Focus moves into the picker when it opens and back to its trigger when it closes (Save, Cancel/Skip or
+  // Escape all unmount it). Without a trigger, focus is left on the page, so the keyboard returns to the game.
   useEffect(() => {
     firstRef.current?.focus();
+    return () => {
+      const target = returnFocusRef.current;
+      if (target?.isConnected) target.focus();
+    };
   }, []);
 
-  // Escape closes this picker even if focus has left it (it is modal), and never reaches a dialogue behind it.
+  // It is modal: if focus has somehow left it (e.g. a click on the backdrop), Escape still closes it without
+  // reaching a dialogue behind it, and Tab brings focus back inside.
   useEffect(() => {
     const onKey = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" && event.key !== "Tab") return;
+      const box = boxRef.current;
       const active = document.activeElement;
-      if (active && active !== document.body && boxRef.current?.contains(active)) return;
+      if (!box || (active && active !== document.body && box.contains(active))) return;
       event.preventDefault();
       event.stopImmediatePropagation();
-      onClose();
+      if (event.key === "Escape") onClose();
+      else trapTab(box, event.shiftKey);
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
@@ -54,6 +71,8 @@ export default function GoalPicker({ onboarding, initialGoals, onSave, onClose }
     if (event.key === "Escape") {
       event.preventDefault();
       onClose();
+    } else if (event.key === "Tab" && boxRef.current && trapTab(boxRef.current, event.shiftKey)) {
+      event.preventDefault(); // wrapped from the last control to the first, or the first to the last
     }
   };
 

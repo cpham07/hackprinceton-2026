@@ -144,6 +144,28 @@ describe("voice turns: measurements", () => {
     expect(store.getSnapshot().metrics).toEqual({ voiceTurns: 1, timedTurns: 0, totalSpeakingMs: 0, timedWords: 0 });
   });
 
+  it("ignores the dev sample transcript: no practice count, no time, no feedback request", () => {
+    const { calls, requester } = deferredRequester();
+    const storage = memoryStorage();
+    const store = createCompanionStore({ storage, requestFeedback: requester });
+    store.saveGoals(["english", "clarity", "pacing", "clear_speech"]);
+    const savedBefore = storage.data.get(STORAGE_KEY);
+    store.recordVoiceTurn({ npcId: "athena", text: "I seek the wisdom of Athena.", method: "voice", simulated: true }, ctx);
+    store.recordVoiceTurn({ npcId: "athena", text: "Sample with a time", method: "voice", simulated: true, durationMs: 4000 }, ctx);
+    expect(store.getSnapshot().metrics).toEqual({ voiceTurns: 0, timedTurns: 0, totalSpeakingMs: 0, timedWords: 0 });
+    expect(store.getSnapshot().latest).toBeNull();
+    expect(calls).toHaveLength(0);
+    expect(storage.data.get(STORAGE_KEY)).toBe(savedBefore);
+  });
+
+  it("a real voice reply after a sample still counts normally", () => {
+    const store = createCompanionStore({ storage: memoryStorage() });
+    store.saveGoals(["pacing"]);
+    store.recordVoiceTurn({ npcId: "athena", text: "sample", method: "voice", simulated: true }, ctx);
+    store.recordVoiceTurn(voice("real words here", 2000), ctx);
+    expect(store.getSnapshot().metrics).toEqual({ voiceTurns: 1, timedTurns: 1, totalSpeakingMs: 2000, timedWords: 3 });
+  });
+
   it("accumulates speaking time across turns", () => {
     const store = createCompanionStore({ storage: memoryStorage() });
     store.saveGoals(["pacing"]);

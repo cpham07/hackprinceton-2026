@@ -86,6 +86,10 @@ function FeedbackView({ turn, detailed, showPacing }: { turn: LatestTurn; detail
 export default function SpeakingCompanion() {
   const { prefs, metrics, latest, goalEditorOpen, unseen } = useSpeakingCompanion();
   const [confirmingReset, setConfirmingReset] = useState(false);
+  // The control that opened the goal editor from the keyboard, so focus can return to it when it closes. A mouse
+  // click is different: the panel hands the keyboard back to the game after clicks, so focus is not pulled back
+  // into the panel (WASD would stop moving the player). Onboarding opens by itself and has no trigger.
+  const goalTriggerRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const showPicker = goalEditorOpen || (prefs.enabled && !prefs.onboarded);
   const showPacing = prefs.goals.includes("pacing");
@@ -182,7 +186,14 @@ export default function SpeakingCompanion() {
                 ) : (
                   <p className="companion-muted">No goals chosen yet.</p>
                 )}
-                <button type="button" className="companion-link" onClick={() => store.openGoalEditor()}>
+                <button
+                  type="button"
+                  className="companion-link"
+                  onClick={(event) => {
+                    goalTriggerRef.current = event.detail === 0 ? event.currentTarget : null;
+                    store.openGoalEditor();
+                  }}
+                >
                   {prefs.goals.length > 0 ? "Change goals" : "Choose goals"}
                 </button>
               </section>
@@ -262,6 +273,7 @@ export default function SpeakingCompanion() {
           initialGoals={prefs.goals}
           onSave={(goals) => store.saveGoals(goals)}
           onClose={() => store.closeGoalEditor()}
+          returnFocusTo={prefs.onboarded ? goalTriggerRef.current : null}
         />
       )}
     </>
