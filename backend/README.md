@@ -31,6 +31,9 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
+ASR evaluation (WER, mythology-name accuracy, latency, baseline vs vocabulary-hint prompt) lives in `ml/`, separate from
+the server: see [`ml/README.md`](ml/README.md). Provider calls there need an explicit `--run`.
+
 ## Configuration (environment or `backend/.env`)
 
 | Variable | Default | Meaning |

@@ -34,6 +34,10 @@ class AudioFormat:
 WEBM = AudioFormat("webm", "audio/webm")
 OGG = AudioFormat("ogg", "audio/ogg")
 MP4 = AudioFormat("mp4", "audio/mp4")
+# Audio-only MPEG-4 from Apple apps (QuickTime, Voice Memos, Music): major brand "M4A ". The provider
+# rejects these as "Invalid file format" when they are labelled .mp4, so they keep their own extension.
+M4A = AudioFormat("m4a", "audio/mp4")
+M4A_BRANDS = frozenset({b"M4A ", b"M4B "})
 MP3 = AudioFormat("mp3", "audio/mpeg")
 WAV = AudioFormat("wav", "audio/wav")
 
@@ -60,7 +64,7 @@ def sniff_audio_format(data: bytes) -> AudioFormat | None:
     if data[:4] == b"OggS":
         return OGG
     if data[4:8] == b"ftyp":
-        return MP4
+        return M4A if data[8:12] in M4A_BRANDS else MP4
     if data[:4] == b"RIFF" and data[8:12] == b"WAVE":
         return WAV
     if data[:3] == b"ID3" or (len(data) > 1 and data[0] == 0xFF and data[1] & 0xE0 == 0xE0):

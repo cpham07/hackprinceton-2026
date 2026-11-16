@@ -1,32 +1,36 @@
 # HackPrinceton 2026
 
-A TypeScript + React frontend backed by a Python FastAPI server that handles speech recognition and audio similarity.
+A 2D adventure through Greek myth that you play by **talking**. You are an axolotl climbing to Olympus, and you move the
+story forward by speaking with gods and mortals. It is built for people with speech impediments, to practise speaking
+somewhere low-pressure and encouraging:
 
-## Layout
+- **No time pressure:** recording stops only when you press Stop. There is no auto-stop on silence and no fluency scoring.
+- **You stay in control:** you can edit what speech recognition heard before you send it. Typing works everywhere too.
+- **Nothing depends on speaking perfectly:** puzzles and story steps are scripted. The AI characters chat, but they
+  cannot lock you out.
+- **Private:** recordings and transcripts are never stored or logged.
 
-```
-frontend/   React + TypeScript (Vite)
-  src/App.tsx
-  src/components/
-  src/game/
-backend/    Python
-  main.py         FastAPI server
-  speech.py       Speech recognition
-  embeddings.py   Audio similarity
-```
+## Built with
 
-## Running
+TypeScript, React, Phaser 3, Vite, Vitest · Python, FastAPI, Uvicorn, HTTPX, pytest · OpenAI Whisper, GPT-4o mini ·
+SVG (hand-drawn art) · optional: PyTorch, Hugging Face Transformers, PEFT/LoRA (`backend/ml/`)
 
-Backend (http://localhost:8000):
+## Running it
+
+**Backend** (http://localhost:8000):
 
 ```bash
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env        # then set OPENAI_API_KEY=... in backend/.env
 uvicorn main:app --reload
 ```
 
-Frontend (http://localhost:5173):
+Without a key the game is still fully playable with typed, scripted dialogue. Voice input, the AI characters and the
+Speaking Companion's tips need the key. `.env` is git-ignored; never commit it.
+
+**Frontend** (http://localhost:5173):
 
 ```bash
 cd frontend
@@ -34,44 +38,74 @@ npm install
 npm run dev
 ```
 
-Tests: `cd frontend && npm test` (unit tests, Vitest) and `cd backend && pytest` (no network, no paid calls).
+**Tests** (no network, no paid calls):
 
-## Speaking Companion
+```bash
+cd backend && pip install -r requirements-dev.txt && pytest
+cd frontend && npm test && npm run build
+```
 
-An optional coach for players practising spoken English. On the first visit a small window asks for goals (Improve my
-English, Express my ideas clearly, Improve my pacing, Practice speaking clearly); you can skip it. The 🗣 button in the
-top-right corner opens the panel, where you can change goals, show or hide detailed tips, reset your practice totals, or
-turn the companion off.
+## How it works
 
-After each **voice** reply you confirm, the panel shows:
-- **Measured:** the number of words in your confirmed reply, the real recording time, an approximate words-per-minute
-  figure (approximate because the recording includes pauses; slower is not wrong), your voice-reply count and total
-  speaking time. If the recording time is not available it says so instead of guessing.
-- **From an AI coach (backend, `POST /speaking/feedback`):** one thing you did well and one suggestion, based only on the
-  words you confirmed, with optional details (a rephrasing, useful words, whether you answered the question and gave a
-  reason). It never judges pronunciation, accent or fluency and never gives scores.
+| Feature | Where | What it does |
+| --- | --- | --- |
+| Voice input | `POST /transcribe` (Whisper) | Record, stop, review and edit the transcript, then send. A mythology vocabulary hint helps with names like Somnus and Hades. |
+| AI characters | `POST /npc/dialogue` (GPT-4o mini) | After their scripted lines, Hades and Zeus (and Aphrodite in Chapter 5) answer freely and in character. They only know facts the player has unlocked and cannot change the story. |
+| Speaking Companion | `POST /speaking/feedback` (GPT-4o mini) | An optional coach (🗣 button): one thing you did well and one gentle tip per voice reply, shaped by goals you choose. |
 
-The tip is fetched in the background: the conversation never waits for it, and it never affects the story. Typed replies
-work everywhere and are never analysed. This browser stores only your goals, panel preferences and practice totals;
-recordings and transcripts are not kept.
+The **Speaking Companion** never comments on pronunciation, accent, stuttering, fluency or disability, and never gives
+scores. Every answer is checked in code before it is shown. Pacing (approximate words per minute, "slower is not wrong")
+is measured in the browser from the real recording time and is never sent to the AI. Only your goals and practice totals
+are saved, in this browser. Details: [backend/README.md](backend/README.md).
 
-## Playing the Chapter 1 prototype
+## Playing
 
-- Move: A/D or left/right arrows
-- Jump: Space or up arrow
-- Interact: walk up to a character or object and press E
-- In the dialogue: type a reply and press Enter to send, Escape to close
+- **Move:** A/D or the arrow keys. **Jump:** Space or up arrow. **Interact:** walk up to someone or something and press E.
+- **Talk:** type and press Enter, or use the microphone controls under the text box. Escape closes a conversation.
 
-Chapter 1 walkthrough: talk to Aphrodite, then Old Theron and Lyra up the road. Lyra teaches the incantation; say it to Argos the gatekeeper ("Somnus, let the heavens dream.") and walk through the open gate. The glowing statue is optional.
+1. **Welcome to Olympus.** Talk to Aphrodite, then Old Theron and Lyra along the meadow path. Lyra teaches the
+   incantation. Say it to Argos the gatekeeper ("Somnus, let the heavens dream.") and walk through the gate.
+2. **The Secrets of the Gods.** Earn three seals in any order: order the symbols in Athena's library (Wisdom), get past the
+   hammers in Ares's arena (Courage), and answer Hades's three questions (Passage). Then open Zeus's palace gates.
+3. **The Forbidden Vault.** Move the two statues onto their plates, show the guards your Seal of Courage, open the vault
+   with the three seals, take the Master Lightning Bolt, answer Zeus and leave.
+4. **The Betrayal.** On the palace steps, talk to Aphrodite. Argue as much as you like: the story moves when you press
+   "Hand over the Master Lightning Bolt", or after three replies. Then talk to Athena to break the necklace's hold.
+5. **Guardian of Olympus.** Break Aphrodite's enchantments in the order on the plaque (I Vanity, II Jealousy, III Desire),
+   talk to her in the throne room, take the bolt, free Zeus, return it and tell him why mortals deserve another chance.
 
-Conversations are scripted; replies do not interpret what you type, except the gatekeeper, who checks for the incantation.
+**Dev shortcuts** (dev server only): `?chapter=2` to `?chapter=5` start at that chapter; add `&seals=all` to start with
+every seal. The dev panel (bottom left) can switch the AI characters to a labelled simulated mode or turn them off.
 
-Chapter 2 so far: on the completion screen choose "Continue to Olympus". Talk to Athena (far right of the hub), enter her library, press E at the pedestal and order the symbols to earn the Seal of Wisdom. Talk to Ares (next to the red arena gate) to open his training arena: get past three moving hammers to the finish line to earn the Seal of Courage. The seals can be earned in either order. Descend through the dark arch to Hades's chamber and answer his three questions to earn the Seal of Passage. With all three seals, the gates of Zeus's palace (left of the fountain) unlock; press E there to finish Chapter 2. Chapter 3 is not playable yet.
+## Project layout
 
-Chapter 3: after Chapter 2, choose "Continue to Zeus's Palace". Move the two statues onto their plates (E cycles a statue, the lever resets them), show the guards Ares's warrior badge (your Seal of Courage), open the vault with the three seals, take the Master Lightning Bolt, answer Zeus, and leave through the palace gate. Chapter 4 is not playable yet.
+```
+frontend/                 Vite + React + TypeScript + Phaser 3
+  src/App.tsx             open dialogue, puzzles, and the one handler for typed and spoken replies
+  src/game/               scenes, story state, chapters, puzzles, art loading
+  src/components/         dialogue box, voice input, Speaking Companion, quest tracker, overlays
+  public/assets/          paintings (backgrounds/), gods (characters/npcs/), mortals, buildings, props
+backend/                  Python FastAPI
+  main.py                 the app and routes
+  speech.py               POST /transcribe
+  npc_dialogue.py         POST /npc/dialogue (+ npc_personas.py, story_knowledge.py)
+  speaking_feedback.py    POST /speaking/feedback
+  ml/                     offline tools (see below), never imported by the server
+docs/                     design notes for the speech features
+```
 
-For testing, `http://localhost:5173/?chapter=2` (dev server only) starts directly in Chapter 2; add `&seals=all` to start with every seal. `?chapter=3` starts inside Zeus's palace, `?chapter=4` starts Chapter 4.
+**Art:** the scene backgrounds are paintings; the gods, townspeople, buildings, ruins and Ares's arena are hand-authored
+SVGs in the same style. They load under the placeholder texture names, so a missing file falls back to a simple
+generated placeholder instead of breaking the game.
 
-Chapter 4: after Chapter 3, choose "Continue". Outside Zeus's palace, talk to Aphrodite. You can argue (typed or spoken), but the story only moves when you press "Hand over the Master Lightning Bolt", or when she loses patience after three replies and takes it. Then Aphrodite reveals her betrayal, imprisons Zeus and leaves; talk to Athena (she and Ares arrive beside you) to break the necklace's hold.
+## Experimental: speech recognition tuned to one speaker
 
-Chapter 5 (the final chapter): after Chapter 4, choose "Continue". Talk to Athena, then break Aphrodite's three enchantments in the order on the plaque (I Vanity, II Jealousy, III Desire; out of turn they reset). In the throne room, talk to Aphrodite; she answers what you say (using the AI backend when it is running), and after you have spoken three times she sets the bolt down. Take it, strike Zeus's cage with it (E), give it back to him, and tell him why mortals deserve another chance. The ending offers "Play again from the beginning". `?chapter=5` (dev server only) starts this chapter.
+`backend/ml/` is an offline pipeline, not used by the live game. It benchmarks Whisper's accuracy on your own consented
+recordings, runs a local pinned Whisper, and trains a lightweight LoRA adapter on one person's speech, so recognition can
+improve for voices general models handle poorly. Its heavy dependencies are optional:
+
+```bash
+cd backend && pip install -r requirements-ml.txt
+```
+
+See [backend/ml/README.md](backend/ml/README.md). Recordings, results and checkpoints are git-ignored; never commit them.
